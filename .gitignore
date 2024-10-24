@@ -1,0 +1,48 @@
+# Prerequisites and object files
+*.d
+*.o
+
+# Libraries
+*.lib
+*.a
+
+# Executables
+minishell
+*.exe
+*.out
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Build directory
+build/
+obj/
+
+# Dependencies
+libft/*.o
+libft/*.a
+
+# History files
+.minishell_history
+
+# Temporary files
+*.tmp
+*~
+
+# Test files
+test/
+tests/
