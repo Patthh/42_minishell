@@ -14,8 +14,8 @@
   - Ch. 10: Signals (basic mechanisms)
 
 **Learning Objectives:**
-- [ ] Create project structure
-- [ ] Implement basic prompt
+- [x] Create project structure
+- [x] Implement basic prompt
 - [ ] Understand process creation
 - [ ] Basic signal management
 
