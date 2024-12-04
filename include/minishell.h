@@ -11,6 +11,8 @@
 # include <errno.h>
 
 # define PROMPT "minishell$ "
+# define TRUE 1
+# define FALSE 0
 
 typedef enum e_token {
 	TOKEN_WORD,
@@ -20,8 +22,8 @@ typedef enum e_token {
 	TOKEN_REDIRECT_HEREDOC,		// <<
 	TOKEN_PIPE,					// |
 	TOKEN_ENV_VAR,				// $VAR
-	TOKEN_EXIT_STATUS,			// $?
-	TOKEN_SPACE,
+	TOKEN_STATUS,				// $?
+	TOKEN_WHITESPACE,
 	TOKEN_EOF,
 } t_token_type;
 
@@ -34,19 +36,26 @@ typedef struct s_token {
 
 // redirection structure
 typedef struct s_redirection {
-	char					*file;
+	char					*type; // IN, OUT, APPEND, HEREDOC
+	char					*filename;
 	struct s_redirection	*next;
 } t_redirection;
 
 // command structure to handle a single command
 typedef struct s_command {
-	t_redirection			*redirection;
+	char					**arguments;
+	t_redirection			*input;
+	t_redirection			*output;
+	int						fd_in;
+	int						fd_out;
+	int						is_builtin;
 	struct s_command		*next;
 } t_command;
 
 // command structure to handle multiple commands
-typedef struct s_pipe {
-
+typedef struct s_pipeline {
+	t_command				**commands; // array of commands
+	int						cmd_count;
 } t_pipeline;
 
 // structure to handle env
@@ -57,11 +66,12 @@ typedef struct s_env {
 } t_env;
 
 typedef struct s_program {
-	// int				std_out;
-	// int				std_int;
-	// int				std_err;
+	char					**envp; // array of environment variables
 	t_token					*token;
 	t_command				*command;
+	t_env					*env_list;
+	int						status;
+	int						exit;
 } t_program;
 
 #endif
