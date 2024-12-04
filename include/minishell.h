@@ -27,33 +27,41 @@ typedef enum e_token {
 
 // token structure for lexer
 typedef struct s_token {
-	t_token_type	type;
-	char			*string;
-	struct s_token	*next;
+	t_token_type			type;
+	char					*value;
+	struct s_token			*next;
 } t_token;
 
 // redirection structure
 typedef struct s_redirection {
-	int				type;
-	char			*file;
+	char					*file;
+	struct s_redirection	*next;
 } t_redirection;
 
 // command structure to handle a single command
 typedef struct s_command {
-
+	t_redirection			*redirection;
+	struct s_command		*next;
 } t_command;
 
 // command structure to handle multiple commands
-typedef struct s_pipeline {
+typedef struct s_pipe {
 
 } t_pipeline;
 
+// structure to handle env
+typedef struct s_env {
+	char					*key;
+	char					*value;
+	struct s_env			*next;
+} t_env;
+
 typedef struct s_program {
-	// int				*stdout;
-	// int				*stdin;
-	// int				*stderr;
-	t_token			*token;
-	t_command		*command;
+	// int				std_out;
+	// int				std_int;
+	// int				std_err;
+	t_token					*token;
+	t_command				*command;
 } t_program;
 
 #endif
