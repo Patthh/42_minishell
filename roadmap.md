@@ -19,6 +19,8 @@
 - [ ] Understand process creation
 - [ ] Basic signal management
 
+
+
 ### Week 2: Command Execution
 **Technical Focus:**
 - Path resolution
