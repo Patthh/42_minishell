@@ -1,49 +1,59 @@
 #include "../include/minishell.h"
 
-int	ft_strcmp(const char *s1, const char *s2)
+// initialize minishell's structure with default values
+void	init_minishell(t_program *program, char **envp)
 {
-	size_t	i;
+	// for the structure
+	ft_memset(program, 0, sizeof(*program));
 
-	i = 0;
-	while (s1[i] != '\0' && s2[i] != '\0' && s1[i] == s2[i])
+	// for specific fields
+	program->envp = envp;
+	program->status = 0;
+	program->exit = 0;
+}
+
+void	free_minishell(t_program *program)
+{
+	if (program->token)
+		free (program->token);
+	if (program->command)
+		free (program->command);
+}
+
+int	check_input(const char *string)
+{
+	while (*string)
 	{
-		i++;
+		if (isspace(*string))
+			return (0);
+		string++;
 	}
-	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+	return (1);
 }
 
-void	*ft_memset(void *s, int c, size_t n)
-{
-	unsigned char	*temp;
-	unsigned char	*end;
-
-	temp = (unsigned char *)s;
-	end = temp + n;
-	while (temp < end)
-		*temp++ = c;
-	return (s);
-}
-
-
-int main(int argc, char **argv, char **env)
+int main (int argc, char **argv, char **envp)
 {
 	(void)argc;
 	(void)argv;
-	(void)env;
-	char	*line;
-	while (1)
+	t_program	minishell;
+	char		*input;
+
+	init_minishell(&minishell, envp);
+	while (!minishell.exit)
 	{
-		line = readline(PROMPT);
-		if (line == NULL)
-			break ;
-		if (ft_strcmp(line, "exit") == 0)
+		input = readline(PROMPT);
+		if (input == NULL)
 		{
-			free (line);
+			printf("\n");
 			break ;
 		}
-		printf(PROMPT);
-		printf("%s\n", line);
-		free (line);
+		if (ft_strcmp(input, "exit") == 0)
+		{
+			free (input);
+			break ;
+		}
+		free (input);
 	}
+	free_minishell(&minishell);
 	return (0);
 }
