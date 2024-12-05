@@ -27,6 +27,11 @@ typedef enum e_token {
 	TOKEN_EOF,
 } t_token_type;
 
+typedef enum e_logical_operator {
+	OP_AND,
+	OP_OR,
+} t_logical_operator;
+
 // token structure for lexer
 typedef struct s_token {
 	t_token_type			type;
