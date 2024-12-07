@@ -18,6 +18,18 @@ void	token_paranthesis(const char **input, t_token **head)
 	token_add(head, token_new(type, value));
 }
 
+/*
+ * detects the quote type ' or "
+ * use helper function for handling single or double quotes
+ * helper functions must collect content inside quotes
+ * double quote handles $VAR and $? expansions
+ * extract and replace env tokens with their values from t_env
+ *
+ * bash behaviour with quotes
+ * interactive shell, bash waits for the closing quote on the next line
+ * 		use readline until closing quote is found
+ * non-interative shell, bash throws syntax error and stops execution
+ */
 void	token_quotes(const char **input, t_token **head)
 {
 	char			c;
