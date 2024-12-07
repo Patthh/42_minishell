@@ -15,16 +15,24 @@
 # define FALSE 0
 
 typedef enum e_token {
-	TOKEN_WORD,
-	TOKEN_REDIRECT_IN,			// <
-	TOKEN_REDIRECT_OUT,			// >
-	TOKEN_REDIRECT_APPEND,		// >>
-	TOKEN_REDIRECT_HEREDOC,		// <<
-	TOKEN_PIPE,					// |
-	TOKEN_ENV_VAR,				// $VAR
-	TOKEN_STATUS,				// $?
-	TOKEN_WHITESPACE,
-	TOKEN_EOF,
+	TKN_WORD,		// command / argument
+	TKN_IN,			// <
+	TKN_OUT,		// >
+	TKN_RDA,		// >>
+	TKN_RDH,		// <<
+	TKN_PIPE,		// |
+	TKN_ENV,		// $VAR
+	TKN_STATUS,		// $?
+	TKN_WHITESPACE,
+	TKN_EOF,
+	TKN_BG,			// &
+	TKN_START,		// (
+	TKN_END,		// )
+	TKN_AND,		// &&
+	TKN_OR,			// ||
+	TKN_SINGLE,		// single quote
+	TKN_DOUBLE,		// double quote
+	TKN_WILDCARD,	// *
 } t_token_type;
 
 // token structure for lexer
@@ -73,8 +81,6 @@ typedef struct s_program {
 	int						status;
 	int						exit;
 } t_program;
-
-
 
 // utils
 int		ft_strcmp(const char *s1, const char *s2);
