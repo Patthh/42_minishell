@@ -49,6 +49,26 @@ char	*ft_strndup(const char *src, size_t n)
 	return (dest);
 }
 
+char	*ft_strdup(const char *s)
+{
+	size_t	i;
+	char	*dest;
+
+	i = ft_strlen(s);
+	dest = malloc(i + 1);
+	if (!dest)
+		return (NULL);
+	i = 0;
+	while (s[i] != '\0')
+	{
+		dest[i] = s[i];
+		i++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
+
+
 // finds the first occurence of a character in a string
 // returns a pointer to 'c' if found or NULL if not
 char	*ft_strchr(const char *string, int c)
@@ -69,4 +89,25 @@ char	*ft_strchr(const char *string, int c)
 		return ((char *)string);
 	}
 	return (NULL);
+}
+
+int	ft_isalnum(int c)
+{
+	if ((c >= 48 && c <= 57) || (c >= 65 && c <= 90) || (c >= 97 && c <= 122))
+	{
+		return (1);
+	}
+	return (0);
+}
+
+size_t	ft_strlen(const char *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (str[i] != '\0')
+	{
+		i++;
+	}
+	return (i);
 }

@@ -17,6 +17,8 @@ t_token	*tokenizer(const char *input)
 	t_token		*head;
 
 	head = NULL;
+	if (!input)
+		return (NULL);
 	while (*input)
 	{
 		if (isspace(*input))
@@ -27,8 +29,8 @@ t_token	*tokenizer(const char *input)
 			token_operator(&input, &head);
 		else if (*input == '(' || *input == ')')
 			token_paranthesis(&input, &head);
-		else if (*input == '\'' || *input == '"')
-			token_quotes(&input, &head);
+		// else if (*input == '\'' || *input == '"')
+		// 	token_quotes(&input, &head);
 		else
 			token_add(&head, token_word(&input));
 	}
@@ -43,12 +45,17 @@ t_token	*token_new(t_token_type type, const char *value)
 	token = malloc(sizeof(t_token));
 	if (!token)
 		ft_error("Lexer: Failed to allocate memory for new token.\n");
-	token->value = ft_strdup(value);
-	if (!token->value)
+	if (value)
 	{
-		free(token);
-		ft_error("Lexer: Failed to allocate memory for token value.\n");
+		token->value = ft_strdup(value);
+		if (!token->value)
+		{
+			free(token);
+			ft_error("Lexer: Failed to allocate memory for token value.\n");
+		}
 	}
+	else
+		token->value = NULL;
 	token->type = type;
 	token->next = NULL;
 	return (token);
@@ -76,9 +83,14 @@ void	token_add(t_token **head, t_token *new_token)
 t_token	*token_word(const char **input)
 {
 	const char	*start;
+	char		*word;
+	t_token		*token;
 
 	start = *input;
 	while (**input && (ft_isalnum(**input) || ft_strchr("_-./", **input)))
 		(*input)++;
-	return (new_token(TKN_WORD, ft_strndup(start, *input - start)));
+	word = ft_strndup(start, *input - start);
+	token = token_new(TKN_WORD, word);
+	free(word);
+	return (token);
 }

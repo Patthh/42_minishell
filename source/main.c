@@ -15,7 +15,7 @@ void	init_minishell(t_program *program, char **envp)
 void	free_minishell(t_program *program)
 {
 	if (program->token)
-		free (program->token);
+		token_free_list (program->token);
 	if (program->command)
 		free (program->command);
 }
@@ -36,6 +36,7 @@ int main (int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	t_program	minishell;
+	t_token		*tokens;
 	char		*input;
 
 	init_minishell(&minishell, envp);
@@ -47,12 +48,17 @@ int main (int argc, char **argv, char **envp)
 			printf("\n");
 			break ;
 		}
+		tokens = tokenizer(input);
+		// parsing
+		// execution
 		if (ft_strcmp(input, "exit") == 0)
 		{
+			token_free_list(tokens);
 			free (input);
 			break ;
 		}
-		free (input);
+		free(input);
+		token_free_list(tokens);
 	}
 	free_minishell(&minishell);
 	return (0);
