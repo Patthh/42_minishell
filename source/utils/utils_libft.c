@@ -1,6 +1,5 @@
 #include "../../include/minishell.h"
 
-
 // fills memory area 's' with a specified byte 'c' for 'n' bytes
 void	*ft_memset(void *s, int c, size_t n)
 {
@@ -36,7 +35,7 @@ char	*ft_strndup(const char *src, size_t n)
 
 	i = 0;
 	j = 0;
-	while (s[i] != '\0' && i < n)
+	while (src[i] != '\0' && i < n)
 		i++;
 	dest = malloc(i + 1);
 	if (!dest)
