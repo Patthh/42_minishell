@@ -29,7 +29,8 @@ t_token	*tokenizer(const char *input)
 			token_paranthesis(&input, &head);
 		else if (*input == '\'' || *input == '"')
 			token_quotes(&input, &head);
-		token_add(&head, token_word(&input));
+		else
+			token_add(&head, token_word(&input));
 	}
 	return (head);
 }
@@ -41,9 +42,14 @@ t_token	*token_new(t_token_type type, const char *value)
 
 	token = malloc(sizeof(t_token));
 	if (!token)
-		return (NULL);
-	token->type = type;
+		ft_error("Lexer: Failed to allocate memory for new token.\n");
 	token->value = ft_strdup(value);
+	if (!token->value)
+	{
+		free(token);
+		ft_error("Lexer: Failed to allocate memory for token value.\n");
+	}
+	token->type = type;
 	token->next = NULL;
 	return (token);
 }
@@ -53,6 +59,8 @@ void	token_add(t_token **head, t_token *new_token)
 {
 	t_token	*current;
 
+	if (!new_token)
+		return ;
 	if (!*head)
 		*head = new_token;
 	else
@@ -70,15 +78,7 @@ t_token	*token_word(const char **input)
 	const char	*start;
 
 	start = *input;
-	while (**input && ft_istokenable(**input))
+	while (**input && (ft_isalnum(**input) || ft_strchr("_-./", **input)))
 		(*input)++;
-	return (new_token(TKN_WORD, strndup(start, *input - start)));
-}
-
-// could do without this function
-int	ft_istokenable(char c)
-{
-	if (ft_isalnum(c) || c == '_' || c == '-' || c == '.' || c == '/')
-		return (1);
-	return (0);
+	return (new_token(TKN_WORD, ft_strndup(start, *input - start)));
 }
