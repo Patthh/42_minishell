@@ -17,6 +17,8 @@ t_token	*tokenizer(const char *input)
 	t_token		*head;
 
 	head = NULL;
+	if (!input)
+		return (NULL);
 	while (*input)
 	{
 		if (isspace(*input))
@@ -81,4 +83,19 @@ t_token	*token_word(const char **input)
 	while (**input && (ft_isalnum(**input) || ft_strchr("_-./", **input)))
 		(*input)++;
 	return (new_token(TKN_WORD, ft_strndup(start, *input - start)));
+}
+
+t_token	*token_word(const char **input)
+{
+	const char	*start;
+	char		*word;
+	t_token		*token;
+
+	start = *input;
+	while (**input && (ft_isalnum(**input) || ft_strchr("_-./", **input)))
+		(*input)++;
+	word = ft_strndup(start, *input - start);
+	token = token_new(TKN_WORD, word);
+	free(word);
+	return (token);
 }
