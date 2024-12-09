@@ -29,8 +29,8 @@ t_token	*tokenizer(const char *input)
 			token_operator(&input, &head);
 		else if (*input == '(' || *input == ')')
 			token_paranthesis(&input, &head);
-		// else if (*input == '\'' || *input == '"')
-		// 	token_quotes(&input, &head);
+		else if (*input == '\'' || *input == '"')
+			token_quotes(&input, &head);
 		else
 			token_add(&head, token_word(&input));
 	}
@@ -87,7 +87,7 @@ t_token	*token_word(const char **input)
 	t_token		*token;
 
 	start = *input;
-	while (**input && (ft_isalnum(**input) || ft_strchr("_-./", **input)))
+	while (**input && (ft_isalnum(**input) || ft_strchr("?!+^#@!`~][_-./;:", **input)))
 		(*input)++;
 	word = ft_strndup(start, *input - start);
 	token = token_new(TKN_WORD, word);
