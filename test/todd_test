@@ -1,0 +1,109 @@
+grep "a" < _f1 << e
+# append _f1 to heredoc
+grep "a" << e < _f1
+# append e to _f1
+cat << e < _f1 < _a
+# append _a to _f1 to _e (So lines from e should appear first.)
+cat << e << a
+# heredoc in order, (e to end first one then a to eof second one. Only last one should be displayed)
+
+
+HD="<<"
+# echo $HD
+<<
+$HD
+<<: command not found
+"$HD"
+<<: command not found
+""<<""
+>
+''; command not found
+<< $HD
+>
+><<
+>$HD
+// '$HD' is the limiter.
+cat < $HD
+<<:no such file or directory
+cat > $HD
+//works
+""ls" "
+'ls ' command not found
+"ls"
+//works
+//================================+
+<< $DOESNT_EXIST
+//want str "$DOESNT_EXIST" as eof.
+<$DOESNT_EXIST
+$DOESNT_EXIST: ambigious redirect.
+ASDF='"asdf qwer"'
+<$ASDF
+$ASDF: ambigious redirect.
+EMPTY=""
+<$EMPTY
+"":no such file or directory
+
+$ export AAA='"aaa"'
+$ $AAA
+"aaa": command not found
+$ export BBB='"abc def"'
+$ $BBB
+"abc: command not found
+$ cat $BBB
+cat: "abc: No such file or directory
+cat: def": No such file or directory
+$ cat "$BBB" $BBB
+cat: "abc def": No such file or directory
+cat: "abc: No such file or directory
+cat: def": No such file or directory
+$ cat $BBB$
+cat: "abc def"$: No such file or directory
+$ cat ${ASDF}
+cat: "abc: No such file or directory
+cat: def": No such file or directory
+$ cat $BBB---=-=-$
+cat: "abc def"---=-=-$: No such file or directory
+$ cat $BBB---=-=-$=
+cat: "abc def"---=-=-$=: No such file or directory
+
+
+#terminal 1
+mkdir tmp
+cd tmp
+mkdir tmp2
+cd tmp2
+#terminal 2
+rm -rf tmp
+#terminal 1
+ls #empty
+pwd #works..?
+cd . #some error
+cd .. #error but works?(see prompt)
+cd .. #works
+
+cd ..[4093-char long random chars]
+cd //
+cd ./././././
+cd ../../../../../../../../../../../../
+
+<< aa << bb << cc
+<<aa cat | <<bb asdf | <<cc cat
+"e"'c'ho hi
+ls>out|cat
+
+export $ASDF='"asdf qwer"'
+cat $ASDF
+"asdf: no such file or directory
+qwer": no such file or directory
+cat $ASDF"$ASDF"
+"asdf: no such file or directory
+qwer""asdf qwer": no such file or directory
+cat "$ASDF"$ASDF
+"asdf qwer": no such file or directory
+"asdf: no such file or directory
+qwer": no such file or directory
+cat $ASDF=$
+"asdf qwer"=$: no such file or directory
+cat $=$ASDF
+$="asdf: no such file or directory
+qwer": no such file or directory
