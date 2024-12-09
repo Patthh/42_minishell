@@ -1,0 +1,1 @@
+cc source/*.c source/*/*.c -o minishell -Iinclude -lreadline
