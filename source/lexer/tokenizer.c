@@ -56,7 +56,7 @@ t_token	*token_new(t_token_type type, const char *value)
 	}
 	else
 		token->value = NULL;
-	token->type = type;
+	token->type = type + 1;
 	token->next = NULL;
 	return (token);
 }

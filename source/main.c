@@ -49,6 +49,7 @@ int main (int argc, char **argv, char **envp)
 			break ;
 		}
 		tokens = tokenizer(input);
+		print_tokens(tokens);
 		// parsing
 		// execution
 		if (ft_strcmp(input, "exit") == 0)
