@@ -1,0 +1,22 @@
+# Ignore object files and compiled library
+*.o
+
+# Ignore editor and OS-specific files
+*.swp
+*.DS_Store
+Thumbs.db
+
+# Ignore backup and temporary files
+*~
+*.tmp
+
+# Ignore test programs (if created)
+test_*
+
+# Ignore any other files not specified for submission
+*.log
+*.out
+*.bak
+
+# Ignore .gch files
+*.gch
