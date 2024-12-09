@@ -1,0 +1,8 @@
+grep "a" < _f1 << e
+# append _f1 to heredoc
+grep "a" << e < _f1
+# append e to _f1
+cat << e < _f1 < _a
+# append _a to _f1 to _e (So lines from e should appear first.)
+cat << e << a
+# heredoc in order, (e to end first one then a to eof second one. Only last one should be displayed)
