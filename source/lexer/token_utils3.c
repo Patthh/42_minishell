@@ -30,29 +30,33 @@ void	token_paranthesis(const char **input, t_token **head)
  * 		use readline until closing quote is found
  * non-interative shell, bash throws syntax error and stops execution
  */
-// void	token_quotes(const char **input, t_token **head)
-// {
-// 	char			c;
-// 	t_token_type	type;
-// 	const char		*start;
+void	token_quotes(const char **input, t_token **head)
+{
+	char			c;
+	t_token_type	type;
+	const char		*start;
+	if (c == '\'')
+		type = TKN_SINGLE;
+	else
+		type = TKN_DOUBLE;
+	(*input)++;
+	start = *input;
+	while (**input && **input != c)
+		(*input)++;
+	if (**input == c)
+	{
+		in_quote(head, type, start, *input);
+	}
+}
 
-// 	if (c == '\'')
-// 		type = TKN_SINGLE;
-// 	else
-// 		type = TKN_DOUBLE;
 
-// 	(*input)++;
-// 	start = *input;
+void	in_quote(t_token **head, t_token_type type, const char *start, const char *end)
+{
+	size_t	length;
+	char	*value;
 
-// 	while (**input && **input != c)
-// 		(*input)++;
-
-// 	// if we reach end of input without closing quote
-// 	// keep the prompt open (like in bash)
-// 	// another while (1) loop?
-// 	if (**input == c)
-// 	{
-// 		// implement strndup to null-terminate the string
-// 		// or use strncpy
-// 	}
-// }
+	length = end - start;
+	value = ft_strndup(start, length);
+	token_add(head, token_new(type, value));
+	free (value);
+}

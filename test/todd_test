@@ -80,3 +80,30 @@ pwd #works..?
 cd . #some error
 cd .. #error but works?(see prompt)
 cd .. #works
+
+cd ..[4093-char long random chars]
+cd //
+cd ./././././
+cd ../../../../../../../../../../../../
+
+<< aa << bb << cc
+<<aa cat | <<bb asdf | <<cc cat
+"e"'c'ho hi
+ls>out|cat
+
+export $ASDF='"asdf qwer"'
+cat $ASDF
+"asdf: no such file or directory
+qwer": no such file or directory
+cat $ASDF"$ASDF"
+"asdf: no such file or directory
+qwer""asdf qwer": no such file or directory
+cat "$ASDF"$ASDF
+"asdf qwer": no such file or directory
+"asdf: no such file or directory
+qwer": no such file or directory
+cat $ASDF=$
+"asdf qwer"=$: no such file or directory
+cat $=$ASDF
+$="asdf: no such file or directory
+qwer": no such file or directory
