@@ -14,8 +14,9 @@
 # define TRUE 1
 # define FALSE 0
 
+// check the token type number of the symbols
+// grep 'TKN_' include/minishell.h | awk '{print NR-1, $1}'
 typedef enum e_token {
-	TKN_WORD,		// command / argument
 	TKN_IN,			// <
 	TKN_OUT,		// >
 	TKN_RDA,		// >>
@@ -33,6 +34,7 @@ typedef enum e_token {
 	TKN_SINGLE,		// single quote
 	TKN_DOUBLE,		// double quote
 	TKN_WILDCARD,	// *
+	TKN_WORD,
 } t_token_type;
 
 // token structure for lexer
@@ -102,6 +104,9 @@ void	token_operator(const char **input, t_token **head);
 void	token_paranthesis(const char **input, t_token **head);
 void	token_free(t_token *token);
 void	token_free_list(t_token *head);
+
+// lexer testing
+void	print_tokens(t_token *head);
 
 // utils
 void	ft_error(const char *message);

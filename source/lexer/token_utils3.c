@@ -9,11 +9,13 @@ void	token_paranthesis(const char **input, t_token **head)
 	{
 		type = TKN_START;
 		value = "(";
+		(*input)++;
 	}
 	else
 	{
 		type = TKN_END;
 		value = ")";
+		(*input)++;
 	}
 	token_add(head, token_new(type, value));
 }
@@ -30,11 +32,24 @@ void	token_paranthesis(const char **input, t_token **head)
  * 		use readline until closing quote is found
  * non-interative shell, bash throws syntax error and stops execution
  */
+static void	in_quote(t_token **head, t_token_type type, const char *start, const char *end)
+{
+	size_t	length;
+	char	*value;
+
+	length = end - start;
+	value = ft_strndup(start, length);
+	token_add(head, token_new(type, value));
+	free (value);
+}
+
 void	token_quotes(const char **input, t_token **head)
 {
 	char			c;
 	t_token_type	type;
 	const char		*start;
+
+	c = '\0';
 	if (c == '\'')
 		type = TKN_SINGLE;
 	else
@@ -49,14 +64,3 @@ void	token_quotes(const char **input, t_token **head)
 	}
 }
 
-
-void	in_quote(t_token **head, t_token_type type, const char *start, const char *end)
-{
-	size_t	length;
-	char	*value;
-
-	length = end - start;
-	value = ft_strndup(start, length);
-	token_add(head, token_new(type, value));
-	free (value);
-}
