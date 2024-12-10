@@ -103,6 +103,7 @@ void	token_redirector(const char **input, t_token **head);
 void	token_operator(const char **input, t_token **head);
 void	token_paranthesis(const char **input, t_token **head);
 void	token_quotes(const char **input, t_token **head);
+int		quote_counter(const char *input);
 void	token_free(t_token *token);
 void	token_free_list(t_token *head);
 

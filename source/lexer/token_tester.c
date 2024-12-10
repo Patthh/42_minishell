@@ -7,7 +7,7 @@ void	print_tokens(t_token *head)
 	if (!head)
 	{
 		printf("Token list is empty.\n");
-		return;
+		return ;
 	}
 	current = head;
 	while (current)

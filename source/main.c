@@ -1,66 +1,71 @@
 #include "../include/minishell.h"
 
-// initialize minishell's structure with default values
-void	init_minishell(t_program *program, char **envp)
+void	ft_exit(char *input, t_token *tokens)
 {
-	// for the structure
-	ft_memset(program, 0, sizeof(*program));
-
-	// for specific fields
-	program->envp = envp;
-	program->status = 0;
-	program->exit = 0;
+	token_free_list(tokens);
+	free(input);
 }
 
-void	free_minishell(t_program *program)
+int	main(void)
 {
-	if (program->token)
-		token_free_list (program->token);
-	if (program->command)
-		free (program->command);
-}
-
-int	check_input(const char *string)
-{
-	while (*string)
-	{
-		if (isspace(*string))
-			return (0);
-		string++;
-	}
-	return (1);
-}
-
-int main (int argc, char **argv, char **envp)
-{
-	(void)argc;
-	(void)argv;
-	t_program	minishell;
-	t_token		*tokens;
 	char		*input;
+	t_token		*tokens;
 
-	init_minishell(&minishell, envp);
-	while (!minishell.exit)
+	while (1)
 	{
-		input = readline(PROMPT);
-		if (input == NULL)
-		{
-			printf("\n");
+		input = readline("minishell$ ");
+		if (!input)
 			break ;
+		if (!quote_counter(input))
+		{
+			free (input);
+			continue ;
 		}
 		tokens = tokenizer(input);
-		print_tokens(tokens);
+		print_tokens(tokens); // testing
 		// parsing
 		// execution
 		if (ft_strcmp(input, "exit") == 0)
 		{
-			token_free_list(tokens);
-			free (input);
+			ft_exit(input, tokens);
 			break ;
 		}
-		free(input);
 		token_free_list(tokens);
+		free(input);
 	}
-	free_minishell(&minishell);
 	return (0);
 }
+
+// int main (int argc, char **argv, char **envp)
+// {
+// 	(void)argc;
+// 	(void)argv;
+// 	t_program	minishell;
+// 	t_token		*tokens;
+// 	char		*input;
+
+// 	init_minishell(&minishell, envp);
+// 	while (!minishell.exit)
+// 	{
+// 		input = readline(PROMPT);
+// 		if (input == NULL)
+// 		{
+// 			printf("\n");
+// 			break ;
+// 		}
+// 		tokens = tokenizer(input);
+// 		print_tokens(tokens);
+// 		// parsing
+// 		// execution
+// 		if (ft_strcmp(input, "exit") == 0)
+// 		{
+// 			token_free_list(tokens);
+// 			free (input);
+// 			break ;
+// 		}
+// 		free(input);
+// 		token_free_list(tokens);
+// 	}
+// 	free_minishell(&minishell);
+// 	return (0);
+// }

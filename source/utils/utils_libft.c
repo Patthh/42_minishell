@@ -68,7 +68,6 @@ char	*ft_strdup(const char *s)
 	return (dest);
 }
 
-
 // finds the first occurence of a character in a string
 // returns a pointer to 'c' if found or NULL if not
 char	*ft_strchr(const char *string, int c)
