@@ -85,17 +85,15 @@ typedef struct s_program {
 	int						exit;
 } t_program;
 
-// MAIN
-int	check_input(const char *string);
-void	init_minishell(t_program *program, char **envp);
-void	free_minishell(t_program *program);
+// SHELL
+void	run_shell(t_program *minishell);
+int		handle_input(char *input, t_program *minishell);
+void	ft_exit(const char *input, t_token *tokens, t_program *minishell);
 
 // LEXER
-// tokenizer
 t_token	*tokenizer(const char *input);
 t_token	*token_new(t_token_type type, const char *value);
 void	token_add(t_token **head, t_token *new_token);
-t_token	*token_word(const char **input);
 t_token	*token_word(const char **input);
 
 // lexer utils
@@ -104,16 +102,16 @@ void	token_operator(const char **input, t_token **head);
 void	token_paranthesis(const char **input, t_token **head);
 void	token_quotes(const char **input, t_token **head);
 int		quote_counter(const char *input);
-void	token_free(t_token *token);
-void	token_free_list(t_token *head);
 
-// lexer testing
-void	print_tokens(t_token *head);
+// MEMORY
+void	init_shell(t_program *program, char **envp);
+void	free_shell(t_program *program);
+void	free_token(t_token *token);
+void	free_list(t_token *head);
 
-// utils
+// UTILS
 void	ft_error(const char *message);
 void	ft_putstr_fd(char *s, int fd);
-
 int		ft_strcmp(const char *s1, const char *s2);
 void	*ft_memset(void *s, int c, size_t n);
 char	*ft_strdup(const char *s);
@@ -121,5 +119,8 @@ char	*ft_strndup(const char *src, size_t n);
 char	*ft_strchr(const char *string, int c);
 int		ft_isalnum(int c);
 size_t	ft_strlen(const char *str);
+
+// TESTING
+void	print_tokens(t_token *head);
 
 #endif
