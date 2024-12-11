@@ -122,3 +122,101 @@ void	ft_putstr_fd(char *s, int fd)
 		i++;
 	}
 }
+
+static size_t	ft_intlen(int n)
+{
+	size_t	length;
+
+	length = 0;
+	if (n == 0)
+		return (1);
+	if (n < 0)
+		length++;
+	while (n != 0)
+	{
+		length++;
+		n /= 10;
+	}
+	return (length);
+}
+
+char	*ft_itoa(int n)
+{
+	size_t	length;
+	char	*string;
+	long	number;
+
+	length = ft_intlen(n);
+	string = (char *)malloc(length + 1);
+	if (!string)
+		return (NULL);
+	string[length] = '\0';
+	number = n;
+	if (number < 0)
+	{
+		string[0] = '-';
+		number = -number;
+	}
+	if (number == 0)
+		string[0] = '0';
+	while (number)
+	{
+		string[--length] = (number % 10) + '0';
+		number /= 10;
+	}
+	return (string);
+}
+
+int	ft_isalpha(int c)
+
+{
+	if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122))
+	{
+		return (1);
+	}
+	return (0);
+}
+
+int	ft_isascii(int c)
+{
+	if (c >= 0 && c <= 127)
+	{
+		return (1);
+	}
+	return (0);
+}
+
+int	ft_isspace(int c)
+{
+	if (c == ' ' || c == '\t' || c == '\n' || c == '\v'
+		|| c == '\f' || c == '\r')
+		return (1);
+	return (0);
+}
+
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	size_t	i;
+	size_t	j;
+	char	*s3;
+
+	if (!s1 && !s2)
+		return (NULL);
+	s3 = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
+	if (!s3)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (s1 && s1[i])
+	{
+		s3[i] = s1[i];
+		i++;
+	}
+	while (s2 && s2[j])
+	{
+		s3[i + j] = s2[j];
+		j++;
+	}
+	s3[i + j] = '\0';
+	return (s3);
+}
