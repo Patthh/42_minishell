@@ -13,28 +13,29 @@
 # define PROMPT "minishell$ "
 # define TRUE 1
 # define FALSE 0
+# define EXIT_STATUS
 
 // check the token type number of the symbols
 // grep 'TKN_' include/minishell.h | awk '{print NR-1, $1}'
 typedef enum e_token {
-	TKN_IN,			// <
-	TKN_OUT,		// >
-	TKN_RDA,		// >>
-	TKN_RDH,		// <<
-	TKN_PIPE,		// |
-	TKN_ENV,		// $VAR
-	TKN_STATUS,		// $?
-	TKN_WHITESPACE,
-	TKN_EOF,
-	TKN_BG,			// &
-	TKN_START,		// (
-	TKN_END,		// )
-	TKN_AND,		// &&
-	TKN_OR,			// ||
-	TKN_SINGLE,		// single quote
-	TKN_DOUBLE,		// double quote
-	TKN_WILDCARD,	// *
-	TKN_WORD,
+	TKN_IN,			// 0 <
+	TKN_OUT,		// 1 >
+	TKN_RDA,		// 2 >>
+	TKN_RDH,		// 3 <<
+	TKN_PIPE,		// 4 |
+	TKN_ENV,		// 5 $VAR
+	TKN_STATUS,		// 6 $?
+	TKN_WHITESPACE, // 7
+	TKN_EOF,		// 8
+	TKN_BG,			// 9 &
+	TKN_START,		// 10 (
+	TKN_END,		// 11 )
+	TKN_AND,		// 12 &&
+	TKN_OR,			// 13 ||
+	TKN_SINGLE,		// 14 single quote
+	TKN_DOUBLE,		// 15 double quote
+	TKN_WILDCARD,	// 16 *
+	TKN_WORD,		// 17
 } t_token_type;
 
 // token structure for lexer
@@ -91,17 +92,22 @@ int		handle_input(char *input, t_program *minishell);
 void	ft_exit(const char *input, t_token *tokens, t_program *minishell);
 
 // LEXER
-t_token	*tokenizer(const char *input);
+t_token	*tokenizer(const char *input, t_program *minishell);
 t_token	*token_new(t_token_type type, const char *value);
 void	token_add(t_token **head, t_token *new_token);
 t_token	*token_word(const char **input);
+
+char	*variable_expand(const char **input, t_token **head, t_program *minishell, const char **start);
+char *get_env_value(t_env *env_list, const char *key);
 
 // lexer utils
 void	token_redirector(const char **input, t_token **head);
 void	token_operator(const char **input, t_token **head);
 void	token_paranthesis(const char **input, t_token **head);
-void	token_quotes(const char **input, t_token **head);
+void	token_quotes(const char **input, t_token **head, t_program *minishell);
 int		quote_counter(const char *input);
+// void	dollar_sign(const char **input, t_token **head, const char **start, t_program *minishell);
+void	token_dollar(const char **input, t_token **head, t_program *minishell);
 
 // MEMORY
 void	init_shell(t_program *program, char **envp);
@@ -119,6 +125,11 @@ char	*ft_strndup(const char *src, size_t n);
 char	*ft_strchr(const char *string, int c);
 int		ft_isalnum(int c);
 size_t	ft_strlen(const char *str);
+char	*ft_itoa(int n);
+int		ft_isalpha(int c);
+int		ft_isascii(int c);
+int		ft_isspace(int c);
+char	*ft_strjoin(char const *s1, char const *s2);
 
 // TESTING
 void	print_tokens(t_token *head);

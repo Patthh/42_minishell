@@ -6,13 +6,13 @@
  * token_operator -> token_utils2.c
  * token_paranthesis -> token_utils3.c
  * token_quotes -> token_utils4.c
+ * token_dollar -> token_utils5.c
  *
  * TO DO
- * env
- * $?
  * wildcard
+ * single token character tokens
  */
-t_token	*tokenizer(const char *input)
+t_token	*tokenizer(const char *input, t_program *minishell)
 {
 	t_token		*head;
 
@@ -30,7 +30,11 @@ t_token	*tokenizer(const char *input)
 		else if (*input == '(' || *input == ')')
 			token_paranthesis(&input, &head);
 		else if (*input == '\'' || *input == '"')
-			token_quotes(&input, &head);
+			token_quotes(&input, &head, minishell);
+		else if (*input == '$')
+			token_dollar(&input, &head, minishell);
+		// else if (*input == '*')
+		// 	token_wildcard(&input, &head);
 		else
 			token_add(&head, token_word(&input));
 	}
@@ -49,14 +53,11 @@ t_token	*token_new(t_token_type type, const char *value)
 	{
 		token->value = ft_strdup(value);
 		if (!token->value)
-		{
 			free(token);
-			ft_error("Lexer: Failed to allocate memory for token value.\n");
-		}
 	}
 	else
 		token->value = NULL;
-	token->type = type + 1;
+	token->type = type;
 	token->next = NULL;
 	return (token);
 }
@@ -87,8 +88,7 @@ t_token	*token_word(const char **input)
 	t_token		*token;
 
 	start = *input;
-	while (**input && (ft_isalnum(**input)
-			|| ft_strchr("?!+^#@!`~][_-./;:", **input)))
+	while (**input && (ft_isascii(**input)) && !ft_isspace(**input))
 		(*input)++;
 	word = ft_strndup(start, *input - start);
 	token = token_new(TKN_WORD, word);
