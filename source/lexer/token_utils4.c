@@ -28,6 +28,11 @@ static void	quote_single(const char **input, t_token **head)
 		(*input)++;
 	if (**input == '\'')
 	{
+		if (start == *input)
+		{
+			(*input)++;
+			return ;
+		}
 		token_add(head, token_new(TKN_SINGLE, "'"));
 		value = ft_strndup(start, *input - start);
 		token_add(head, token_new(TKN_WORD, value));
@@ -89,7 +94,8 @@ static void	quote_double(const char **input, t_token **head, t_program *minishel
 	}
 	if (**input == '"')
 	{
-		token_add(head, token_new(TKN_WORD, value));
+		if (value && *value != '\0')
+			token_add(head, token_new(TKN_WORD, value));
 		free(value);
 		(*input)++;
 	}
