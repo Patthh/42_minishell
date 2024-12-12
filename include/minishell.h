@@ -9,6 +9,7 @@
 # include <sys/wait.h>
 # include <string.h>
 # include <errno.h>
+# include <dirent.h> // opendir, readir
 
 # define PROMPT "minishell$ "
 # define TRUE 1
