@@ -10,34 +10,47 @@ int	quote_counter(const char *input)
 	while (*input)
 	{
 		if (*input == '\'')
-			single_quote++;
+		{
+			if (!double_quote)
+				single_quote = !single_quote;
+		}
 		else if (*input == '"')
-			double_quote++;
+		{
+			if (!single_quote)
+				double_quote = !double_quote;
+		}
 		input++;
 	}
-	return (single_quote % 2 == 0 && double_quote % 2 == 0);
+	return !(single_quote || double_quote);
 }
-
+/*
+ * everything inside single quote must be handled as a literal string.
+ * no interpretation or expansion needed (variable expansion or wildcard)
+ */
 static void	quote_single(const char **input, t_token **head)
 {
 	const char	*start;
 	char		*value;
 
 	start = ++(*input);
+
 	while (**input && **input != '\'')
 		(*input)++;
+
+	if (**input == '\0')
+		return ;
+
 	if (**input == '\'')
 	{
-		if (start == *input)
+		if (start < *input)
 		{
-			(*input)++;
-			return ;
+			value = ft_strndup(start, *input - start);
+			if (value && *value != '\0')
+			{
+				token_add(head, token_new(TKN_WORD, value));
+				free (value);
+			}
 		}
-		token_add(head, token_new(TKN_SINGLE, "'"));
-		value = ft_strndup(start, *input - start);
-		token_add(head, token_new(TKN_WORD, value));
-		free(value);
-		token_add(head, token_new(TKN_SINGLE, "'"));
 		(*input)++;
 	}
 }
@@ -50,7 +63,7 @@ static void	quote_merged(char **value, const char *content)
 	{
 		new_value = (ft_strjoin(*value, content));
 		free(value);
-		value = &new_value;
+		*value = new_value;
 	}
 	else
 		*value = ft_strdup(content);

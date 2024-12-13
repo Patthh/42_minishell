@@ -7,10 +7,7 @@
  * token_paranthesis -> token_utils3.c
  * token_quotes -> token_utils4.c
  * token_dollar -> token_utils5.c
- *
- * TO DO
- * wildcard
- * single token character tokens
+ * token_wildcard -> token_utils6.c
  */
 t_token	*tokenizer(const char *input, t_program *minishell)
 {
@@ -33,8 +30,8 @@ t_token	*tokenizer(const char *input, t_program *minishell)
 			token_quotes(&input, &head, minishell);
 		else if (*input == '$')
 			token_dollar(&input, &head, minishell);
-		// else if (*input == '*')
-		// 	token_wildcard(&input, &head);
+		else if (*input == '*')
+			token_wildcard(&input, &head);
 		else
 			token_add(&head, token_word(&input));
 	}

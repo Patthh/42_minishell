@@ -19,3 +19,44 @@ char	*variable_expand(const char **input, t_token **head, t_program *minishell, 
 	*start = *input;
 	return (value);
 }
+
+void	token_wildcard(const char **input, t_token **head)
+{
+	if (**input == '*')
+	{
+		token_add(head, token_new(TKN_WILDCARD, "*"));
+		(*input)++;
+		return ;
+	}
+}
+/*
+ * use opendir to open the current directory
+ * use readdir to read each entry in the directory
+ * implement a simple matching function for filenames
+ * create token for matching filenames
+ *
+ * opendir - opens a directory
+ * readdir - reads a directory, uses struct dirent
+ * perror - prints a system error message
+ */
+// void	handle_wildcard(const char **input, t_token **head)
+// {
+// 	DIR				*directory;
+// 	const char		*token;
+// 	struct dirent	*entry;
+
+// 	directory = opendir(".");
+// 	token = *input;
+// 	if (!directory)
+// 	{
+// 		perror("opendir");
+// 		return ;
+// 	}
+// 	while ((entry = readdir(directory)) != NULL)
+// 	{
+// 		if (ft_strcmp(token, "*") == 0 || ft_strstr(entry->d_name, token) != NULL)
+// 			token_add(head, token_new(TKN_WILDCARD, entry->d_name));
+// 	}
+// 	closedir(directory);
+// 	(*input)++;
+// }

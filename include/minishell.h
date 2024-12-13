@@ -107,8 +107,8 @@ void	token_operator(const char **input, t_token **head);
 void	token_paranthesis(const char **input, t_token **head);
 void	token_quotes(const char **input, t_token **head, t_program *minishell);
 int		quote_counter(const char *input);
-// void	dollar_sign(const char **input, t_token **head, const char **start, t_program *minishell);
 void	token_dollar(const char **input, t_token **head, t_program *minishell);
+void	token_wildcard(const char **input, t_token **head);
 
 // MEMORY
 void	init_shell(t_program *program, char **envp);
@@ -131,6 +131,7 @@ int		ft_isalpha(int c);
 int		ft_isascii(int c);
 int		ft_isspace(int c);
 char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strstr(const char *big, const char *little);
 
 // TESTING
 void	print_tokens(t_token *head);
