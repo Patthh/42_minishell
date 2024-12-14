@@ -35,6 +35,8 @@ char	*ft_strndup(const char *src, size_t n)
 
 	i = 0;
 	j = 0;
+	if (!src)
+		return (NULL);
 	while (src[i] != '\0' && i < n)
 		i++;
 	dest = malloc(i + 1);
