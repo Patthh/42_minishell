@@ -56,6 +56,7 @@ t_token	*token_new(t_token_type type, const char *value)
 		token->value = NULL;
 	token->type = type;
 	token->next = NULL;
+	// printf("Create token: type: %d, value %s\n", type, token->value); // testing
 	return (token);
 }
 
@@ -75,6 +76,7 @@ void	token_add(t_token **head, t_token *new_token)
 			current = current->next;
 		current->next = new_token;
 	}
+	// printf("Add token: type: %d, value: %s\n", new_token->type, new_token->value); // testing
 }
 
 // extracts and creates a token for a word
