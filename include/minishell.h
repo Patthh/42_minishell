@@ -140,6 +140,7 @@ int		ft_isascii(int c);
 int		ft_isspace(int c);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strstr(const char *big, const char *little);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
 
 // TESTING
 void	print_tokens(t_token *head);

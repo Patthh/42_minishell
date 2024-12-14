@@ -14,8 +14,6 @@ t_token	*tokenizer(const char *input, t_program *minishell)
 	t_token		*head;
 
 	head = NULL;
-	if (!input)
-		return (NULL);
 	while (*input)
 	{
 		if (isspace(*input))
