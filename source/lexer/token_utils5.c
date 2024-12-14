@@ -1,38 +1,5 @@
 #include "../../include/minishell.h"
 
-// static void	token_env(const char **input, t_token **head, t_program *minishell)
-// {
-// 	char	*key;
-// 	char	*value;
-
-// 	key = env_name(input);
-// 	if (key)
-// 	{
-// 		value = env_value(minishell, key);
-// 		if (value)
-// 			token_add(head, token_new(TKN_ENV, value));
-// 		free (key);
-// 	}
-// }
-
-// for this to work, exec commands should update minishell->status
-// static void	token_exit(const char **input, t_token **head, t_program *minishell)
-// {
-// 	char	*status;
-
-// 	(*input)++;
-// 	if (**input == '?')
-// 	{
-// 		status = ft_itoa(minishell->status);
-// 		if (status)
-// 		{
-// 			token_add(head, token_new(TKN_STATUS, status));
-// 			free(status);
-// 		}
-// 		(*input)++;
-// 	}
-// }
-
 // handles special case for $?, retrievew exit status and creates token
 // checks if lone $, creates TKN_WORD
 // exec commands should update minishell-status
