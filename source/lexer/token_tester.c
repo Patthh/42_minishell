@@ -4,11 +4,11 @@ void	print_tokens(t_token *head)
 {
 	t_token	*current;
 
-	if (!head)
-	{
-		printf("Token list is empty.\n");
-		return ;
-	}
+	// if (!head)
+	// {
+	// 	printf("Token list is empty.\n");
+	// 	return ;
+	// }
 	current = head;
 	while (current)
 	{
