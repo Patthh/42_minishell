@@ -10,15 +10,6 @@
  * readdir - reads a directory, uses struct dirent
  * perror - prints a system error message
  */
-// opens a directory safely
-DIR	*open_directory(const char *path)
-{
-	DIR	*directory = opendir(path);
-	if (!directory)
-		perror("opendir");
-	return (directory);
-}
-
 // checks if a filename matches the wildcard pattern
 // skip consecutive *
 // if rest of pattern empty, match
@@ -87,7 +78,13 @@ void	token_wildcard(const char **input, t_token **head)
 	while (**input != '\0' && **input != '*' && !ft_isspace(**input))
 		(*input)++;
 	pattern = ft_strndup(start, *input - start);
-	directory = open_directory(".");
+	directory = opendir(".");
+	if (!directory)
+	{
+		perror("opendir");
+		free (pattern);
+		return ;
+	}
 	matched = add_wildcard(directory, pattern, head);
 	if (!matched)
 		token_add(head, token_new(TKN_WILDCARD, pattern));
