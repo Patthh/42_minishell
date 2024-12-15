@@ -118,11 +118,15 @@ char	*env_value(t_program *minishell, const char *key);
 void	env_token(t_token **head, t_program *minishell, const char *key);
 char	*env_quote(t_program *minishell, const char *input);
 
+// PARSER
+t_pipeline	*parser(t_token *tokens, t_program *minishell);
+
 // MEMORY
 void	init_shell(t_program *program, char **envp);
 void	free_shell(t_program *program);
 void	free_token(t_token *token);
 void	free_list(t_token *head);
+void	free_pipeline(t_pipeline *pipeline);
 
 // UTILS
 void	ft_error(const char *message);
