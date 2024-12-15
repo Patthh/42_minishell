@@ -14,22 +14,26 @@
 // skip consecutive *
 // if rest of pattern empty, match
 // parse to match remain pattern with rest of filename
-int match_pattern(const char *pattern, const char *filename) {
-	while (*pattern && *filename) {
-		if (*pattern == '*') {
+int	match_pattern(const char *pattern, const char *filename)
+{
+	while (*pattern && *filename)
+	{
+		if (*pattern == '*')
+		{
 			while (*pattern == '*')
 				pattern++;
 			if (*pattern == '\0')
-				return 1;
-			while (*filename) {
+				return (1);
+			while (*filename)
+			{
 				if (match_pattern(pattern, filename))
-					return 1;
+					return (1);
 				filename++;
 			}
-			return 0;
-		} else if (*pattern != *filename) {
-			return 0;
+			return (0);
 		}
+		else if (*pattern != *filename)
+			return (0);
 		pattern++;
 		filename++;
 	}
@@ -45,15 +49,20 @@ int	add_wildcard(DIR *directory, const char *pattern, t_token **head)
 	match = 0;
 	if (!directory)
 		return (match);
-	while ((entry = readdir(directory)) != NULL)
+	entry = readdir(directory);
+	while (entry != NULL)
 	{
-		if (entry->d_name[0] == '.')
+		if (entry->d_name[0] == '.' && pattern[0] != '.')
+		{
+			entry = readdir(directory);
 			continue ;
+		}
 		if (match_pattern(pattern, entry->d_name))
 		{
 			token_add(head, token_new(TKN_WILDCARD, entry->d_name));
 			match = 1;
 		}
+		entry = readdir(directory);
 	}
 	closedir(directory);
 	return (match);
@@ -90,4 +99,3 @@ void	token_wildcard(const char **input, t_token **head)
 		token_add(head, token_new(TKN_WILDCARD, pattern));
 	free (pattern);
 }
-
