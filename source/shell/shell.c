@@ -11,7 +11,8 @@ void	ft_exit(const char *input, t_token *tokens, t_program *minishell)
 
 int	handle_input(char *input, t_program *minishell)
 {
-	t_token	*tokens;
+	t_token		*tokens;
+	t_pipeline	*pipeline;
 
 	if (!quote_counter(input))
 	{
@@ -22,6 +23,9 @@ int	handle_input(char *input, t_program *minishell)
 		add_history(input);
 	tokens = tokenizer(input, minishell);
 	print_tokens(tokens); // testing tokens
+	pipeline = parser(tokens, minishell);
+	// testing function for parser
+	// exercution here
 	if (ft_strcmp(input, "exit") == 0)
 	{
 		free_list(tokens);
