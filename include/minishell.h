@@ -97,7 +97,7 @@ typedef struct s_program
 // SHELL
 void	run_shell(t_program *minishell);
 int		handle_input(char *input, t_program *minishell);
-void	ft_exit(const char *input, t_token *tokens, t_program *minishell);
+// void	ft_exit(const char *input, t_token *tokens, t_program *minishell);
 
 // LEXER
 t_token	*tokenizer(const char *input, t_program *minishell);

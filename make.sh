@@ -1,1 +1,1 @@
-cc source/*.c source/*/*.c -o minishell -Iinclude -lreadline -Wunused -Wunreachable-code -Werror -Wall -Wextra
+cc source/*.c source/*/*.c -o minishell -Iinclude -lreadline -Wall -Wextra -Werror -g3 -Wunused -Wunreachable-code
