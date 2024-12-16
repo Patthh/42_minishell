@@ -29,11 +29,30 @@ t_command	*create_command(void)
 	return (command);
 }
 
+t_redirection	*create_redirection(const char *type, const char *filename)
+{
+	t_redirection	*redirection;
+
+	redirection = malloc(sizeof(t_redirection));
+	if (!redirection)
+		ft_error("Parser: Redirection allocation Failed\n");
+	redirection->type = ft_strdup(type);
+	redirection->filename = ft_strdup(filename);
+	redirection->next = NULL;
+	return (redirection);
+}
+
 // parse token and build commands
 // update command and pipeline as needed
 t_token	*parse_token(t_token *token, t_command *command, t_program *minihell, t_pipeline *pipeline)
 {
-
+	if (token->type == TKN_WORD)
+		return (parse_word(token, command));
+	if (token->type == TKN_PIPE)
+		return (parse_pipe(token, command, pipeline));
+	if (token->type == TKN_IN || token->type == TKN_OUT || token->type == TKN_RDA || token->type == TKN_RDH)
+		return (parse_redirection(token, command));
+	return (token->next);
 }
 
 
