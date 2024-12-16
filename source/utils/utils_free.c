@@ -35,18 +35,3 @@ void	free_shell(t_program *minishell)
 		minishell->token = NULL;
 	}
 }
-
-void	free_pipeline(t_pipeline *pipeline)
-{
-	t_command	*command;
-	t_command	*next;
-
-	command = pipeline->commands;
-	while (command)
-	{
-		next = command->next;
-		free (command);
-		command = next;
-	}
-	free (pipeline);
-}
