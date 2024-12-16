@@ -22,10 +22,10 @@ int	handle_input(char *input, t_program *minishell)
 	if (input && *input)
 		add_history(input);
 	tokens = tokenizer(input, minishell);
-	print_tokens(tokens); // testing tokens
+	// print_tokens(tokens); // testing tokenizer
 	pipeline = parser(tokens, minishell);
-	// testing function for parser
-	// exercution here
+	print_pipeline(pipeline); // testing parser
+	// execution here
 	if (ft_strcmp(input, "exit") == 0)
 	{
 		free_list(tokens);
@@ -33,6 +33,7 @@ int	handle_input(char *input, t_program *minishell)
 		return (-1);
 	}
 	free_list(tokens);
+	free_pipeline(pipeline);
 	free(input);
 	return (1);
 }
