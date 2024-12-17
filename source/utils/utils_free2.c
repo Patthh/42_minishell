@@ -65,11 +65,11 @@ void	free_pipeline(t_pipeline *pipeline)
 	free(pipeline);
 }
 
-void	free_parser(t_pipeline *pipeline)
-{
-	if (pipeline)
-	{
-		free_pipeline(pipeline);
-		free (pipeline);
-	}
-}
+// void	free_parser(t_pipeline *pipeline)
+// {
+// 	if (pipeline)
+// 	{
+// 		free_pipeline(pipeline);
+// 		free (pipeline);
+// 	}
+// }
