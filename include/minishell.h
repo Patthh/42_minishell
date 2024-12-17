@@ -118,11 +118,29 @@ char	*env_value(t_program *minishell, const char *key);
 void	env_token(t_token **head, t_program *minishell, const char *key);
 char	*env_quote(t_program *minishell, const char *input);
 
+// PARSER
+t_pipeline		*parser(t_token *tokens, t_program *minishell);
+
+t_token			*parser_word(t_token *token, t_command *command);
+t_token			*parser_token(t_token *token, t_command **command, t_program *minihell, t_pipeline *pipeline);
+t_token			*parser_pipe(t_token *token, t_command **command, t_pipeline *pipeline);
+t_token			*parser_redirection(t_token *token, t_command *command);
+t_token			*parser_env(t_token *token, t_command *command, t_program *minishell);
+int				parser_argument(t_command *command, const char *value);
+int				parser_builtin(const char *command);
+int				parser_sequence(t_token *tokens);
+
+t_pipeline		*create_pipeline(void);
+t_command		*create_command(void);
+t_redirection	*create_redirection(const char *type, const char *filename);
+
 // MEMORY
 void	init_shell(t_program *program, char **envp);
 void	free_shell(t_program *program);
 void	free_token(t_token *token);
 void	free_list(t_token *head);
+void	free_pipeline(t_pipeline *pipeline);
+// void	free_parser(t_pipeline *pipeline);
 
 // UTILS
 void	ft_error(const char *message);
@@ -141,8 +159,11 @@ int		ft_isspace(int c);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strstr(const char *big, const char *little);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+// void	ft_sequence(const char *message);
 
 // TESTING
 void	print_tokens(t_token *head);
+void	print_pipeline(t_pipeline *pipeline);
+void	test_parser_env();
 
 #endif
