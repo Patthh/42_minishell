@@ -6,9 +6,12 @@ t_pipeline	*create_pipeline(void)
 
 	pipeline = malloc(sizeof(t_pipeline));
 	if (!pipeline)
-		ft_error("Parser: Pipeline Memory Allocation Failed\n");
-	pipeline->commands = NULL;
+		ft_error("Parser: Pipeline Memory Allocation Failed");
+	pipeline->commands = malloc(sizeof(t_command *));
+	if (!pipeline->commands)
+		ft_error("Parser: Commands Memory Allocation Failed");
 	pipeline->cmd_count = 0;
+	pipeline->commands[0] = NULL;
 	return (pipeline);
 }
 
@@ -18,7 +21,7 @@ t_command	*create_command(void)
 
 	command = malloc(sizeof(t_command));
 	if (!command)
-		ft_error("Parser: Command Memory Allocaiton Failed.\n");
+		ft_error("Parser: Command Memory Allocaiton Failed");
 	command->arguments = NULL;
 	command->input = NULL;
 	command->output = NULL;
@@ -35,26 +38,12 @@ t_redirection	*create_redirection(const char *type, const char *filename)
 
 	redirection = malloc(sizeof(t_redirection));
 	if (!redirection)
-		ft_error("Parser: Redirection allocation Failed\n");
+		ft_error("Parser: Redirection allocation Failed");
 	redirection->type = ft_strdup(type);
 	redirection->filename = ft_strdup(filename);
 	redirection->next = NULL;
 	return (redirection);
 }
-
-// parse token and build commands
-// update command and pipeline as needed
-t_token	*parse_token(t_token *token, t_command *command, t_program *minihell, t_pipeline *pipeline)
-{
-	if (token->type == TKN_WORD)
-		return (parse_word(token, command));
-	if (token->type == TKN_PIPE)
-		return (parse_pipe(token, command, pipeline));
-	if (token->type == TKN_IN || token->type == TKN_OUT || token->type == TKN_RDA || token->type == TKN_RDH)
-		return (parse_redirection(token, command));
-	return (token->next);
-}
-
 
 // Preparation
 // Verify input token are valid
@@ -68,23 +57,16 @@ t_pipeline	*parser(t_token *tokens, t_program *minishell)
 	t_token		*token;
 
 	pipeline = create_pipeline();
-
-	// init first command
 	command = create_command();
-	pipeline->commands = command;
+	pipeline->commands[0] = command;
 	pipeline->cmd_count = 1;
-
-	// parse tokens
 	token = tokens;
 	while (token)
 	{
-		token = parse_token(token, command, minishell, pipeline);
-		if (!token)
-		{
-			ft_error("Parser: Failed to parse token.\n");
-			free_pipeline (pipeline);
-			return (NULL);
-		}
+		// printf("Parser: token type %d, token value %s\n", token->type, token->value); // testing
+		token = parser_token(token, &command, minishell, pipeline);
+		if (token && token->type == TKN_PIPE)
+			command = command->next;
 	}
 	return (pipeline);
 }

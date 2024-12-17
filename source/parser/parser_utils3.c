@@ -38,3 +38,17 @@ int	parser_argument(t_command *command, const char *value)
 	command->arguments = new;
 	return (1);
 }
+
+t_token	*parser_env(t_token *token, t_command *command, t_program *minishell)
+{
+	const char	*exp_pointer;
+	char		*exp_value;
+
+	exp_value = env_value(minishell, token->value);
+	if (exp_value)
+	{
+		exp_pointer = exp_value;
+		return (parser_word(token_word(&exp_pointer), command));
+	}
+	return (token->next);
+}
