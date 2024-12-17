@@ -8,7 +8,7 @@ static void	free_input(t_redirection *input)
 	{
 		temp = input;
 		input = input->next;
-		free(temp->next);
+		free(temp->type);
 		free(temp->filename);
 		free(temp);
 	}
@@ -57,8 +57,19 @@ void	free_pipeline(t_pipeline *pipeline)
 	while (i < pipeline->cmd_count)
 	{
 		free_command(pipeline->commands[i]);
+		pipeline->commands[i] = NULL;
 		i++;
 	}
 	free(pipeline->commands);
+	pipeline->commands = NULL;
 	free(pipeline);
+}
+
+void	free_parser(t_pipeline *pipeline)
+{
+	if (pipeline)
+	{
+		free_pipeline(pipeline);
+		free (pipeline);
+	}
 }
