@@ -52,3 +52,17 @@ t_token	*parser_env(t_token *token, t_command *command, t_program *minishell)
 	}
 	return (token->next);
 }
+
+t_token	*parser_status(t_token *token, t_program *minishell)
+{
+	char	*status;
+
+	status = ft_itoa(minishell->status);
+	if (!status)
+		return (NULL);
+	if (token->value)
+		free(token->value);
+	token->type = TKN_WORD;
+	token->value = status;
+	return (token);
+}
