@@ -45,6 +45,10 @@ void	print_pipeline(t_pipeline *pipeline)
 			printf("  Input: %s\n", command->input->filename);
 		if (command->output)
 			printf("  Output: %s\n", command->output->filename);
+		if (command->append)
+			printf("  Append: %s\n", command->append->filename);
+		if (command->heredoc)
+			printf("  Heredoc: %s\n", command->heredoc->filename);
 		i++;
 	}
 }

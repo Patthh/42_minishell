@@ -25,6 +25,8 @@ t_command	*create_command(void)
 	command->arguments = NULL;
 	command->input = NULL;
 	command->output = NULL;
+	command->append = NULL;
+	command->heredoc = NULL;
 	command->fd_in = STDIN_FILENO;
 	command->fd_out = STDOUT_FILENO;
 	command->is_builtin = 0;
@@ -56,6 +58,8 @@ t_pipeline	*parser(t_token *tokens, t_program *minishell)
 	t_command	*command;
 	t_token		*token;
 
+	if (!parser_sequence(tokens))
+		return (NULL);
 	pipeline = create_pipeline();
 	command = create_command();
 	pipeline->commands[0] = command;
