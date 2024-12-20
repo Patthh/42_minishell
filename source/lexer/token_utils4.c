@@ -1,95 +1,92 @@
 #include "../../include/minishell.h"
 
-int	quote_counter(const char *input)
+// extract env name
+char	*env_name(const char **input)
 {
-	int	single_quote;
-	int	double_quote;
+	const char	*start;
+	const char	*end;
 
-	single_quote = 0;
-	double_quote = 0;
-	while (*input)
-	{
-		if (*input == '\'')
-		{
-			if (!double_quote)
-				single_quote = !single_quote;
-		}
-		else if (*input == '"')
-		{
-			if (!single_quote)
-				double_quote = !double_quote;
-		}
-		input++;
-	}
-	return (!(single_quote || double_quote));
+	while (**input == '$')
+		(*input)++;
+	start = *input;
+	end = start;
+	while (*end && (ft_isalnum(*end) || *end == '_'))
+		end++;
+	if (start == end)
+		return (NULL);
+	return (ft_strndup(start, end - start));
 }
 
-static void	quote_dollar(const char **input, t_token **head, t_program *minishell)
+// retrieve env value
+char	*env_value(t_program *minishell, const char *key)
+{
+	t_env	*current;
+
+	current = minishell->env_list;
+	while (current)
+	{
+		if (ft_strcmp(current->key, key) == 0)
+			return (current->value);
+		current = current->next;
+	}
+	return (getenv(key));
+}
+
+// create token for env
+void	env_token(t_token **head, t_program *minishell, const char *key)
 {
 	char	*value;
 
-	(*input)++;
-	value = env_quote(minishell, *input);
-	{
-		if (value)
-		{
-			token_add(head, token_new(TKN_ENV, value));
-			free (value);
-		}
-	}
-}
-
-// must handle the env inside double quotes
-static void	quote_double(const char **input, t_token **head, t_program *minishell)
-{
-	const char	*start;
-	char		*string;
-
-	start = *input;
-	(*input)++;
-	while (**input && **input != '"')
-	{
-		if (**input == '$')
-			quote_dollar(input, head, minishell);
-		else
-			(*input)++;
-	}
-	string = ft_strndup(start + 1, *input - start - 1);
-	token_add(head, token_new(TKN_WORD, string));
-	free (string);
-	if (**input == '"')
-		(*input)++;
-}
-
-// everything inside single quote must be handled as a literal string.
-// no interpretation or expansion needed (variable expansion or wildcard)
-static void	quote_single(const char **input, t_token **head)
-{
-	char		*value;
-	const char	*start;
-
-	start = *input;
-	(*input)++;
-	while (**input && **input != '\'')
-		(*input)++;
-	value = ft_strndup(start + 1, *input - start - 1);
+	value = env_value(minishell, key);
 	if (value)
-	{
-		token_add(head, token_new(TKN_WORD, value));
-		free (value);
-	}
-	if (**input == '\'')
-		(*input)++;
+		token_add(head, token_new(TKN_ENV, value));
 }
 
-void	token_quotes(const char **input, t_token **head, t_program *minishell)
+char	*env_quote(t_program *minishell, const char *input)
 {
-	if (**input == '\'')
+	char	*key;
+	char	*value;
+
+	key = env_name(&input);
+	if (!key)
+		return (NULL);
+	value = env_value(minishell, key);
+	free(key);
+	if (value)
+		return (ft_strdup(value));
+	else
+		return (NULL);
+}
+
+// handles special case for $?, retrievew exit status and creates token
+// checks if lone $, creates TKN_WORD
+// exec commands should update minishell-status
+// extract env name if valid
+void	token_dollar(const char **input, t_token **head, t_program *minishell)
+{
+	char	*key;
+	char	*value;
+
+	(*input)++;
+	if (**input == '?')
 	{
-		quote_single(input, head);
-		while (**input == '\'')
-			(*input)++;
+		value = ft_itoa(minishell->status);
+		token_add(head, token_new(TKN_STATUS, value));
+		free (value);
+		(*input)++;
+		return ;
 	}
-	else if (**input == '"')
-		quote_double(input, head, minishell);
+	if (!ft_isalnum(**input) && **input != '_')
+	{
+		token_add(head, token_new(TKN_WORD, "$"));
+		return ;
+	}
+	key = env_name(input);
+	if (key)
+	{
+		value = env_value(minishell, key);
+		if (value)
+			token_add(head, token_new(TKN_ENV, value));
+		free (key);
+	}
 }
