@@ -18,7 +18,7 @@ int	ft_exit(t_command *command, t_program *minishell)
 	char	*end;
 
 	end = NULL;
-	ft_putstr_fd("exit\n", STDERR_FILENO);
+	ft_putstr_fd("exit\n", STDOUT_FILENO); // or STDERR_FILENO ?
 	if (!command->arguments[1])
 		status = minishell->status;
 	else
