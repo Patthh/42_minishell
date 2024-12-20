@@ -18,6 +18,8 @@
 
 // check the token type number of the symbols
 // grep 'TKN_' include/minishell.h | awk '{print NR-1, $1}'
+// & is unnecessary
+// && || * () are bonuses
 typedef enum e_token
 {
 	TKN_IN,			// 0 <
@@ -63,9 +65,12 @@ typedef struct s_command
 	char					**arguments;
 	t_redirection			*input;
 	t_redirection			*output;
+	t_redirection			*append;
+	t_redirection			*heredoc;
 	int						fd_in;
 	int						fd_out;
 	int						is_builtin;
+//	int						priority; // bonus
 	struct s_command		*next;
 }	t_command;
 
@@ -95,28 +100,30 @@ typedef struct s_program
 }	t_program;
 
 // SHELL
-void	run_shell(t_program *minishell);
-int		handle_input(char *input, t_program *minishell);
+void		run_shell(t_program *minishell);
+int			handle_input(char *input, t_program *minishell);
 // void	ft_exit(const char *input, t_token *tokens, t_program *minishell);
 
 // LEXER
-t_token	*tokenizer(const char *input, t_program *minishell);
-t_token	*token_new(t_token_type type, const char *value);
-void	token_add(t_token **head, t_token *new_token);
-t_token	*token_word(const char **input);
+t_token			*tokenizer(const char *input, t_program *minishell);
+t_token			*token_new(t_token_type type, const char *value);
+void			token_add(t_token **head, t_token *new_token);
+t_token			*token_word(const char **input);
 
-void	token_redirector(const char **input, t_token **head);
-void	token_operator(const char **input, t_token **head);
-void	token_paranthesis(const char **input, t_token **head);
-void	token_quotes(const char **input, t_token **head, t_program *minishell);
-int		quote_counter(const char *input);
-void	token_dollar(const char **input, t_token **head, t_program *minishell);
-void	token_wildcard(const char **input, t_token **head);
+void			token_redirector(const char **input, t_token **head);
+void			token_operator(const char **input, t_token **head);
+void			token_quotes(const char **input, t_token **head, t_program *minishell);
+int				quote_counter(const char *input);
+void			token_dollar(const char **input, t_token **head, t_program *minishell);
 
-char	*env_name(const char **input);
-char	*env_value(t_program *minishell, const char *key);
-void	env_token(t_token **head, t_program *minishell, const char *key);
-char	*env_quote(t_program *minishell, const char *input);
+// LEXER BONUS
+// void	token_paranthesis(const char **input, t_token **head);
+// void	token_wildcard(const char **input, t_token **head);
+
+char			*env_name(const char **input);
+char			*env_value(t_program *minishell, const char *key);
+void			env_token(t_token **head, t_program *minishell, const char *key);
+char			*env_quote(t_program *minishell, const char *input);
 
 // PARSER
 t_pipeline		*parser(t_token *tokens, t_program *minishell);
@@ -134,6 +141,10 @@ int				parser_sequence(t_token *tokens);
 t_pipeline		*create_pipeline(void);
 t_command		*create_command(void);
 t_redirection	*create_redirection(const char *type, const char *filename);
+
+// PARSER BONUS
+// t_token	*parser_and(t_token *token, t_command **command, t_pipeline *pipeline);
+// t_token	*parser_or(t_token *token, t_command **command, t_pipeline *pipeline);
 
 // MEMORY
 void	init_shell(t_program *program, char **envp);
