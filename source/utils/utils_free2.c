@@ -28,6 +28,34 @@ static void	free_output(t_redirection *output)
 	}
 }
 
+static void	free_append(t_redirection *append)
+{
+	t_redirection	*temp;
+
+	while (append)
+	{
+		temp = append;
+		append = append->next;
+		free(temp->type);
+		free(temp->filename);
+		free(temp);
+	}
+}
+
+static void	free_heredoc(t_redirection *heredoc)
+{
+	t_redirection	*temp;
+
+	while (heredoc)
+	{
+		temp = heredoc;
+		heredoc = heredoc->next;
+		free(temp->type);
+		free(temp->filename);
+		free(temp);
+	}
+}
+
 static void	free_command(t_command *command)
 {
 	int	i;
@@ -44,6 +72,8 @@ static void	free_command(t_command *command)
 	}
 	free_input(command->input);
 	free_output(command->output);
+	free_append(command->append);
+	free_heredoc(command->heredoc);
 	free(command);
 }
 
