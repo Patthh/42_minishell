@@ -27,18 +27,38 @@ static int	redir_filename(t_token *token)
 	return (1);
 }
 
+static void	redir_free(t_redirection *redirection)
+{
+	if (redirection)
+	{
+		free(redirection->filename);
+		free(redirection->type);
+		free(redirection);
+	}
+}
+
 // input: IN or HEREDOC
 // output: OUT or APPEND
 static void	redir_add(t_command *command, t_redirection *redirection, int index)
 {
 	t_redirection	**list;
-	// t_redirection	*temp;
+
 	if (index == 0)
 		list = &command->input;
 	else if (index == 1)
-		list = &command->output;
+	{
+		if (command->output)
+			redir_free(command->output);
+		command->output = redirection;
+		return ;
+	}
 	else if (index == 2)
-		list = &command->append;
+	{
+		if (command->append)
+			redir_free(command->append);
+		command->append = redirection;
+		return ;
+	}
 	else
 		list = &command->heredoc;
 	while (*list)
@@ -49,49 +69,23 @@ static void	redir_add(t_command *command, t_redirection *redirection, int index)
 // advances to the next token and check
 // check redirection type
 // create redirection and add it to command
+// in case of multiple redirection,
+// each file should be treated as a target
+// previous ones are just opened and closed/replaced
+// not treated as arguments to the command
 t_token	*parser_redirection(t_token *token, t_command *command)
 {
 	const char		*types[] = {"INT", "OUT", "APPEND", "HEREDOC"};
 	t_redirection	*redirection;
-	t_token			*next;
 	int				index;
 
 	index = redir_index(token->type);
 	token = token->next;
 	if (!redir_filename(token))
 		return (NULL);
-	next = token->next;
-	if (next && (next->type == TKN_OUT || next->type == TKN_RDA))
-	{
-		if (!parser_argument(command, token->value))
-			ft_error("Parser: Failed to add argument\n");
-		return (token->next);
-	}
 	redirection = create_redirection(types[index], token->value);
 	if (!redirection)
 		return (NULL);
 	redir_add(command, redirection, index);
 	return (token->next);
-}
-
-int	parser_sequence(t_token *tokens)
-{
-	t_token	*token;
-
-	token = tokens;
-	while (token)
-	{
-		if (token->type == TKN_PIPE && (!token->next || token->next->type == TKN_PIPE))
-		{
-			ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", STDERR_FILENO);
-			return (0);
-		}
-		if ((token->type == TKN_IN || token->type == TKN_OUT || token->type == TKN_RDA || token->type == TKN_RDH) && (!token->next || token->next->type != TKN_WORD))
-		{
-			ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", STDERR_FILENO);
-			return (0);
-		}
-		token = token->next;
-	}
-	return (1);
 }
