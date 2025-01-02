@@ -67,7 +67,6 @@ t_pipeline	*parser(t_token *tokens, t_program *minishell)
 	token = tokens;
 	while (token)
 	{
-		// printf("Parser: token type %d, token value %s\n", token->type, token->value); // testing
 		token = parser_token(token, &command, minishell, pipeline);
 		if (token && token->type == TKN_PIPE)
 			command = command->next;

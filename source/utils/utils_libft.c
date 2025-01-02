@@ -262,6 +262,182 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	return (0);
 }
 
+static int	ft_length_word(const char *s, char c)
+{
+	int	length;
+	int	i;
+
+	length = 0;
+	i = 0;
+	while (s[i] != '\0' && s[i] != c)
+	{
+		length++;
+		i++;
+	}
+	return (length);
+}
+
+static int	ft_count_words(const char *s, char c)
+{
+	int	count;
+	int	i;
+
+	count = 0;
+	i = 0;
+	while (s[i] != '\0')
+	{
+		if (s[i] != c)
+		{
+			count++;
+			while (s[i] != '\0' && s[i] != c)
+			{
+				i++;
+			}
+		}
+		else
+		{
+			i++;
+		}
+	}
+	return (count);
+}
+
+static void	*ft_free(char **strs)
+{
+	int	i;
+
+	i = 0;
+	while (strs[i] != NULL)
+	{
+		free(strs[i]);
+		i++;
+	}
+	free(strs);
+	return (NULL);
+}
+
+char	**ft_split(char const *s, char c)
+{
+	char	**strs;
+	int		i;
+	int		count;
+
+	if (s == 0)
+		return (NULL);
+	count = ft_count_words(s, c);
+	strs = malloc(sizeof(char *) * (count + 1));
+	if (strs == 0)
+		return (NULL);
+	strs[count] = NULL;
+	i = 0;
+	while (*s)
+	{
+		if (*s != c)
+		{
+			strs[i] = ft_substr(s, 0, ft_length_word(s, c));
+			if (strs[i++] == 0)
+				return (ft_free(strs));
+			s += ft_length_word(s, c);
+		}
+		else
+			s++;
+	}
+	return (strs);
+}
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	char	*substring;
+	size_t	src_len;
+
+	if (!s)
+		return (NULL);
+	src_len = ft_strlen(s);
+	if (start >= src_len)
+	{
+		substring = ft_calloc(1, sizeof(char));
+		if (!substring)
+			return (NULL);
+		return (substring);
+	}
+	if (len > src_len - start)
+		len = src_len - start;
+	substring = ft_calloc(len + 1, sizeof(char));
+	if (!substring)
+		return (NULL);
+	ft_memcpy(substring, s + start, len);
+	return (substring);
+}
+
+void	*ft_calloc(size_t nmemb, size_t size)
+{
+	void	*ptr;
+	size_t	total;
+
+	total = nmemb * size;
+	if (nmemb == 0 || size == 0)
+	{
+		ptr = malloc(1);
+		if (!ptr)
+			return (NULL);
+		return (ptr);
+	}
+	if (total / size != nmemb)
+		return (NULL);
+	ptr = malloc(total);
+	if (!ptr)
+		return (NULL);
+	ft_bzero(ptr, total);
+	return (ptr);
+}
+
+void	ft_bzero(void *s, size_t n)
+{
+	unsigned char	*temp;
+
+	temp = s;
+	while (n--)
+		*temp++ = 0;
+}
+
+void	*ft_memcpy(void *dest, const void *src, size_t n)
+{
+	unsigned char		*temp_dest;
+	const unsigned char	*temp_src;
+	size_t				i;
+
+	if (!dest && !src && n > 0)
+		return (NULL);
+	if (!n)
+		return (dest);
+	temp_dest = (unsigned char *)dest;
+	temp_src = (const unsigned char *)src;
+	i = 0;
+	while (i < n)
+	{
+		temp_dest[i] = temp_src[i];
+		i++;
+	}
+	return (dest);
+}
+
+char	*ft_strjoin_char(const char *str, char c)
+{
+	char	*result;
+	size_t	len;
+
+	if (!str)
+		return (NULL);
+	len = ft_strlen(str);
+	result = malloc(len + 2);
+	if (!result)
+		return (NULL);
+	ft_memcpy(result, str, len);
+	result[len] = c;
+	result[len + 1] = '\0';
+	return (result);
+}
+
 // extract tokens from strings
 // returns a pointer to the next token
 // could be useful for handling simple word tokenization
