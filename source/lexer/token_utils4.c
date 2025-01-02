@@ -14,6 +14,7 @@ char	*env_name(const char **input)
 		end++;
 	if (start == end)
 		return (NULL);
+	*input = end;
 	return (ft_strndup(start, end - start));
 }
 
