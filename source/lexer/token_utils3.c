@@ -24,52 +24,55 @@ int	quote_counter(const char *input)
 	return (!(single_quote || double_quote));
 }
 
-// static void	quote_dollar(const char **input, t_token **head,
-// 		t_program *minishell)
-// {
-// 	char	*value;
+static char	*process_env(const char **input, t_program *minishell, char *result)
+{
+	char	*value;
+	char	*temp;
+	char	*key;
 
-// 	(*input)++;
-// 	value = env_quote(minishell, *input);
-// 	{
-// 		if (value)
-// 		{
-// 			token_add(head, token_new(TKN_ENV, value));
-// 			free (value);
-// 		}
-// 	}
-// }
+	(*input)++;
+	key = env_name(input);
+	if (key)
+	{
+		value = env_value(minishell, key);
+		if (value)
+		{
+			temp = ft_strjoin(result, value);
+			free (result);
+			result = temp;
+		}
+		free (key);
+	}
+	return (result);
+}
 
 // must handle the env inside double quotes
 static void	quote_double(const char **input, t_token **head,
 		t_program *minishell)
 {
-	char		*key;
-	char		*value;
+	char	*result;
+	char	*temp;
 
 	(*input)++;
+	result = ft_strdup("");
 	while (**input && **input != '"')
 	{
 		if (**input == '$')
-		{
-			(*input)++;
-			if (**input && (ft_isalnum(**input) || **input == '_'))
-			{
-				key = env_name(input);
-				if (key)
-				{
-					value = env_value(minishell, key);
-					if (value)
-						token_add(head, token_new(TKN_ENV, value));
-					free (key);
-				}
-			}
-		}
+			result = process_env(input, minishell, result);
 		else
+		{
+			temp = ft_strjoin_char(result, **input);
+			free (result);
+			result = temp;
+			if (!result)
+				return ;
 			(*input)++;
+		}
 	}
 	if (**input == '"')
 		(*input)++;
+	token_add(head, token_new(TKN_WORD, result));
+	free (result);
 }
 
 // everything inside single quote must be handled as a literal string.

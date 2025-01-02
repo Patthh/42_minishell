@@ -22,7 +22,7 @@ int	handle_input(char *input, t_program *minishell)
 	if (input && *input)
 		add_history(input);
 	tokens = tokenizer(input, minishell);
-	// print_tokens(tokens); // testing tokenizer
+	print_tokens(tokens); // testing tokenizer
 	pipeline = parser(tokens, minishell);
 	print_pipeline(pipeline); // testing parser
 	// execution here

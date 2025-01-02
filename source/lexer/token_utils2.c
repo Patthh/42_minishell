@@ -38,3 +38,29 @@ void	token_operator(const char **input, t_token **head)
 	else if (**input == '&')
 		token_ampersand(input, head);
 }
+
+// create token for env
+void	env_token(t_token **head, t_program *minishell, const char *key)
+{
+	char	*value;
+
+	value = env_value(minishell, key);
+	if (value)
+		token_add(head, token_new(TKN_ENV, value));
+}
+
+char	*env_quote(t_program *minishell, const char *input)
+{
+	char	*key;
+	char	*value;
+
+	key = env_name(&input);
+	if (!key)
+		return (NULL);
+	value = env_value(minishell, key);
+	free(key);
+	if (value)
+		return (ft_strdup(value));
+	else
+		return (NULL);
+}
