@@ -2,7 +2,7 @@
 
 // everything here is for handling the env outside of quotes
 // don't touch this, it works now
-static void	env_status(const char **input, t_token **head, t_program *minishell)
+static void	token_exit(const char **input, t_token **head, t_program *minishell)
 {
 	char	*value;
 
@@ -12,7 +12,7 @@ static void	env_status(const char **input, t_token **head, t_program *minishell)
 	(*input)++;
 }
 
-static void	env_string(const char **input, t_token **head, t_program *minishell)
+static void	token_string(const char **input, t_token **head, t_program *minishell)
 {
 	char	*key;
 	char	*value;
@@ -37,9 +37,9 @@ void	token_dollar(const char **input, t_token **head, t_program *minishell)
 {
 	(*input)++;
 	if (**input == '?')
-		env_status(input, head, minishell);
+		token_exit(input, head, minishell);
 	else if (!ft_isalnum(**input) && **input != '_')
 		token_add(head, token_new(TKN_WORD, "$"));
 	else
-		env_string(input, head, minishell);
+		token_string(input, head, minishell);
 }
