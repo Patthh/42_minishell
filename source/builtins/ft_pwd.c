@@ -5,7 +5,6 @@ int	ft_pwd(t_program *minishell)
 	char	*cwd;
 
 	cwd = getcwd(NULL, 0);
-
 	if (cwd == NULL)
 	{
 		ft_putstr_fd("pwd: error retrieving current directory", STDERR_FILENO);
