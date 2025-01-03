@@ -19,7 +19,6 @@ t_token	*token_new(t_token_type type, const char *value)
 		token->value = NULL;
 	token->type = type;
 	token->next = NULL;
-	// printf("Create token: type: %d, value %s\n", type, token->value);
 	return (token);
 }
 
@@ -39,7 +38,6 @@ void	token_add(t_token **head, t_token *new_token)
 			current = current->next;
 		current->next = new_token;
 	}
-	// printf("Add token: type: %d, value: %s\n", new_token->type, new_token->value);
 }
 
 // extracts and creates a token for a word
@@ -106,9 +104,3 @@ t_token	*tokenizer(const char *input, t_program *minishell)
 	}
 	return (head);
 }
-
-// bonus
-		// else if (*input == '(' || *input == ')')
-		// 	token_paranthesis(&input, &head);
-		// else if (*input == '*')
-		// 	token_wildcard(&input, &head);

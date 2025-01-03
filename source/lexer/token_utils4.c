@@ -1,61 +1,32 @@
 #include "../../include/minishell.h"
 
-// extract env name
-char	*env_name(const char **input)
-{
-	const char	*start;
-	const char	*end;
-
-	while (**input == '$')
-		(*input)++;
-	start = *input;
-	end = start;
-	while (*end && (ft_isalnum(*end) || *end == '_'))
-		end++;
-	if (start == end)
-		return (NULL);
-	return (ft_strndup(start, end - start));
-}
-
-// retrieve env value
-char	*env_value(t_program *minishell, const char *key)
-{
-	t_env	*current;
-
-	current = minishell->env_list;
-	while (current)
-	{
-		if (ft_strcmp(current->key, key) == 0)
-			return (current->value);
-		current = current->next;
-	}
-	return (getenv(key));
-}
-
-// create token for env
-void	env_token(t_token **head, t_program *minishell, const char *key)
+// everything here is for handling the env outside of quotes
+// don't touch this, it works now
+static void	env_status(const char **input, t_token **head, t_program *minishell)
 {
 	char	*value;
 
-	value = env_value(minishell, key);
-	if (value)
-		token_add(head, token_new(TKN_ENV, value));
+	value = ft_itoa(minishell->status);
+	token_add(head, token_new(TKN_STATUS, value));
+	free (value);
+	(*input)++;
 }
 
-char	*env_quote(t_program *minishell, const char *input)
+static void	env_string(const char **input, t_token **head, t_program *minishell)
 {
 	char	*key;
 	char	*value;
 
-	key = env_name(&input);
-	if (!key)
-		return (NULL);
-	value = env_value(minishell, key);
-	free(key);
-	if (value)
-		return (ft_strdup(value));
+	key = env_name(input);
+	if (key)
+	{
+		value = env_value(minishell, key);
+		if (value)
+			token_add(head, token_new(TKN_ENV, key));
+		free (key);
+	}
 	else
-		return (NULL);
+		token_add(head, token_new(TKN_WORD, "$"));
 }
 
 // handles special case for $?, retrievew exit status and creates token
@@ -64,29 +35,11 @@ char	*env_quote(t_program *minishell, const char *input)
 // extract env name if valid
 void	token_dollar(const char **input, t_token **head, t_program *minishell)
 {
-	char	*key;
-	char	*value;
-
 	(*input)++;
 	if (**input == '?')
-	{
-		value = ft_itoa(minishell->status);
-		token_add(head, token_new(TKN_STATUS, value));
-		free (value);
-		(*input)++;
-		return ;
-	}
-	if (!ft_isalnum(**input) && **input != '_')
-	{
+		env_status(input, head, minishell);
+	else if (!ft_isalnum(**input) && **input != '_')
 		token_add(head, token_new(TKN_WORD, "$"));
-		return ;
-	}
-	key = env_name(input);
-	if (key)
-	{
-		value = env_value(minishell, key);
-		if (value)
-			token_add(head, token_new(TKN_ENV, value));
-		free (key);
-	}
+	else
+		env_string(input, head, minishell);
 }

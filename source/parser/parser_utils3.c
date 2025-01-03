@@ -41,14 +41,15 @@ int	parser_argument(t_command *command, const char *value)
 
 t_token	*parser_env(t_token *token, t_command *command, t_program *minishell)
 {
-	const char	*exp_pointer;
-	char		*exp_value;
+	char		*key;
+	char		*value;
 
-	exp_value = env_value(minishell, token->value);
-	if (exp_value)
+	key = token->value;
+	value = env_value(minishell, key);
+	if (value)
 	{
-		exp_pointer = exp_value;
-		return (parser_word(token_word(&exp_pointer), command));
+		if (!parser_argument(command, value))
+			ft_error("Parse: failed to add argument\n");
 	}
 	return (token->next);
 }
@@ -65,4 +66,26 @@ t_token	*parser_status(t_token *token, t_program *minishell)
 	token->type = TKN_WORD;
 	token->value = status;
 	return (token);
+}
+
+int	parser_sequence(t_token *tokens)
+{
+	t_token	*token;
+
+	token = tokens;
+	while (token)
+	{
+		if (token->type == TKN_PIPE && (!token->next || token->next->type == TKN_PIPE))
+		{
+			ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", STDERR_FILENO);
+			return (0);
+		}
+		if ((token->type == TKN_IN || token->type == TKN_OUT || token->type == TKN_RDA || token->type == TKN_RDH) && (!token->next || token->next->type != TKN_WORD))
+		{
+			ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", STDERR_FILENO);
+			return (0);
+		}
+		token = token->next;
+	}
+	return (1);
 }
