@@ -10,6 +10,7 @@
 # include <string.h>
 # include <errno.h>
 # include <dirent.h> // opendir, readir
+# include <limits.h>
 
 # define PROMPT "minishell$ "
 # define TRUE 1
@@ -165,6 +166,7 @@ char	*ft_strchr(const char *string, int c);
 int		ft_isalnum(int c);
 size_t	ft_strlen(const char *str);
 char	*ft_itoa(int n);
+int		ft_isdigit(int c);
 int		ft_isalpha(int c);
 int		ft_isascii(int c);
 int		ft_isspace(int c);
@@ -172,6 +174,8 @@ char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strjoin_char(const char *str, char c);
 char	*ft_strstr(const char *big, const char *little);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+int		ft_atoi(const char *nptr);
+long	ft_strtol(const char *string, char **end);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	**ft_split(char const *s, char c);
 void	*ft_calloc(size_t nmemb, size_t size);
