@@ -57,6 +57,7 @@ typedef struct s_redirection
 {
 	char					*type; // IN, OUT, APPEND, HEREDOC
 	char					*filename;
+	int						quoted; // 1 if delimiter is quoted, 0 if not
 	struct s_redirection	*next;
 }	t_redirection;
 
@@ -141,7 +142,7 @@ int				parser_sequence(t_token *tokens);
 
 t_pipeline		*create_pipeline(void);
 t_command		*create_command(void);
-t_redirection	*create_redirection(const char *type, const char *filename);
+t_redirection	*create_redirection(const char *type, const char *filename, int quoted);
 
 // PARSER BONUS
 // t_token	*parser_and(t_token *token, t_command **command, t_pipeline *pipeline);
@@ -186,6 +187,6 @@ void	*ft_memcpy(void *dest, const void *src, size_t n);
 // TESTING
 void	print_tokens(t_token *head);
 void	print_pipeline(t_pipeline *pipeline);
-void	test_parser_env();
+// void	test_parser_env();
 
 #endif

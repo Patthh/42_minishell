@@ -34,7 +34,7 @@ t_command	*create_command(void)
 	return (command);
 }
 
-t_redirection	*create_redirection(const char *type, const char *filename)
+t_redirection	*create_redirection(const char *type, const char *filename, int quoted)
 {
 	t_redirection	*redirection;
 
@@ -43,6 +43,7 @@ t_redirection	*create_redirection(const char *type, const char *filename)
 		ft_error("Parser: Redirection allocation Failed");
 	redirection->type = ft_strdup(type);
 	redirection->filename = ft_strdup(filename);
+	redirection->quoted = quoted;
 	redirection->next = NULL;
 	return (redirection);
 }

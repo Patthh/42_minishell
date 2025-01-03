@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-void	ft_exit(const char *input, t_token *tokens, t_program *minishell)
+void	shell_exit(const char *input, t_token *tokens, t_program *minishell)
 {
 	if (tokens)
 		free_list(tokens);
@@ -29,7 +29,7 @@ int	handle_input(char *input, t_program *minishell)
 	if (ft_strcmp(input, "exit") == 0)
 	{
 		free_list(tokens);
-		ft_exit(input, NULL, minishell);
+		shell_exit(input, NULL, minishell);
 		return (-1);
 	}
 	free_list(tokens);

@@ -1,136 +1,91 @@
-# Minishell Lexer Implementation Guide
+# Minishell Progress Report
 
 ## Overview
-The lexer (lexical analyzer) is responsible for breaking down the input string into meaningful tokens that can be processed by the parser.
+The Minishell project aims to create a simple shell that can execute basic commands and handle input/output redirection. The project is divided into several components, including the lexer, parser, and built-in commands.
 
-## Objectives
-- Tokenize input string
-- Handle special characters
-- Manage quotes
-- Expand environment variables
-- Prepare tokens for parsing
+---
 
-## Useful Libft Functions
-### String Manipulation
-- `ft_strlen()`: Determine string length
-- `ft_strdup()`: Create string copies
-- `ft_substr()`: Extract substrings
-- `ft_strjoin()`: Concatenate strings
-- `ft_split()`: Tokenize strings
-- `ft_strchr()`: Find characters
-- `ft_strncmp()`: Compare strings
+## Lexer
+- [x] Tokenize input strings into a linked list of tokens.
+- [x] Handle different token types (e.g., words, operators, redirections).
+- [x] Handle quote handling (single and double quotes).
+- [x] Handle environment variables (`$` followed by a sequence of characters).
+- [ ] Handle `$?` which should expand to the exit status of the most recently executed foreground pipeline.
 
-### Memory Management
-- `ft_calloc()`: Allocate and zero memory
-- `ft_memset()`: Initialize memory
-- `ft_memcpy()`: Copy memory
+---
 
-### Character Checks
-- `ft_isalnum()`: Alphanumeric check
-- `ft_isdigit()`: Digit check
-- `ft_isalpha()`: Alphabetic check
+## Parser
+- [x] Parse tokens into a pipeline of commands.
+- [x] Handle command sequences, redirections, and pipes.
+- [x] Handle advanced redirection scenarios (e.g., `<`, `>`, `>>`, `<<`).
+- [x] Implement pipes (`|` character).
+- [x] Handle redirections:
+  - [x] `<` should redirect input.
+  - [x] `>` should redirect output.
+  - [x] `<<` should be given a delimiter, then read the input until a line containing the delimiter is seen.
+  - [x] `>>` should redirect output in append mode.
 
-## Token Types
-```c
-typedef enum e_token_type {
-    TOKEN_WORD,           // Regular word/argument
-    TOKEN_REDIRECT_IN,    // <
-    TOKEN_REDIRECT_OUT,   // >
-    TOKEN_REDIRECT_APPEND,// >>
-    TOKEN_REDIRECT_HEREDOC,// <<
-    TOKEN_PIPE,           // |
-    TOKEN_ENV_VAR,        // $VARIABLE
-    TOKEN_EXIT_STATUS,    // $?
-    TOKEN_SPACE,          // Whitespace
-    TOKEN_EOF             // End of input
-} t_token_type;
+---
 
-typedef struct s_token {
-    t_token_type type;
-    char *value;
-    struct s_token *next;
-} t_token;
-```
+## Built-in Commands
+- [ ] `cd`: Change the current working directory.
+- [x] `pwd`: Print the current working directory.
+- [x] `exit`: Exit the shell.
+- [x] `echo`: Print arguments to the standard output.
+- [x] `env`: Print the environment variables.
+- [x] `unset`: Remove environment variables.
+- [ ] `export`: Set environment variables.
 
-## Lexer Stages
+---
 
-### 1. Input Preprocessing
-- Remove leading/trailing whitespaces
-- Handle empty input
-- Initialize token list
+## Heredoc (`<<`) Handling
+- [x] Tokenize heredoc delimiters correctly.
+- [x] Handle unquoted delimiters.
+- [x] Handle single-quoted delimiters (treat as literal strings).
+- [x] Handle double-quoted delimiters (treat as literal strings).
+- [x] Handle delimiters with special characters (e.g., `EOF@#`).
+- [x] Handle empty delimiters (syntax error).
+- [x] Handle multiple heredocs in a single command.
+- [x] Handle heredocs with spaces in delimiters.
+- [ ] Handle heredocs with newlines in delimiters.
+- [ ] Handle variable expansion within heredoc input (for double-quoted delimiters).
+- [ ] Handle indentation in heredoc input.
 
-### 2. Quote Handling
-- Track quote states (single, double, no quotes)
-- Prevent splitting within quotes
-- Handle escaped characters
+---
 
-### 3. Token Extraction
-- Identify token types
-- Handle special characters
-- Manage environment variable expansion
+## Next Steps
+1. **Implement Variable Expansion in Heredocs:**
+   - Expand variables within heredoc input when the delimiter is double-quoted.
+   - Example:
+     ```bash
+     VAR="Hello"
+     cat << "EOF"
+     $VAR
+     EOF
+     ```
+     Should output:
+     ```
+     Hello
+     ```
 
-### 4. Error Handling
-- Detect unclosed quotes
-- Validate token sequences
-- Manage syntax errors
+2. **Handle Indentation in Heredocs:**
+   - Preserve indentation in heredoc input for better readability.
+   - Example:
+     ```bash
+     cat << EOF
+         Indented line
+     EOF
+     ```
+     Should output:
+     ```
+         Indented line
+     ```
 
-## Pseudocode
-```c
-t_token *lexer(char *input) {
-    t_token *tokens = NULL;
-    char *current = input;
+3. **Implement `export` Command:**
+   - Add support for setting environment variables using the `export` command.
 
-    while (*current) {
-        if (is_whitespace(*current)) {
-            // Skip whitespaces
-            continue;
-        }
-
-        if (is_special_char(*current)) {
-            // Handle redirects, pipes
-            add_special_token(&tokens, current);
-        }
-
-        if (is_quote(*current)) {
-            // Handle quoted sections
-            add_quoted_token(&tokens, &current);
-        }
-
-        if (is_env_var(*current)) {
-            // Expand environment variables
-            add_env_token(&tokens, &current);
-        }
-
-        // Add regular word token
-        add_word_token(&tokens, &current);
-    }
-
-    return tokens;
-}
-```
-
-## Detailed Implementation Steps
-1. Create token structure
-2. Implement quote handling
-3. Develop token extraction logic
-4. Add environment variable expansion
-5. Implement error checking
-6. Create token list management functions
-
-## Recommended Testing Approach
-- Simple commands
-- Commands with quotes
-- Environment variable expansions
-- Mixed input types
-- Edge cases (empty input, multiple spaces)
-
-## Potential Challenges
-- Handling nested quotes
-- Complex environment variable expansions
-- Managing memory for tokens
-- Detecting syntax errors
-
-## Performance Considerations
-- Minimize memory allocations
-- Use efficient string processing
-- Implement robust error handling
+4. **Test and Refine:**
+   - Conduct thorough testing for edge cases, including:
+     - Heredocs with nested commands.
+     - Heredocs with complex delimiters.
+     - Heredocs with large input.

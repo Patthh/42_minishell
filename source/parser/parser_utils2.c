@@ -78,14 +78,25 @@ t_token	*parser_redirection(t_token *token, t_command *command)
 	const char		*types[] = {"INT", "OUT", "APPEND", "HEREDOC"};
 	t_redirection	*redirection;
 	int				index;
+	int				quoted;
+	char			*delimiter;
 
 	index = redir_index(token->type);
 	token = token->next;
 	if (!redir_filename(token))
 		return (NULL);
-	redirection = create_redirection(types[index], token->value);
+	quoted = 0;
+	delimiter = token->value;
+	if (token->type == TKN_SINGLE || token->type == TKN_DOUBLE)
+	{
+		quoted = 1;
+		delimiter = ft_substr(token->value, 1, ft_strlen(token->value) - 2);
+	}
+	redirection = create_redirection(types[index], token->value, quoted);
 	if (!redirection)
 		return (NULL);
+	if (quoted && delimiter != token->value)
+		free (delimiter);
 	redir_add(command, redirection, index);
 	return (token->next);
 }
