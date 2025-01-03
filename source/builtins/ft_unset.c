@@ -58,7 +58,7 @@ static int	unset_check(const char *name)
 // process a single argument
 // check variable name
 // remove variable from list
-static int	unset_single(t_program *minishell, const char *argument)
+static int	unset_single(t_program *minishell, char *argument)
 {
 	if (!unset_check(argument))
 	{
