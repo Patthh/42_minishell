@@ -6,6 +6,7 @@
 // skips all -n flags
 // cc ft_echo.c ../utils/utils_libft.c
 // run ./a.out -n argument
+// flag -n do not output the trailing newline
 int	ft_echo(t_command *command, t_program *minishell)
 {
 	int	i;
