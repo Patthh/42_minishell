@@ -47,9 +47,9 @@ The Minishell project aims to create a simple shell that can execute basic comma
 - [x] Handle empty delimiters (syntax error).
 - [x] Handle multiple heredocs in a single command.
 - [x] Handle heredocs with spaces in delimiters.
-- [ ] Handle heredocs with newlines in delimiters.
-- [ ] Handle variable expansion within heredoc input (for double-quoted delimiters).
-- [ ] Handle indentation in heredoc input.
+- [x] Handle heredocs with newlines in delimiters.
+- [x] Handle variable expansion within heredoc input (for double-quoted delimiters).
+- [x] Handle indentation in heredoc input.
 
 ---
 

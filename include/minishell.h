@@ -58,6 +58,7 @@ typedef struct s_redirection
 	char					*type; // IN, OUT, APPEND, HEREDOC
 	char					*filename;
 	int						quoted; // 1 if delimiter is quoted, 0 if not
+	char					*content; // store heredoc content
 	struct s_redirection	*next;
 }	t_redirection;
 
@@ -133,12 +134,15 @@ t_pipeline		*parser(t_token *tokens, t_program *minishell);
 t_token			*parser_word(t_token *token, t_command *command);
 t_token			*parser_token(t_token *token, t_command **command, t_program *minihell, t_pipeline *pipeline);
 t_token			*parser_pipe(t_token *token, t_command **command, t_pipeline *pipeline);
-t_token			*parser_redirection(t_token *token, t_command *command);
+t_token			*parser_redirection(t_token *token, t_command *command, t_program *minishell);
 t_token			*parser_env(t_token *token, t_command *command, t_program *minishell);
 t_token			*parser_status(t_token *token, t_program *minishell);
 int				parser_argument(t_command *command, const char *value);
 int				parser_builtin(const char *command);
 int				parser_sequence(t_token *tokens);
+
+void			heredoc_read(t_redirection *heredoc, t_command *command, t_program *minishell);
+char			*quote_expand(char *string, t_program *minishell);
 
 t_pipeline		*create_pipeline(void);
 t_command		*create_command(void);

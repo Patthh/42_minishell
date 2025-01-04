@@ -44,6 +44,7 @@ t_redirection	*create_redirection(const char *type, const char *filename, int qu
 	redirection->type = ft_strdup(type);
 	redirection->filename = ft_strdup(filename);
 	redirection->quoted = quoted;
+	redirection->content = NULL;
 	redirection->next = NULL;
 	return (redirection);
 }
