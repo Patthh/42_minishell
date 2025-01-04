@@ -177,6 +177,9 @@ int		ft_exit(t_command *command, t_program *minishell);
 // cd
 int		ft_pwd(t_program *minishell);
 int		ft_unset(t_command *command, t_program *minishell);
+//env
+void	init_env(t_program *minishell, char **envp);
+void	add_env(t_program *minishell, const char *key, const char *value);
 
 // UTILS
 void	ft_error(const char *message);
