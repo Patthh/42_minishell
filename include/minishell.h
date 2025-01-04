@@ -105,7 +105,7 @@ typedef struct s_program
 // SHELL
 void		run_shell(t_program *minishell);
 int			handle_input(char *input, t_program *minishell);
-// void	ft_exit(const char *input, t_token *tokens, t_program *minishell);
+void		shell_exit(const char *input, t_token *tokens, t_program *minishell);
 
 // LEXER
 t_token			*tokenizer(const char *input, t_program *minishell);
@@ -163,6 +163,20 @@ void	free_token(t_token *token);
 void	free_list(t_token *head);
 void	free_pipeline(t_pipeline *pipeline);
 // void	free_parser(t_pipeline *pipeline);
+
+// EXECUTION
+void	execute_pipeline(t_pipeline *pipeline, t_program *minishell);
+void	execute_command(t_command *command, t_program *minishell);
+void	execute_builtin(t_command *command, t_program *minishell);
+
+// BUILTINS
+// cd
+int		ft_echo(t_command *command, t_program *minishell);
+int		ft_env(t_program *minishell);
+int		ft_exit(t_command *command, t_program *minishell);
+// cd
+int		ft_pwd(t_program *minishell);
+int		ft_unset(t_command *command, t_program *minishell);
 
 // UTILS
 void	ft_error(const char *message);
