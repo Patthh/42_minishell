@@ -144,6 +144,10 @@ int				parser_sequence(t_token *tokens);
 void			heredoc_read(t_redirection *heredoc, t_command *command, t_program *minishell);
 char			*quote_expand(char *string, t_program *minishell);
 
+char		*expand_single(const char **string, t_program *minishell);
+char		*expand_exit(t_program *minishell);
+char		*expand_var(const char **pointer, t_program *minishell);
+
 t_pipeline		*create_pipeline(void);
 t_command		*create_command(void);
 t_redirection	*create_redirection(const char *type, const char *filename, int quoted);
