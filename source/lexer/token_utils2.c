@@ -72,16 +72,6 @@ static void	token_string(const char **input, t_token **head, t_program *minishel
 // checks if lone $, creates TKN_WORD
 // exec commands should update minishell-status
 // extract env name if valid
-// void	token_dollar(const char **input, t_token **head, t_program *minishell)
-// {
-// 	(*input)++;
-// 	if (**input == '?')
-// 		token_exit(input, head, minishell);
-// 	else if (!ft_isalnum(**input) && **input != '_')
-// 		token_add(head, token_new(TKN_WORD, "$"));
-// 	else
-// 		token_string(input, head, minishell);
-// }
 
 void	token_dollar(const char **input, t_token **head, t_program *minishell)
 {
@@ -95,6 +85,8 @@ void	token_dollar(const char **input, t_token **head, t_program *minishell)
 		free (status);
 		(*input)++;
 	}
+	else if (**input == '\0' || ft_isspace(**input))
+		token_add(head, token_new(TKN_WORD, "$"));
 	else if (!ft_isalnum(**input) && **input != '_')
 		token_add(head, token_new(TKN_ENV, expand_var(input, minishell)));
 	else

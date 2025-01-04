@@ -7,7 +7,7 @@ char	*expand_var(const char **pointer, t_program *minishell)
 
 	key = env_name(pointer);
 	if (!key)
-		return (NULL);
+		return (ft_strdup("$"));
 	if (ft_strcmp(key, "?") == 0)
 	{
 		value = ft_itoa(minishell->status);
@@ -48,7 +48,7 @@ char	*expand_single(const char **string, t_program *minishell)
 		else
 			return (expand_var(string, minishell));
 	}
-	result = malloc(2);
+	result = ft_strndup(*string, 1);
 	if (!result)
 		return (NULL);
 	result[0] = **string;

@@ -18,6 +18,8 @@ int	ft_strcmp(const char *s1, const char *s2)
 {
 	size_t	i;
 
+	if (!s1 || !s2)
+		return (-1);
 	i = 0;
 	while (s1[i] != '\0' && s2[i] != '\0' && s1[i] == s2[i])
 	{
@@ -296,7 +298,7 @@ int	ft_atoi(const char *nptr)
 	}
 	return (sign * result);
 }
-  
+
 static int	ft_length_word(const char *s, char c)
 {
 	int	length;
