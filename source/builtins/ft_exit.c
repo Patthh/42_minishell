@@ -36,5 +36,6 @@ int	ft_exit(t_command *command, t_program *minishell)
 		}
 	}
 	minishell->exit = TRUE;
+	shell_exit(NULL, NULL, minishell);
 	return (status);
 }
