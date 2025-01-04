@@ -2,15 +2,15 @@
 
 // everything here is for handling the env outside of quotes
 // don't touch this, it works now
-static void	token_exit(const char **input, t_token **head, t_program *minishell)
-{
-	char	*value;
+// static void	token_exit(const char **input, t_token **head, t_program *minishell)
+// {
+// 	char	*value;
 
-	value = ft_itoa(minishell->status);
-	token_add(head, token_new(TKN_STATUS, value));
-	free (value);
-	(*input)++;
-}
+// 	value = ft_itoa(minishell->status);
+// 	token_add(head, token_new(TKN_STATUS, value));
+// 	free (value);
+// 	(*input)++;
+// }
 
 static void	token_string(const char **input, t_token **head, t_program *minishell)
 {
@@ -33,13 +33,31 @@ static void	token_string(const char **input, t_token **head, t_program *minishel
 // checks if lone $, creates TKN_WORD
 // exec commands should update minishell-status
 // extract env name if valid
+// void	token_dollar(const char **input, t_token **head, t_program *minishell)
+// {
+// 	(*input)++;
+// 	if (**input == '?')
+// 		token_exit(input, head, minishell);
+// 	else if (!ft_isalnum(**input) && **input != '_')
+// 		token_add(head, token_new(TKN_WORD, "$"));
+// 	else
+// 		token_string(input, head, minishell);
+// }
+
 void	token_dollar(const char **input, t_token **head, t_program *minishell)
 {
+	char	*status;
+
 	(*input)++;
 	if (**input == '?')
-		token_exit(input, head, minishell);
+	{
+		status = ft_itoa(minishell->status);
+		token_add(head, token_new(TKN_WORD, status));
+		free (status);
+		(*input)++;
+	}
 	else if (!ft_isalnum(**input) && **input != '_')
-		token_add(head, token_new(TKN_WORD, "$"));
+		token_add(head, token_new(TKN_ENV, expand_var(input, minishell)));
 	else
 		token_string(input, head, minishell);
 }

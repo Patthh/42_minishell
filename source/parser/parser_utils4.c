@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-static char	*expand_var(const char **pointer, t_program *minishell)
+char	*expand_var(const char **pointer, t_program *minishell)
 {
 	char	*key;
 	char	*value;
@@ -8,6 +8,12 @@ static char	*expand_var(const char **pointer, t_program *minishell)
 	key = env_name(pointer);
 	if (!key)
 		return (NULL);
+	if (ft_strcmp(key, "?") == 0)
+	{
+		value = ft_itoa(minishell->status);
+		free(key);
+		return (value);
+	}
 	value = env_value(minishell, key);
 	free(key);
 	if (value)
@@ -17,7 +23,7 @@ static char	*expand_var(const char **pointer, t_program *minishell)
 }
 
 // expand the exit status "$?"
-static char	*expand_exit(t_program *minishell)
+char	*expand_exit(t_program *minishell)
 {
 	char	*status;
 
@@ -26,7 +32,7 @@ static char	*expand_exit(t_program *minishell)
 }
 
 // expand a single character or environment variable
-static char	*expand_single(const char **string, t_program *minishell)
+char	*expand_single(const char **string, t_program *minishell)
 {
 	char	*result;
 
