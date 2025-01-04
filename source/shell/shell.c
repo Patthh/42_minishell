@@ -1,13 +1,25 @@
 #include "../include/minishell.h"
 
-void	shell_exit(const char *input, t_token *tokens, t_program *minishell)
+// void	shell_exit(const char *input, t_token *tokens, t_program *minishell)
+// {
+// 	printf("inside exit status: %d\n", minishell->status);
+// 	if (tokens)
+// 		free_list(tokens);
+// 	free((char *)input);
+// 	free_shell(minishell);
+// 	exit(0);
+// }
+
+void    shell_exit(const char *input, t_token *tokens, t_program *minishell)
 {
-	printf("inside exit status: %d\n", minishell->status);
+	int exit_status;
+
+	exit_status = minishell->status & 255;
 	if (tokens)
 		free_list(tokens);
 	free((char *)input);
 	free_shell(minishell);
-	exit(0);
+	exit(exit_status);
 }
 
 int	handle_input(char *input, t_program *minishell)

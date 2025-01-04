@@ -12,30 +12,70 @@
 	// set program exit flag and return exit status
 
 // terminates the calling process
-int	ft_exit(t_command *command, t_program *minishell)
+static int	exit_number(const char *string, char **end)
 {
-	int		status;
-	char	*end;
+	if (!string || !end)
+		return (0);
+	ft_strtol(string, end);
+	if (!*end)
+		return (0);
+	if (*end == string)
+		return (0);
+	if (**end != '\0')
+		return (0);
+	if (errno == ERANGE)
+		return (-1);
+	return (1);
+}
 
-	end = NULL;
-	ft_putstr_fd("exit\n", STDOUT_FILENO); // or STDERR_FILENO ?
-	if (!command->arguments[1])
-		status = minishell->status;
-	else
+static int	exit_arguments(t_program *minishell)
+{
+	ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
+	minishell->status = 1;
+	return (1);
+}
+
+static int	exit_set(t_program *minishell, int status, char *argument)
+{
+	if (argument)
 	{
-		status = ft_strtol(command->arguments[1], &end);
-		if (end == NULL || *end != '\0' || command->arguments[2])
-		{
-			ft_putstr_fd("exit: numeric argument required\n", STDERR_FILENO);
-			return (1);
-		}
-		if (errno == ERANGE)
-		{
-			ft_putstr_fd("exit: numeric argument out of range\n", STDERR_FILENO);
-			return (2);
-		}
+		ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
+		ft_putstr_fd(argument, STDERR_FILENO);
+		ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
+		status = 2;
 	}
+	minishell->status = status;
 	minishell->exit = TRUE;
 	shell_exit(NULL, NULL, minishell);
+	return (status);
+}
+
+// count the number of arguments
+// case 1: no argument
+// case 2: more than one argument
+// case 3: single argument
+//			check not number or out-of-range argument
+int	ft_exit(t_command *command, t_program *minishell)
+{
+	int		length;
+	long	status;
+	char	*end;
+
+	length = 0;
+	end = NULL;
+	while (command->arguments[length])
+		length++;
+	ft_putstr_fd("exit\n", STDERR_FILENO);
+	if (length == 1)
+		return (exit_set(minishell, minishell->status, NULL));
+	if (length > 2)
+		return (exit_arguments(minishell));
+	status = ft_strtol(command->arguments[1], &end);
+	if (exit_number(command->arguments[1], &end) < 0)
+	{
+		exit_set(minishell, 0, command->arguments[1]);
+		return (2);
+	}
+	exit_set(minishell, status, NULL);
 	return (status);
 }
