@@ -1,5 +1,29 @@
 #include "../../include/minishell.h"
 
+void	init_env(t_program *minishell, char **envp)
+{
+	int		i;
+	char	*key;
+	char	*value;
+	char	*equals_sign;
+
+	minishell->env_list = NULL;
+	i = 0;
+	while (envp[i])
+	{
+		equals_sign = ft_strchr(envp[i], '=');
+		if (equals_sign)
+		{
+			key = ft_strndup(envp[i], equals_sign - envp[i]);
+			value = ft_strdup(equals_sign + 1);
+			add_env(minishell, key, value);
+			free(key);
+			free(value);
+		}
+		i++;
+	}
+}
+
 int	ft_env(t_program *minishell)
 {
 	t_env	*current;
@@ -8,54 +32,36 @@ int	ft_env(t_program *minishell)
 	while (current)
 	{
 		if (current->value)
-		{
-			write(STDOUT_FILENO, current->key, ft_strlen(current->key));
-			write(STDOUT_FILENO, "=", 1);
-			write(STDOUT_FILENO, current->value, ft_strlen(current->value));
-			write(STDOUT_FILENO, "\n", 1);
-		}
+			printf("%s=%s\n", current->key, current->value);
 		current = current->next;
 	}
 	minishell->status = 0;
 	return (0);
 }
 
-// void	add_env(t_program *minishell, const char *key, const char *value)
-// {
-// 	t_env	*new;
+void	add_env(t_program *minishell, const char *key, const char *value)
+{
+	t_env	*new;
 
-// 	new = malloc(sizeof(t_env));
-// 	if (!new)
-// 		return ;
-// 	new->key = ft_strdup(key);
-// 	new->value = ft_strdup(value);
-// 	new->next = minishell->env_list;
-// 	minishell->env_list = new;
-// }
+	new = malloc(sizeof(t_env));
+	if (!new)
+		return ;
+	new->key = ft_strdup(key);
+	new->value = ft_strdup(value);
+	new->next = minishell->env_list;
+	minishell->env_list = new;
+}
 
-// void	free_env(t_env *head)
-// {
-// 	t_env	*temp;
+void	free_env(t_env *head)
+{
+	t_env	*temp;
 
-// 	while (head)
-// 	{
-// 		temp = head;
-// 		head = head->next;
-// 		free(temp->key);
-// 		free(temp->value);
-// 		free(temp);
-// 	}
-// }
-
-// int	main(void)
-// {
-// 	t_program	minishell;
-
-// 	minishell.env_list = NULL;
-// 	add_env(&minishell, "PATH", "/bin:/usr/bin");
-// 	add_env(&minishell, "HOME", "/home/user");
-// 	add_env(&minishell, "USER", "user");
-// 	ft_env(&minishell);
-// 	free_env(minishell.env_list);
-// 	return (0);
-// }
+	while (head)
+	{
+		temp = head;
+		head = head->next;
+		free(temp->key);
+		free(temp->value);
+		free(temp);
+	}
+}
