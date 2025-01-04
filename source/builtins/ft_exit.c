@@ -45,7 +45,7 @@ static int	exit_arguments(char *argument, long *status)
 		i++;
 	j = i;
 	while (argument[j] && !ft_isspace(argument[j]))
-	j++;
+		j++;
 	if (exit_number(argument + i, NULL) < 0)
 	{
 		ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
