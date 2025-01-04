@@ -39,35 +39,3 @@ void	token_redirector(const char **input, t_token **head)
 		token_output(input, head);
 }
 
-// extract env name
-char	*env_name(const char **input)
-{
-	const char	*start;
-	const char	*end;
-
-	while (**input == '$')
-		(*input)++;
-	start = *input;
-	end = start;
-	while (*end && (ft_isalnum(*end) || *end == '_'))
-		end++;
-	if (start == end)
-		return (NULL);
-	*input = end;
-	return (ft_strndup(start, end - start));
-}
-
-// retrieve env value
-char	*env_value(t_program *minishell, const char *key)
-{
-	t_env	*current;
-
-	current = minishell->env_list;
-	while (current)
-	{
-		if (ft_strcmp(current->key, key) == 0)
-			return (current->value);
-		current = current->next;
-	}
-	return (getenv(key));
-}
