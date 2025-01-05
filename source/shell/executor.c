@@ -45,8 +45,8 @@ void	execute_builtin(t_command *command, t_program *minishell)
 	// 	ft_cd(minishell);
 	else if (ft_strcmp(command->arguments[0], "pwd") == 0)
 		ft_pwd(minishell);
-	// else if (ft_strcmp(command->arguments[0], "export") == 0)
-	// 	ft_export(minishell);
+	else if (ft_strcmp(command->arguments[0], "export") == 0)
+		ft_export(command, minishell);
 	else if (ft_strcmp(command->arguments[0], "unset") == 0)
 		ft_unset(command, minishell);
 	else if (ft_strcmp(command->arguments[0], "env") == 0)

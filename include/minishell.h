@@ -174,9 +174,11 @@ void	execute_builtin(t_command *command, t_program *minishell);
 int		ft_echo(t_command *command, t_program *minishell);
 int		ft_env(t_program *minishell);
 int		ft_exit(t_command *command, t_program *minishell);
-// cd
+void	ft_export(t_command *command, t_program *minishell);
 int		ft_pwd(t_program *minishell);
 int		ft_unset(t_command *command, t_program *minishell);
+
+
 //env
 void	init_env(t_program *minishell, char **envp);
 void	add_env(t_program *minishell, const char *key, const char *value);
