@@ -13,7 +13,7 @@ t_token	*token_new(t_token_type type, const char *value)
 	{
 		token->value = ft_strdup(value);
 		if (!token->value)
-			free(token);
+			ft_error("Lexer: failed to allocation memory for token value\n");
 	}
 	else
 		token->value = NULL;
@@ -48,7 +48,7 @@ t_token	*token_word(const char **input)
 	t_token		*token;
 
 	start = *input;
-	while (**input && (ft_isascii(**input)) && !ft_isspace(**input))
+	while (**input && !ft_isspace(**input))
 		(*input)++;
 	word = ft_strndup(start, *input - start);
 	token = token_new(TKN_WORD, word);
@@ -85,6 +85,8 @@ t_token	*tokenizer(const char *input, t_program *minishell)
 
 	head = NULL;
 	flag = 0;
+	if (!input || !*input)
+		return (NULL);
 	while (*input)
 	{
 		while (ft_isspace(*input) && !flag)

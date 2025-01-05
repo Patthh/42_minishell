@@ -31,6 +31,14 @@ static char	*process_env(const char **input, t_program *minishell, char *result)
 	char	*key;
 
 	(*input)++;
+	// If $ is at end of input or followed by non-variable character
+	if (!**input || **input == '"' || **input == '\'' || !(ft_isalnum(**input) || **input == '_' || **input == '?'))
+	{
+		temp = ft_strjoin_char(result, '$');
+		free(result);
+		return temp;
+	}
+
 	key = env_name(input);
 	if (key)
 	{
