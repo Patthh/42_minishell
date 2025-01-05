@@ -178,6 +178,10 @@ void	ft_export(t_command *command, t_program *minishell);
 int		ft_pwd(t_program *minishell);
 int		ft_unset(t_command *command, t_program *minishell);
 
+// BUILTINS UTILS
+t_env	**export_sorting(t_program *minishell, int *size);
+int		export_process(const char *argument, t_program *minishell);
+
 
 //env
 void	init_env(t_program *minishell, char **envp);
@@ -209,6 +213,7 @@ char	**ft_split(char const *s, char c);
 void	*ft_calloc(size_t nmemb, size_t size);
 void	ft_bzero(void *s, size_t n);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
+size_t	ft_strlcpy(char *dst, const char *src, size_t dst_size);
 // void	ft_sequence(const char *message);
 
 // TESTING
