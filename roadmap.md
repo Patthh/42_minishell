@@ -1,62 +1,84 @@
 ## Minishell Progress Report
 
-**Lexer**
+### **Lexer**
 
-**Lexer**
 - [x] Tokenize input strings into a linked list of tokens
   - [x] Edge case: Handle empty input string
   - [x] Edge case: Handle input string with only whitespace
   - [ ] Edge case: Handle invalid characters (e.g., control characters) (to execution SIGNAL)
+  - [x] Edge case: Handle input with mixed whitespace (tabs, spaces, newlines)
+  - [x] Edge case: Handle input with leading/trailing whitespace
 - [x] Handle different token types (e.g., words, operators, redirections)
-  - [ ] Edge case: Handle unexpected token types (e.g., invalid operators: '@')
+  - [x] Edge case: Handle multiple consecutive operators (e.g., `>>`, `<<`, `||`, `&&`)
+  - [x] Edge case: Handle operators at the beginning/end of input
 - [x] Handle quote handling (single and double quotes)
   - [x] Edge case: Unmatched quotes
   - [x] Edge case: Nested quotes
   - [x] Edge case: Quotes at the beginning/end of the input
+  - [x] Edge case: Empty quotes (`''` or `""`)
+  - [x] Edge case: Quotes containing only whitespace
 - [x] Handle environment variables ($ followed by a sequence of characters)
   - [x] Edge case: Variable name not found
-  - [ ] Edge case: Variable name contains special characters
+  - [x] Edge case: Variable name contains special characters ("_-.")
   - [x] Edge case: Empty variable name
-- [ ] Handle $? which should expand to the exit status of the most recently executed foreground pipeline
-  - [ ] Edge case: No previous command executed
-  - [ ] Edge case: Previous command was a built-in
+  - [x] Edge case: Variable name starting with a number
+  - [x] Edge case: Variable name with mixed case (e.g., `$PATH`, `$path`)
+- [x] Handle $? which should expand to the exit status of the most recently executed foreground pipeline
+  - [x] Edge case: No previous command executed
+  - [x] Edge case: Previous command was a built-in
+  - [x] Edge case: $? in the middle of a command
 - [ ] Handle wildcard expansion (* and ? characters)
   - [ ] Edge case: No matching files
   - [ ] Edge case: Wildcard at the beginning/end of the input
   - [ ] Edge case: Invalid wildcard characters
+  - [ ] Edge case: Wildcard in the middle of a word (e.g., `file*.txt`)
+  - [ ] Edge case: Wildcard in quotes (should not expand)
 
-**Parser**
+### **Parser**
 
-- [ ] Parse tokens into a pipeline of commands.
-    - [ ] Edge case: Empty command.
-    - [ ] Edge case: Multiple consecutive pipes.
-    - [ ] Edge case: Pipe at the beginning/end of the input.
-- [ ] Handle command sequences, redirections, and pipes.
-    - [ ] Edge case: Invalid command sequence order (e.g., redirection before command).
-- [ ] Handle advanced redirection scenarios (e.g., <, >, >>, <<).
-    - [ ] Edge case: Multiple redirections to the same file.
-    - [ ] Edge case: Redirection to/from a device (e.g., /dev/null).
-- [ ] Implement pipes (| character).
-    - [ ] Edge case: Pipe between two redirections.
-- [ ] Handle redirections:
-  -   [ ] < should redirect input.
-        - [ ] Edge case: File not found.
-        - [ ] Edge case: File not readable.
-  -   [ ] > should redirect output.
-        - [ ] Edge case: File cannot be created.
-        - [ ] Edge case: File not writable.
-  -   [ ] << should be given a delimiter, then read the input until a line containing the delimiter is seen.
-        - [ ] Edge case: No delimiter specified.
-        - [ ] Edge case: Delimiter not found.
-        - [ ] Edge case: Delimiter on the same line as <<.
-  -   [ ] >> should redirect output in append mode.
-        - [ ] Edge case: File cannot be opened for appending.
+- [x] Parse tokens into a pipeline of commands.
+    - [x] Edge case: Empty command.
+    - [x] Edge case: Multiple consecutive pipes.
+    - [x] Edge case: Pipe at the beginning/end of the input.
+    - [x] Edge case: Command with no arguments.
+    - [x] Edge case: Command with only redirections.
+- [x] Handle command sequences, redirections, and pipes.
+    - [x] Edge case: Invalid command sequence order (e.g., redirection before command).
+    - [x] Edge case: Redirection after a pipe.
+    - [x] Edge case: Multiple redirections for the same command.
+- [x] Handle advanced redirection scenarios (e.g., <, >, >>, <<).
+    - [x] Edge case: Multiple redirections to the same file.
+    - [x] Edge case: Redirection to/from a device (e.g., /dev/null).
+    - [x] Edge case: Redirection to/from a directory.
+    - [x] Edge case: Redirection with no filename specified.
+- [x] Implement pipes (| character).
+    - [x] Edge case: Pipe between two redirections.
+    - [x] Edge case: Pipe with no command on one side.
+    - [x] Edge case: Pipe with no command on either side.
+- [x] Handle redirections:
+  - [x] < should redirect input.
+        - [x] Edge case: File not found.
+        - [x] Edge case: File not readable.
+        - [x] Edge case: File is a directory.
+  - [x] > should redirect output.
+        - [x] Edge case: File cannot be created.
+        - [x] Edge case: File not writable.
+        - [x] Edge case: File is a directory.
+  - [x] << should be given a delimiter, then read the input until a line containing the delimiter is seen.
+        - [x] Edge case: No delimiter specified.
+        - [x] Edge case: Delimiter not found - [x] Edge case: Delimiter on the same line as <<.
+  - [x] >> should redirect output in append mode.
+        - [x] Edge case: File cannot be opened for appending.
+        - [x] Edge case: File is a directory.
 - [ ] Handle logical operators (&& and ||).
     - [ ] Edge case: Mismatched parentheses.
     - [ ] Edge case: Complex expressions with multiple operators.
+    - [ ] Edge case: Logical operators with no commands.
 - [ ] Handle parentheses (( and )).
     - [ ] Edge case: Unbalanced parentheses.
     - [ ] Edge case: Nested parentheses.
+    - [ ] Edge case: Parentheses with no commands inside.
+
 
 **Execution**
 
