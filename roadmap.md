@@ -1,6 +1,8 @@
-## Minishell Progress Report
+# Minishell Progress Report
 
-### **Lexer**
+## Mandatory Part
+
+### Lexer
 
 - [x] Tokenize input strings into a linked list of tokens
   - [x] Edge case: Handle empty input string
@@ -27,14 +29,8 @@
   - [x] Edge case: No previous command executed
   - [x] Edge case: Previous command was a built-in
   - [x] Edge case: $? in the middle of a command
-- [ ] Handle wildcard expansion (* and ? characters)
-  - [ ] Edge case: No matching files
-  - [ ] Edge case: Wildcard at the beginning/end of the input
-  - [ ] Edge case: Invalid wildcard characters
-  - [ ] Edge case: Wildcard in the middle of a word (e.g., `file*.txt`)
-  - [ ] Edge case: Wildcard in quotes (should not expand)
 
-### **Parser**
+### Parser
 
 - [x] Parse tokens into a pipeline of commands.
     - [x] Edge case: Empty command.
@@ -55,133 +51,38 @@
     - [x] Edge case: Pipe between two redirections.
     - [x] Edge case: Pipe with no command on one side.
     - [x] Edge case: Pipe with no command on either side.
-- [x] Handle redirections:
-  - [x] < should redirect input.
-        - [x] Edge case: File not found.
-        - [x] Edge case: File not readable.
-        - [x] Edge case: File is a directory.
-  - [x] > should redirect output.
-        - [x] Edge case: File cannot be created.
-        - [x] Edge case: File not writable.
-        - [x] Edge case: File is a directory.
-  - [x] << should be given a delimiter, then read the input until a line containing the delimiter is seen.
-        - [x] Edge case: No delimiter specified.
-        - [x] Edge case: Delimiter not found - [x] Edge case: Delimiter on the same line as <<.
-  - [x] >> should redirect output in append mode.
-        - [x] Edge case: File cannot be opened for appending.
-        - [x] Edge case: File is a directory.
-- [ ] Handle logical operators (&& and ||).
-    - [ ] Edge case: Mismatched parentheses.
-    - [ ] Edge case: Complex expressions with multiple operators.
-    - [ ] Edge case: Logical operators with no commands.
-- [ ] Handle parentheses (( and )).
-    - [ ] Edge case: Unbalanced parentheses.
-    - [ ] Edge case: Nested parentheses.
-    - [ ] Edge case: Parentheses with no commands inside.
 
+### Execution
 
-**Execution**
-
-- [ ] Execute commands in the pipeline.
-    - [ ] Edge case: Command not found.
-    - [ ] Edge case: Incorrect path.
-    - [ ] Edge case: Invalid arguments to the command.
-- [ ] Handle built-in commands:
+- [x] Execute commands in the pipeline.
+    - [x] Edge case: Command not found.
+    - [x] Edge case: Incorrect path.
+    - [x] Edge case: Invalid arguments to the command.
+- [x] Handle built-in commands:
   -   [ ] cd: Change the current working directory.
         - [ ] Edge case: Invalid path (e.g., non-existent directory).
         - [ ] Edge case: Empty path.
         - [ ] Edge case: Path containing special characters.
-  -   [ ] pwd: Print the current working directory.
-        - [ ] Edge case: Current directory is root.
-        - [ ] Edge case: Path contains special characters.
-  -   [ ] exit: Exit the shell.
-        - [ ] Edge case: Exit during command execution.
-  -   [ ] echo: Print arguments to the standard output.
-        - [ ] Edge case: No arguments to echo.
-        - [ ] Edge case: Multiple arguments with -n.
-        - [ ] Edge case: Escaped characters within arguments.
-  -   [ ] env: Print the environment variables.
-        - [ ] Edge case: No environment variables set.
-        - [ ] Edge case: Environment variables with special characters.
+  -   [x] pwd: Print the current working directory.
+        - [x] Edge case: Current directory is root.
+        - [x] Edge case: Path contains special characters.
+  -   [x] exit: Exit the shell.
+        - [x] Edge case: Exit during command execution.
+  -   [x] echo: Print arguments to the standard output.
+        - [x] Edge case: No arguments to echo.
+        - [x] Edge case: Multiple arguments with -n.
+        - [x] Edge case: Escaped characters within arguments.
+  -   [x] env: Print the environment variables.
+        - [x] Edge case: No environment variables set.
+        - [x] Edge case: Environment variables with special characters.
   -   [ ] unset: Remove environment variables.
         - [ ] Edge case: Unsetting an unset variable.
-        - [ ] Edge case: Unsetting a built-in variable.
+        - - [ ] Edge case: Invalid variable name.
   -   [ ] export: Set environment variables.
-        - [ ] Edge case: Exporting an existing variable.
-        - [ ] Edge case: Exporting a variable with special characters.
-- [ ] Handle external commands (e.g., /bin/ls, /usr/bin/cat).
-    - [ ] Edge case: Command execution fails.
-    - [ ] Edge case: Command signals an error.
-- [ ] Handle redirections during execution.
-    - [ ] Edge case: Redirection to/from a device (e.g., /dev/null).
-- [ ] Handle pipes during execution.
-    - [ ] Edge case: Pipe between two redirections.
-- [ ] Handle logical operators during execution.
-    - [ ] Edge case: Short-circuit evaluation (&& and ||).
-- [ ] Handle parentheses during execution.
-    - [ ] Edge case: Nested parentheses.
+        - [ ] Edge case: Invalid variable name.
+        - [ ] Edge case: Variable name already exists.
 
-**Heredoc (<<) Handling**
+## Bonus Part
 
-- [ ] Tokenize heredoc delimiters correctly.
-    - [ ] Edge case: Delimiter contains whitespace.
-    - [ ] Edge case: Delimiter contains special characters.
-- [ ] Handle unquoted delimiters.
-    - [ ] Edge case: Unquoted delimiter contains special characters.
-- [ ] Handle single-quoted delimiters (treat as literal strings).
-    - [ ] Edge case: Nested single quotes within the delimiter.
-- [ ] Handle double-quoted delimiters (treat as literal strings).
-    - [ ] Edge case: Variable expansion within the delimiter.
-- [ ] Handle delimiters with special characters (e.g., EOF@#).
-    - [ ] Edge case: Delimiter contains invalid characters.
-- [ ] Handle empty delimiters (syntax error).
-- [ ] Handle multiple heredocs in a single command.
-- [ ] Handle heredocs with spaces in delimiters.
-- [ ] Handle heredocs with newlines in delimiters.
-- [ ] Handle variable expansion within heredoc input (for double-quoted delimiters).
-    - [ ] Edge case: Variable not found.
-- [ ] Handle indentation in heredoc input.
-    - [ ] Edge case: Indentation before the delimiter.
-
-**Signals**
-
-- [ ] Handle signals (e.g., SIGINT, SIGQUIT, SIGTERM).
-    - [ ] Edge case: Signal received during command execution.
-    - [ ] Edge case: Signal received during long-running commands.
-
-**Error Handling**
-
-- [ ] Handle errors during execution (e.g., file not found, permission denied).
-    - [ ] Edge case: Display appropriate error messages.
-- [ ] Handle errors during parsing (e.g., syntax errors).
-    - [ ] Edge case: Display informative syntax error messages.
-- [ ] Handle errors during tokenization (e.g., invalid characters).
-    - [ ] Edge case: Display error messages for specific invalid characters.
-
----
-
-**Mandatory Part**
-
-## Prompt & History
-
-- [ ] Display a prompt when waiting for a new command.
-    - [ ] Edge case: Empty prompt.
-    - [ ] Edge case: Custom prompt using environment variables (e.g., `PS1`).
-- [ ] Have a working history.
-    - [ ] Edge case: Empty history.
-    - [ ] Edge case: History size limits (optional).
-    - [ ] Edge case: Handling history navigation commands (e.g., up/down arrows).
-
-## Command Execution
-
-- [ ] Search and launch the right executable (based on the PATH variable or using a relative or an absolute path).
-    - [ ] Edge case: Command not found.
-    - [ ] Edge case: Incorrect path.
-    - [ ] Edge case: Invalid characters in command name.
-    - [ ] Edge case: Command with spaces in its name.
-
-## Signal Handling
-
-- [ ] Handle ctrl-C, ctrl-D, and ctrl-\ as expected.
-    - [ ] Edge case: ctrl-C during command execution.
-    - [ ] Edge case: ctrl-C during
+- [ ] Implement logical operators (&& and ||) with parenthesis for priorities.
+- [ ] Implement wildcard (*) functionality for the current working directory.
