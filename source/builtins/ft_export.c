@@ -1,37 +1,61 @@
 #include "../../include/minishell.h"
 
-// Export a a=b b
-// Result: a="b"
-// b
-// Export a=
-// Result: a=""
-// Export a='""'
-// Result: a="\"\""
+// extracts key and value from argument
+static void	export_extract(const char *argument, char **key, char **value)
+{
+	char	*equals;
+
+	equals = ft_strchr(argument, '=');
+	if (equals)
+	{
+		*key = ft_strndup(argument, equals - argument);
+		*value = ft_strdup(equals + 1);
+	}
+	else
+	{
+		*key = ft_strdup(argument);
+		*value = NULL;
+	}
+}
+
+static int	export_process(const char *argument, t_program *minishell)
+{
+	char	*key;
+	char	*value;
+	char	*expand;
+
+	export_extract(argument, &key, &value);
+	if (value)
+	{
+		expand = quote_expand(value, minishell);
+		free(value);
+		if (expand)
+		{
+			add_env(minishell, key, expand);
+			free(expand);
+		}
+		else
+			add_env(minishell, key, "");
+	}
+	else
+		add_env(minishell, key, "");
+	free(key);
+	return (0);
+}
 
 // prints formatted env
 static void	export_print(t_env *env)
 {
 	ft_putstr_fd("declare -x ", STDOUT_FILENO);
 	ft_putstr_fd(env->key, STDOUT_FILENO);
-	if (env->value)
+	if (env->value && *env->value != '\0')
 	{
-		if (ft_strchr(env->value, ' ') != NULL || ft_strchr(env->value, '"') != NULL)
-		{
-			ft_putstr_fd("=\"", STDOUT_FILENO);
-			ft_putstr_fd(env->value, STDOUT_FILENO);
-			ft_putstr_fd("\"", STDOUT_FILENO);
-		}
-		else
-		{
-			ft_putstr_fd("=", STDOUT_FILENO);
-			ft_putstr_fd(env->value, STDOUT_FILENO);
-		}
+		ft_putstr_fd("=", STDOUT_FILENO);
+		ft_putstr_fd(env->value, STDOUT_FILENO);
 	}
 	ft_putstr_fd("\n", STDOUT_FILENO);
 }
 
-// export_sorting in utils_builtins2.c
-// export_process in utils_builtins3.c
 void	ft_export(t_command *command, t_program *minishell)
 {
 	t_env	**sorted;
@@ -51,12 +75,10 @@ void	ft_export(t_command *command, t_program *minishell)
 		minishell->status = 0;
 		return ;
 	}
-	minishell->status = 0;
 	i = 1;
 	while (command->arguments[i])
 	{
-		if (export_process(command->arguments[i], minishell))
-			minishell->status = 1;
+		export_process(command->arguments[i], minishell);
 		i++;
 	}
 }

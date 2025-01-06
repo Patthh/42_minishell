@@ -35,3 +35,16 @@ void	free_shell(t_program *minishell)
 		minishell->token = NULL;
 	}
 }
+
+void	free_args(char **strings)
+{
+	int	i;
+
+	i = 0;
+	while (strings[i] != NULL)
+	{
+		free(strings[i]);
+		i++;
+	}
+	free (strings);
+}
