@@ -24,21 +24,6 @@ void	init_env(t_program *minishell, char **envp)
 	}
 }
 
-int	ft_env(t_program *minishell)
-{
-	t_env	*current;
-
-	current = minishell->env_list;
-	while (current)
-	{
-		if (current->value)
-			printf("%s=%s\n", current->key, current->value);
-		current = current->next;
-	}
-	minishell->status = 0;
-	return (0);
-}
-
 void	add_env(t_program *minishell, const char *key, const char *value)
 {
 	t_env	*new;
@@ -67,4 +52,19 @@ void	free_env(t_env *head)
 		free(temp->value);
 		free(temp);
 	}
+}
+
+int	ft_env(t_program *minishell)
+{
+	t_env	*current;
+
+	current = minishell->env_list;
+	while (current)
+	{
+		if (current->value)
+			printf("%s=%s\n", current->key, current->value);
+		current = current->next;
+	}
+	minishell->status = 0;
+	return (0);
 }

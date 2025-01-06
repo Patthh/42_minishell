@@ -28,13 +28,13 @@ RM				=	rm -rf
 
 ################################################################################
 ## SOURCES
-SRCS			=	$(DIR_SRC)*.c \
-					$(DIR_BUILTINS)*.c \
-					$(DIR_LEXER)*.c \
-					$(DIR_PARSER)*.c \
-					$(DIR_SHELL)*.c \
-					$(DIR_SIGNALS)*.c \
-					$(DIR_UTILS)*.c
+SRCS			=	$(wildcard $(DIR_SRC)*.c) \
+					$(wildcard $(DIR_BUILTINS)*.c) \
+					$(wildcard $(DIR_LEXER)*.c) \
+					$(wildcard $(DIR_PARSER)*.c) \
+					$(wildcard $(DIR_SHELL)*.c) \
+					$(wildcard $(DIR_SIGNALS)*.c) \
+					$(wildcard $(DIR_UTILS)*.c)
 
 OBJS			=	$(SRCS:.c=.o)
 DEPS			=	$(OBJS:.o=.d)
