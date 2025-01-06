@@ -10,9 +10,9 @@
 // 	exit(0);
 // }
 
-void    shell_exit(const char *input, t_token *tokens, t_program *minishell)
+void	shell_exit(const char *input, t_token *tokens, t_program *minishell)
 {
-	int exit_status;
+	int	exit_status;
 
 	exit_status = minishell->status & 255;
 	if (tokens)
@@ -39,7 +39,6 @@ int	handle_input(char *input, t_program *minishell)
 	pipeline = parser(tokens, minishell);
 	print_pipeline(pipeline); // testing parser
 	execute_pipeline(pipeline, minishell);
-
 	free_list(tokens);
 	free_pipeline(pipeline);
 	free(input);
@@ -53,6 +52,8 @@ void	run_shell(t_program *minishell)
 
 	while (1)
 	{
+		signal(SIGINT, nl_handler);
+		signal(SIGQUIT, SIG_IGN);
 		input = readline("minishell$ ");
 		if (!input)
 			break ;

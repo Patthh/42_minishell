@@ -181,9 +181,12 @@ int		ft_unset(t_command *command, t_program *minishell);
 int		ft_cd(t_command *command, t_program *minishell);
 
 
-//env
+// env
 void	init_env(t_program *minishell, char **envp);
 void	add_env(t_program *minishell, const char *key, const char *value);
+
+// SIGNAL
+void	nl_handler(int signal);
 
 // UTILS
 void	ft_error(const char *message);
