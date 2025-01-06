@@ -162,6 +162,8 @@ void	free_shell(t_program *program);
 void	free_token(t_token *token);
 void	free_list(t_token *head);
 void	free_pipeline(t_pipeline *pipeline);
+void	free_args(char **strings);
+void	free_env(t_env *head);
 // void	free_parser(t_pipeline *pipeline);
 
 // EXECUTION
@@ -178,6 +180,8 @@ void	ft_export(t_command *command, t_program *minishell);
 int		ft_pwd(t_program *minishell);
 int		ft_unset(t_command *command, t_program *minishell);
 
+// BUILTINS UTILS
+t_env	**export_sorting(t_program *minishell, int *size);
 
 //env
 void	init_env(t_program *minishell, char **envp);
@@ -209,6 +213,8 @@ char	**ft_split(char const *s, char c);
 void	*ft_calloc(size_t nmemb, size_t size);
 void	ft_bzero(void *s, size_t n);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
+size_t	ft_strlcpy(char *dst, const char *src, size_t dst_size);
+char	*ft_strtrim(char const *s1, char const *set);
 // void	ft_sequence(const char *message);
 
 // TESTING

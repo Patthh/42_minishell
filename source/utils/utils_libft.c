@@ -58,6 +58,8 @@ char	*ft_strdup(const char *s)
 	size_t	i;
 	char	*dest;
 
+	if (!s)
+		return (NULL);
 	i = ft_strlen(s);
 	dest = malloc(i + 1);
 	if (!dest)
@@ -473,6 +475,51 @@ char	*ft_strjoin_char(const char *str, char c)
 	result[len] = c;
 	result[len + 1] = '\0';
 	return (result);
+}
+
+size_t	ft_strlcpy(char *dst, const char *src, size_t dst_size)
+{
+	size_t	i;
+
+	i = 0;
+	if (dst_size == 0)
+	{
+		return (ft_strlen(src));
+	}
+	while (src[i] != '\0' && i < dst_size - 1)
+	{
+		dst[i] = src[i];
+		i++;
+	}
+	if (i < dst_size)
+	{
+		dst[i] = '\0';
+	}
+	else if (dst_size > 0)
+	{
+		dst[dst_size - 1] = '\0';
+	}
+	dst[i] = '\0';
+	return (ft_strlen(src));
+}
+
+char	*ft_strtrim(char const *s1, char const *set)
+{
+	size_t	start;
+	size_t	end;
+	char	*str;
+
+	start = 0;
+	end = ft_strlen(s1);
+	while (s1[start] && ft_strchr(set, s1[start]))
+		start++;
+	while (end > start && ft_strchr(set, s1[end -1]))
+		end--;
+	str = (char *)malloc((end - start + 1) * sizeof(char));
+	if (str == NULL)
+		return (NULL);
+	ft_strlcpy(str, s1 + start, end - start + 1);
+	return (str);
 }
 
 // extract tokens from strings

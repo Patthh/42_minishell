@@ -15,7 +15,7 @@ void execute_pipeline(t_pipeline *pipeline, t_program *minishell)
 		execute_command(command, minishell);
 		i++;
 	}
-	printf("execute_pipeline: finished executing pipeline\n");
+	// printf("execute_pipeline: finished executing pipeline\n");
 }
 
 // check if builting
@@ -31,7 +31,7 @@ void execute_command(t_command *command, t_program *minishell)
 		execute_builtin(command, minishell);
 	// else
 	// 	execute_external(command, minishell);
-	printf("execute_command: finished executing command\n");
+	// printf("execute_command: finished executing command\n");
 }
 
 // TO DO

@@ -47,7 +47,10 @@ void	add_env(t_program *minishell, const char *key, const char *value)
 	if (!new)
 		return ;
 	new->key = ft_strdup(key);
-	new->value = ft_strdup(value);
+	if (value)
+		new->value = ft_strdup(value);
+	else
+		new->value = NULL;
 	new->next = minishell->env_list;
 	minishell->env_list = new;
 }
