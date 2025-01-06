@@ -178,6 +178,7 @@ int		ft_exit(t_command *command, t_program *minishell);
 void	ft_export(t_command *command, t_program *minishell);
 int		ft_pwd(t_program *minishell);
 int		ft_unset(t_command *command, t_program *minishell);
+int		ft_cd(t_command *command, t_program *minishell);
 
 
 //env
