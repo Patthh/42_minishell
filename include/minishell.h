@@ -11,7 +11,7 @@
 # include <errno.h>
 # include <dirent.h> // opendir, readir
 # include <limits.h>
-# include "libft.h"
+# include "../libft/include/libft.h"
 
 # define PROMPT "minishell$ "
 # define TRUE 1
