@@ -10,7 +10,8 @@ char	*env_name(const char **input)
 		(*input)++;
 	start = *input;
 	end = start;
-	while (*end && (ft_isalnum(*end) || *end == '_' || *end == '-' || *end == '.'))
+	while (*end && (ft_isalnum(*end) || *end == '_'
+			|| *end == '-' || *end == '.'))
 		end++;
 	if (start == end)
 		return (NULL);

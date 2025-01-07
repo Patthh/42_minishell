@@ -39,3 +39,18 @@ void	token_redirector(const char **input, t_token **head)
 		token_output(input, head);
 }
 
+// extracts and creates a token for a word
+t_token	*token_word(const char **input)
+{
+	const char	*start;
+	char		*word;
+	t_token		*token;
+
+	start = *input;
+	while (**input && !ft_isspace(**input))
+		(*input)++;
+	word = ft_strndup(start, *input - start);
+	token = token_new(TKN_WORD, word);
+	free(word);
+	return (token);
+}

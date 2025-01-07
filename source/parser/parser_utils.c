@@ -12,6 +12,8 @@ t_token	*parser_token(t_token *token, t_command **command, t_program *minishell,
 		return (parser_redirection(token, *command, minishell));
 	if (token->type == TKN_ENV)
 		return (parser_env(token, *command, minishell));
+	if (token->type == TKN_WILDCARD)
+		return (parser_wildcard(token, *command));
 	if (token->type == TKN_STATUS)
 		return (parser_status(token, minishell));
 	return (token->next);

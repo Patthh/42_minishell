@@ -39,19 +39,7 @@ void	token_operator(const char **input, t_token **head)
 		token_ampersand(input, head);
 }
 
-// everything here is for handling the env outside of quotes
-// don't touch this, it works now
-// static void	token_exit(const char **input, t_token **head, t_program *minishell)
-// {
-// 	char	*value;
-
-// 	value = ft_itoa(minishell->status);
-// 	token_add(head, token_new(TKN_STATUS, value));
-// 	free (value);
-// 	(*input)++;
-// }
-
-static void	token_string(const char **input, t_token **head, t_program *minishell)
+static void	token_string(const char **input, t_token **head, t_program *shell)
 {
 	char	*key;
 	char	*value;
@@ -59,7 +47,7 @@ static void	token_string(const char **input, t_token **head, t_program *minishel
 	key = env_name(input);
 	if (key)
 	{
-		value = env_value(minishell, key);
+		value = env_value(shell, key);
 		if (value)
 			token_add(head, token_new(TKN_ENV, key));
 		free (key);
@@ -72,7 +60,6 @@ static void	token_string(const char **input, t_token **head, t_program *minishel
 // checks if lone $, creates TKN_WORD
 // exec commands should update minishell-status
 // extract env name if valid
-
 void	token_dollar(const char **input, t_token **head, t_program *minishell)
 {
 	char	*status;
