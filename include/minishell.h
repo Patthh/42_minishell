@@ -179,6 +179,8 @@ void	init_env(t_program *minishell, char **envp);
 void	free_shell(t_program *program);
 void	free_token(t_token *token);
 void	free_list(t_token *head);
+void	free_redirection(t_redirection *redirection);
+void	free_command(t_command *command);
 void	free_pipeline(t_pipeline *pipeline);
 void	free_args(char **strings);
 void	free_env(t_env *head);

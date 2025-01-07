@@ -1,62 +1,20 @@
 #include "../../include/minishell.h"
 
-static void	free_input(t_redirection *input)
+void	free_redirection(t_redirection *redirection)
 {
 	t_redirection	*temp;
 
-	while (input)
+	while (redirection)
 	{
-		temp = input;
-		input = input->next;
+		temp = redirection;
+		redirection = redirection->next;
 		free(temp->type);
 		free(temp->filename);
 		free(temp);
 	}
 }
 
-static void	free_output(t_redirection *output)
-{
-	t_redirection	*temp;
-
-	while (output)
-	{
-		temp = output;
-		output = output->next;
-		free(temp->type);
-		free(temp->filename);
-		free(temp);
-	}
-}
-
-static void	free_append(t_redirection *append)
-{
-	t_redirection	*temp;
-
-	while (append)
-	{
-		temp = append;
-		append = append->next;
-		free(temp->type);
-		free(temp->filename);
-		free(temp);
-	}
-}
-
-static void	free_heredoc(t_redirection *heredoc)
-{
-	t_redirection	*temp;
-
-	while (heredoc)
-	{
-		temp = heredoc;
-		heredoc = heredoc->next;
-		free(temp->type);
-		free(temp->filename);
-		free(temp);
-	}
-}
-
-static void	free_command(t_command *command)
+void	free_command(t_command *command)
 {
 	int	i;
 
@@ -70,10 +28,10 @@ static void	free_command(t_command *command)
 		}
 		free(command->arguments);
 	}
-	free_input(command->input);
-	free_output(command->output);
-	free_append(command->append);
-	free_heredoc(command->heredoc);
+	free_redirection(command->input);
+	free_redirection(command->output);
+	free_redirection(command->append);
+	free_redirection(command->heredoc);
 	free(command);
 }
 
@@ -94,6 +52,7 @@ void	free_pipeline(t_pipeline *pipeline)
 	pipeline->commands = NULL;
 	free(pipeline);
 }
+
 
 // void	free_parser(t_pipeline *pipeline)
 // {
