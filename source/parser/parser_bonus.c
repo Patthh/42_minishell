@@ -51,3 +51,12 @@
 // 	*command = new;
 // 	return (token->next);
 // }
+
+t_token	*parser_wildcard(t_token *token, t_command *command)
+{
+	if (!token || !command)
+		return (NULL);
+	if (!parser_argument(command, token->value))
+		ft_error("Parser: failed to add wildcard argument\n");
+	return (token->next);
+}
