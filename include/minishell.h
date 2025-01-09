@@ -1,6 +1,7 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include <fcntl.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -67,6 +68,9 @@ typedef struct s_redirection
 typedef struct s_command
 {
 	char					**arguments;
+	char					*input_file;     // For < redirection
+    char					*output_file;    // For > and >> redirection
+    int						append_output;
 	t_redirection			*input;
 	t_redirection			*output;
 	t_redirection			*append;
