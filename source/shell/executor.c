@@ -3,8 +3,7 @@
 static void	execute_in_child(char *cmd_path, t_command *command,
 				t_program *minishell);
 
-static char	**get_paths_from_env(char **envp)
-=======
+
 // Execute group
 // int execute_group(t_group *group, t_program *minishell)
 // {
@@ -14,7 +13,8 @@ static char	**get_paths_from_env(char **envp)
 // 		return execute_pipeline(group->content.pipeline, minishell);
 // }
 
-void execute_pipeline(t_pipeline *pipeline, t_program *minishell)
+// void execute_pipeline(t_pipeline *pipeline, t_program *minishell)
+static char	**get_paths_from_env(char **envp)
 {
 	int		i;
 	char	**paths;
