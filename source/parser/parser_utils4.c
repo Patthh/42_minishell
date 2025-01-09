@@ -68,6 +68,8 @@ char	*quote_expand(char *string, t_program *minishell)
 	result = ft_strdup("");
 	temp = NULL;
 	pointer = string;
+	if (!string)
+		return (NULL);
 	while (*pointer)
 	{
 		temp = expand_single(&pointer, minishell);

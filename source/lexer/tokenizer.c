@@ -40,22 +40,6 @@ void	token_add(t_token **head, t_token *new_token)
 	}
 }
 
-// extracts and creates a token for a word
-t_token	*token_word(const char **input)
-{
-	const char	*start;
-	char		*word;
-	t_token		*token;
-
-	start = *input;
-	while (**input && !ft_isspace(**input))
-		(*input)++;
-	word = ft_strndup(start, *input - start);
-	token = token_new(TKN_WORD, word);
-	free(word);
-	return (token);
-}
-
 static void	handle_word(const char **input, t_token **head, int *flag)
 {
 	const char	*start;
@@ -102,7 +86,17 @@ t_token	*tokenizer(const char *input, t_program *minishell)
 		else if (*input == '$')
 			token_dollar(&input, &head, minishell);
 		else
-			handle_word(&input, &head, &flag);
+			token_extra(&input, &head, flag);
 	}
 	return (head);
+}
+
+void	token_extra(const char **input, t_token **head, int flag)
+{
+	if (**input == '*')
+		token_wildcard(input, head);
+	// else if (**input == '(' || **input == ')')
+	// 	token_paranthesis(input, head);
+	else
+		handle_word(input, head, &flag);
 }

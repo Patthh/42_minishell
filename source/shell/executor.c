@@ -4,6 +4,17 @@ static void	execute_in_child(char *cmd_path, t_command *command,
 				t_program *minishell);
 
 static char	**get_paths_from_env(char **envp)
+=======
+// Execute group
+// int execute_group(t_group *group, t_program *minishell)
+// {
+// 	if (group->type == GROUP_COMMAND)
+// 		return execute_command(group->content.command, minishell);
+// 	else
+// 		return execute_pipeline(group->content.pipeline, minishell);
+// }
+
+void execute_pipeline(t_pipeline *pipeline, t_program *minishell)
 {
 	int		i;
 	char	**paths;
@@ -77,6 +88,7 @@ static char	*find_command_path(char *cmd, char **envp)
 	}
 	free_paths(paths);
 	return (NULL);
+
 }
 
 static void	handle_execution_error(t_command *command, t_program *minishell,
@@ -139,6 +151,16 @@ static void	fork_and_execute(char *cmd_path, t_command *command,
 	else
 		handle_execution_status(pid, minishell);
 	free(cmd_path);
+	// printf("execute_command: command = %p\n", command);
+	// printf("execute_command: command->arguments = %p\n", command->arguments);
+	// printf("execute_command: command->is_builtin = %d\n", command->is_builtin);
+// 	if (command == NULL)
+// 		return;
+// 	if (command->is_builtin)
+// 		execute_builtin(command, minishell);
+	// else
+	// 	execute_external(command, minishell);
+	// printf("execute_command: finished executing command\n");
 }
 
 static void	execute_external(t_command *command, t_program *minishell)

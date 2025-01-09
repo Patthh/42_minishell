@@ -1,6 +1,5 @@
-#include "../../include/minishell.h"
+#include "../../include/libft.h"
 
-// skips whitespaces and extracts sign
 static const char	*strtol_parse(const char *string, int *sign)
 {
 	while (ft_isspace(*string))
