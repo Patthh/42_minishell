@@ -1,12 +1,14 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include <fcntl.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <sys/wait.h>
+# include <signal.h>
 # include <string.h>
 # include <errno.h>
 # include <dirent.h> // opendir, readir
@@ -93,6 +95,9 @@ typedef struct s_redirection
 typedef struct s_command
 {
 	char					**arguments;
+	char					*input_file;     // For < redirection
+    char					*output_file;    // For > and >> redirection
+    int						append_output;
 	t_redirection			*input;
 	t_redirection			*output;
 	t_redirection			*append;
@@ -188,6 +193,7 @@ int		ft_exit(t_command *command, t_program *minishell);
 void	ft_export(t_command *command, t_program *minishell);
 int		ft_pwd(t_program *minishell);
 int		ft_unset(t_command *command, t_program *minishell);
+int		ft_cd(t_command *command, t_program *minishell);
 
 // EXECUTION
 void	execute_pipeline(t_pipeline *pipeline, t_program *minishell);
@@ -225,9 +231,12 @@ void	free_env(t_env *head);
 // BUILTINS UTILS
 t_env	**export_sorting(t_program *minishell, int *size);
 
-//env
+// env
 void	init_env(t_program *minishell, char **envp);
 void	add_env(t_program *minishell, const char *key, const char *value);
+
+// SIGNAL
+void	nl_handler(int signal);
 
 // UTILS
 void	ft_error(const char *message);
