@@ -1,5 +1,14 @@
 #include "../../include/minishell.h"
 
+// Execute group
+// int execute_group(t_group *group, t_program *minishell)
+// {
+// 	if (group->type == GROUP_COMMAND)
+// 		return execute_command(group->content.command, minishell);
+// 	else
+// 		return execute_pipeline(group->content.pipeline, minishell);
+// }
+
 void execute_pipeline(t_pipeline *pipeline, t_program *minishell)
 {
 	t_command	*command;
