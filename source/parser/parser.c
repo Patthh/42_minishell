@@ -30,6 +30,8 @@ t_command	*create_command(void)
 	command->fd_in = STDIN_FILENO;
 	command->fd_out = STDOUT_FILENO;
 	command->is_builtin = 0;
+	command->exit_status = 0;
+	command->logical = LOG_NONE;
 	command->next = NULL;
 	return (command);
 }
@@ -48,6 +50,22 @@ t_redirection	*create_redirection(const char *type, const char *filename, int qu
 	redirection->next = NULL;
 	return (redirection);
 }
+
+// t_group	*create_group(void)
+// {
+// 	t_group	*group;
+
+// 	group = malloc(sizeof(t_group));
+// 	if (!group)
+// 		ft_error("Parser: Group Memory Allocation Failed");
+// 	group->type = GROUP_COMMAND;
+// 	group->content.command = NULL;
+// 	group->logical = LOG_NONE;
+// 	group->exit_status = 0;
+// 	group->next = NULL;
+// 	return (group);
+// }
+
 
 // Preparation
 // Verify input token are valid

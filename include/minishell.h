@@ -42,6 +42,33 @@ typedef enum e_token
 	TKN_WORD,		// 17
 }	t_token_type;
 
+typedef enum e_logical
+{
+	LOG_AND,
+	LOG_OR,
+	LOG_NONE
+} t_logical;
+
+// // Add to your enum declarations
+// typedef enum e_group_type
+// {
+// 	GROUP_COMMAND,	// Single command
+// 	GROUP_PIPELINE	// Subpipeline/subshell
+// }	t_group_type;
+
+// // New group structure
+// typedef struct s_group
+// {
+// 	t_group_type 			type; // Type of group (command or pipeline)
+// 	union {
+// 		t_command			*command; // Single command
+// 		t_pipeline			*pipeline;  // Subpipeline for parentheses
+// 	} content;
+// 	t_logical				logical; // Logical operator following this group
+// 	int						exit_status;
+// 	struct s_group			*next;
+// }	t_group;
+
 // STRUCTURES
 // token structure for lexer
 typedef struct s_token
@@ -73,14 +100,20 @@ typedef struct s_command
 	int						fd_in;
 	int						fd_out;
 	int						is_builtin;
+	int						exit_status;
+	t_logical				logical;
 	struct s_command		*next;
 }	t_command;
 
 // command structure to handle multiple commands
+// if working, refractor it to use only groups
 typedef struct s_pipeline
 {
 	t_command				**commands;
 	int						cmd_count;
+	// t_group					**groups; // Array of command groups
+	// int						group_count; // Number of groups
+	// int						is_subshell;
 }	t_pipeline;
 
 // environment variable structure
@@ -143,6 +176,7 @@ int				parser_sequence(t_token *tokens);
 
 // PARSER BONUS
 t_token			*parser_wildcard(t_token *token, t_command *command);
+t_token *parser_logical(t_token *token, t_command **command, t_pipeline *pipeline);
 // t_token		*parser_and(t_token *token, t_command **command, t_pipeline *pipeline);
 // t_token		*parser_or(t_token *token, t_command **command, t_pipeline *pipeline);
 

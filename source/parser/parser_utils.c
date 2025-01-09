@@ -17,7 +17,7 @@ t_token	*parser_token(t_token *token, t_command **command, t_program *minishell,
 	if (token->type == TKN_PIPE)
 		return (parser_pipe(token, command, pipeline));
 	if (token->type == TKN_AND || token->type == TKN_OR)
-		return (parser_logical(token, command, pipeline, minishell));
+		return (parser_logical(token, command, pipeline));
 	return (token->next);
 }
 
