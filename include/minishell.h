@@ -195,6 +195,10 @@ int		ft_pwd(t_program *minishell);
 int		ft_unset(t_command *command, t_program *minishell);
 int		ft_cd(t_command *command, t_program *minishell);
 
+// BUILTINS UTILS
+t_env	**export_sorting(t_program *minishell, int *size);
+int	export_process(const char *argument, t_program *minishell);
+
 // EXECUTION
 void	execute_pipeline(t_pipeline *pipeline, t_program *minishell);
 void	execute_command(t_command *command, t_program *minishell);
@@ -226,10 +230,6 @@ void	free_args(char **strings);
 void	free_env(t_env *head);
 // void	free_parser(t_pipeline *pipeline);
 
-
-
-// BUILTINS UTILS
-t_env	**export_sorting(t_program *minishell, int *size);
 
 // env
 void	init_env(t_program *minishell, char **envp);

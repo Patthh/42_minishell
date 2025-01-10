@@ -1,7 +1,7 @@
 #include "../../include/minishell.h"
 
-static void	execute_in_child(char *cmd_path, t_command *command,
-				t_program *minishell);
+// static void	execute_in_child(char *cmd_path, t_command *command,
+// 				t_program *minishell);
 
 // Execute group
 // int execute_group(t_group *group, t_program *minishell)
@@ -118,19 +118,63 @@ static void	handle_execution_status(pid_t pid, t_program *minishell)
 		minishell->status = 128 + WTERMSIG(status);
 }
 
-// static void	execute_in_child(char *cmd_path, t_command *command,
-// 		t_program *minishell)
+// static void	free_paths(char **paths)
 // {
-// 	if (execve(cmd_path, command->arguments, minishell->envp) == -1)
+// 	int	i;
+
+// 	if (!paths)
+// 		return ;
+// 	i = 0;
+// 	while (paths[i])
+// 		free(paths[i++]);
+// 	free(paths);
+// }
+
+// static char	*find_command_path(char *cmd, char **envp)
+// {
+// 	char	**paths;
+// 	char	*full_path;
+// 	int		i;
+
+// 	if (!cmd)
+// 		return (NULL);
+// 	if (access(cmd, X_OK) == 0)
+// 		return (ft_strdup(cmd));
+// 	paths = get_paths_from_env(envp);
+// 	if (!paths)
+// 		return (NULL);
+// 	i = 0;
+// 	while (paths[i])
+// 	{
+// 		full_path = get_full_path(paths[i], cmd);
+// 		if (full_path)
+// 		{
+// 			free_paths(paths);
+// 			return (full_path);
+// 		}
+// 		i++;
+// 	}
+// 	free_paths(paths);
+// 	return (NULL);
+
+// }
+
+// static void	handle_execution_error(t_command *command, t_program *minishell,
+// 		char *cmd_path, int error_type)
+// {
+// 	if (error_type == 1) // Command not found
 // 	{
 // 		ft_putstr_fd("minishell: ", 2);
 // 		ft_putstr_fd(command->arguments[0], 2);
-// 		ft_putstr_fd(": ", 2);
-// 		ft_putstr_fd(strerror(errno), 2);
-// 		ft_putstr_fd("\n", 2);
-// 		free(cmd_path);
-// 		exit(errno);
+// 		ft_putstr_fd(": command not found\n", 2);
+// 		minishell->status = 127;
 // 	}
+// 	else if (error_type == 2) // Fork failure
+// 	{
+// 		ft_putstr_fd("minishell: fork failed\n", 2);
+// 		minishell->status = 1;
+// 	}
+// 	free(cmd_path);
 // }
 
 static void	fork_and_execute(char *cmd_path, t_command *command,
@@ -176,16 +220,6 @@ static void	execute_external(t_command *command, t_program *minishell)
 	}
 	fork_and_execute(cmd_path, command, minishell);
 }
-
-// void	execute_command(t_command *command, t_program *minishell)
-// {
-// 	if (command == NULL || command->arguments == NULL)
-// 		return ;
-// 	if (command->is_builtin)
-// 		execute_builtin(command, minishell);
-// 	else
-// 		execute_external(command, minishell);
-// }
 
 void	execute_builtin(t_command *command, t_program *minishell)
 {
@@ -504,3 +538,4 @@ static void	execute_in_child(char *cmd_path, t_command *command,
 		exit(errno);
 	}
 }
+
