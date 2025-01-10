@@ -78,7 +78,7 @@ t_pipeline	*parser(t_token *tokens, t_program *minishell)
 	t_command	*command;
 	t_token		*token;
 
-	if (!parser_sequence(tokens))
+	if (!parser_sequence(tokens, minishell))
 		return (NULL);
 	pipeline = create_pipeline();
 	command = create_command();
