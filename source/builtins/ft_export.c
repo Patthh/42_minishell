@@ -1,59 +1,37 @@
 #include "../../include/minishell.h"
 
-// extracts key and value from argument
-static void	export_extract(const char *argument, char **key, char **value)
-{
-	char	*equals;
+// handles without memory leaks
+// export
+// export a
+// export a b c d e f g h
+// export VAR=$USER
+// export =
+// export "="
 
-	equals = ft_strchr(argument, '=');
-	if (equals)
-	{
-		*key = ft_strndup(argument, equals - argument);
-		*value = ft_strdup(equals + 1);
-	}
-	else
-	{
-		*key = ft_strdup(argument);
-		*value = NULL;
-	}
-}
-
-static int	export_process(const char *argument, t_program *minishell)
-{
-	char	*key;
-	char	*value;
-	char	*expand;
-
-	export_extract(argument, &key, &value);
-	if (value)
-	{
-		expand = quote_expand(value, minishell);
-		free(value);
-		if (expand)
-		{
-			add_env(minishell, key, expand);
-			free(expand);
-		}
-		else
-			add_env(minishell, key, "");
-	}
-	else
-		add_env(minishell, key, "");
-	free(key);
-	return (0);
-}
 
 // prints formatted env
-static void	export_print(t_env *env)
+static void	export_print(const char *key, const char *value)
 {
 	ft_putstr_fd("declare -x ", STDOUT_FILENO);
-	ft_putstr_fd(env->key, STDOUT_FILENO);
-	if (env->value && *env->value != '\0')
+	ft_putstr_fd((char *)key, STDOUT_FILENO);
+	if (value && *value != '\0')
 	{
 		ft_putstr_fd("=", STDOUT_FILENO);
-		ft_putstr_fd(env->value, STDOUT_FILENO);
+		ft_putstr_fd((char *)value, STDOUT_FILENO);
 	}
 	ft_putstr_fd("\n", STDOUT_FILENO);
+}
+
+static void	export_print_sorted(t_env **sorted, int size)
+{
+	int	i;
+
+	i = 0;
+	while (i < size)
+	{
+		export_print(sorted[i]->key, sorted[i]->value);
+		i++;
+	}
 }
 
 void	ft_export(t_command *command, t_program *minishell)
@@ -67,9 +45,7 @@ void	ft_export(t_command *command, t_program *minishell)
 		sorted = export_sorting(minishell, &size);
 		if (sorted)
 		{
-			i = 0;
-			while (i < size)
-				export_print(sorted[i++]);
+			export_print_sorted(sorted, size);
 			free (sorted);
 		}
 		minishell->status = 0;
@@ -77,8 +53,5 @@ void	ft_export(t_command *command, t_program *minishell)
 	}
 	i = 1;
 	while (command->arguments[i])
-	{
-		export_process(command->arguments[i], minishell);
-		i++;
-	}
+		export_process(command->arguments[i++], minishell);
 }
