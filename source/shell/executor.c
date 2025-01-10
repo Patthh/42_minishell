@@ -3,14 +3,13 @@
 static void	execute_in_child(char *cmd_path, t_command *command,
 				t_program *minishell);
 
-
 // Execute group
 // int execute_group(t_group *group, t_program *minishell)
 // {
 // 	if (group->type == GROUP_COMMAND)
-// 		return execute_command(group->content.command, minishell);
+// 		return (execute_command(group->content.command, minishell));
 // 	else
-// 		return execute_pipeline(group->content.pipeline, minishell);
+// 		return (execute_pipeline(group->content.pipeline, minishell));
 // }
 
 // void execute_pipeline(t_pipeline *pipeline, t_program *minishell)
@@ -88,7 +87,6 @@ static char	*find_command_path(char *cmd, char **envp)
 	}
 	free_paths(paths);
 	return (NULL);
-
 }
 
 static void	handle_execution_error(t_command *command, t_program *minishell,
@@ -153,11 +151,12 @@ static void	fork_and_execute(char *cmd_path, t_command *command,
 	free(cmd_path);
 	// printf("execute_command: command = %p\n", command);
 	// printf("execute_command: command->arguments = %p\n", command->arguments);
-	// printf("execute_command: command->is_builtin = %d\n", command->is_builtin);
-// 	if (command == NULL)
-// 		return;
-// 	if (command->is_builtin)
-// 		execute_builtin(command, minishell);
+	// printf("execute_command: command->is_builtin =
+	//		%d\n"	command->is_builtin);
+	// 	if (command == NULL)
+	// 		return ;
+	// 	if (command->is_builtin)
+	// 		execute_builtin(command, minishell);
 	// else
 	// 	execute_external(command, minishell);
 	// printf("execute_command: finished executing command\n");
@@ -226,10 +225,12 @@ static void	close_pipes(t_pipeline *pipeline, int **pipe_fds)
 {
 	int	i;
 
-	for (i = 0; i < pipeline->cmd_count - 1; i++)
+	i = 0;
+	while (i < pipeline->cmd_count - 1)
 	{
 		close(pipe_fds[i][0]);
 		close(pipe_fds[i][1]);
+		i++;
 	}
 }
 
@@ -271,6 +272,7 @@ void	execute_pipeline(t_pipeline *pipeline, t_program *minishell)
 	pid_t	*pids;
 	int		i;
 
+	i = 0;
 	if (!pipeline || pipeline->cmd_count == 0)
 		return ;
 	if (pipeline->cmd_count == 1)
@@ -279,11 +281,15 @@ void	execute_pipeline(t_pipeline *pipeline, t_program *minishell)
 		return ;
 	}
 	pipe_fds = malloc(sizeof(int *) * (pipeline->cmd_count - 1));
-	for (i = 0; i < pipeline->cmd_count - 1; i++)
+	while (i < pipeline->cmd_count - 1)
+	{
 		pipe_fds[i] = malloc(sizeof(int) * 2);
+		i++;
+	}
 	pids = malloc(sizeof(pid_t) * pipeline->cmd_count);
 	setup_pipes(pipeline, pipe_fds);
-	for (i = 0; i < pipeline->cmd_count; i++)
+	i = 0;
+	while (i < pipeline->cmd_count)
 	{
 		pids[i] = fork();
 		if (pids[i] == -1)
@@ -297,16 +303,26 @@ void	execute_pipeline(t_pipeline *pipeline, t_program *minishell)
 			close_pipes(pipeline, pipe_fds);
 			execute_piped_command(pipeline->commands[i], minishell);
 		}
+		i++;
 	}
 	close_pipes(pipeline, pipe_fds);
-	for (i = 0; i < pipeline->cmd_count; i++)
+	i = 0;
+	while (i < pipeline->cmd_count)
+	{
 		handle_execution_status(pids[i], minishell);
-	for (i = 0; i < pipeline->cmd_count - 1; i++)
+		i++;
+	}
+	i = 0;
+	while (i < pipeline->cmd_count - 1)
+	{
 		free(pipe_fds[i]);
+		i++;
+	}
 	free(pipe_fds);
 	free(pids);
 }
-//redir
+
+// redir
 static int	setup_input_redirection(t_command *command)
 {
 	int	fd;
@@ -368,12 +384,14 @@ static int	setup_output_redirection(t_command *command)
 
 static void	cleanup_redirections(t_command *command)
 {
-	if (command->fd_in != -1)
+	if (!command)
+		return ;
+	if (command->input && command->fd_in != -1)
 	{
 		close(command->fd_in);
 		command->fd_in = -1;
 	}
-	if (command->fd_out != -1)
+	if ((command->output || command->append) && command->fd_out != -1)
 	{
 		close(command->fd_out);
 		command->fd_out = -1;
@@ -382,38 +400,89 @@ static void	cleanup_redirections(t_command *command)
 
 static int	handle_redirections(t_command *command)
 {
-	if (setup_input_redirection(command))
+	// Setup input redirection
+	if (command->input && setup_input_redirection(command))
+	{
+		cleanup_redirections(command);
 		return (1);
-	if (setup_output_redirection(command))
+	}
+	// Setup output redirection
+	if ((command->output || command->append)
+		&& setup_output_redirection(command))
 	{
 		cleanup_redirections(command);
 		return (1);
 	}
 	return (0);
 }
+// static int handle_redirections(t_command *command)
+// {
+//     int setup_input;
+//     int setup_output;
+
+// 	setup_input = 0;
+// 	setup_output = 0;
+//     if (!command)
+//         return (1);
+//     if (command->input)
+//     {
+//         if (setup_input_redirection(command))
+//             return (1);
+//         setup_input = 1;
+//     }
+//     if (command->output || command->append)
+//     {
+//         if (setup_output_redirection(command))
+//         {
+//             if (setup_input)
+//                 cleanup_redirections(command);
+//             return (1);
+//         }
+//         setup_output = 1;
+//     }
+//     return (0);
+// }
 
 void	execute_command(t_command *command, t_program *minishell)
 {
 	int	saved_stdin;
 	int	saved_stdout;
 
+	saved_stdin = -1;
+	saved_stdout = -1;
 	if (!command || !command->arguments || !command->arguments[0])
 		return ;
 	if (command->is_builtin)
 	{
-		saved_stdin = dup(STDIN_FILENO);
-		saved_stdout = dup(STDOUT_FILENO);
-		if (handle_redirections(command))
+		// Save current stdin/stdout
+		if ((saved_stdin = dup(STDIN_FILENO)) == -1
+			|| (saved_stdout = dup(STDOUT_FILENO)) == -1)
 		{
+			if (saved_stdin != -1)
+				close(saved_stdin);
 			minishell->status = 1;
 			return ;
 		}
+		// Handle redirections
+		if (handle_redirections(command))
+		{
+			close(saved_stdin);
+			close(saved_stdout);
+			minishell->status = 1;
+			return ;
+		}
+		// Execute builtin
 		execute_builtin(command, minishell);
-		dup2(saved_stdin, STDIN_FILENO);
-		dup2(saved_stdout, STDOUT_FILENO);
+		// Restore stdin/stdout
+		if (dup2(saved_stdin, STDIN_FILENO) == -1 || dup2(saved_stdout,
+				STDOUT_FILENO) == -1)
+		{
+			minishell->status = 1;
+		}
+		// // Cleanup
 		close(saved_stdin);
 		close(saved_stdout);
-		cleanup_redirections(command);
+		// cleanup_redirections(command);
 	}
 	else
 		execute_external(command, minishell);
