@@ -163,7 +163,7 @@ char			*env_name(const char **input);
 char			*env_value(t_program *minishell, const char *key);
 void			env_token(t_token **head, t_program *minishell, const char *key);
 
-void			token_extra(const char **input, t_token **head, int flag);
+void			token_extra(const char **input, t_token **head, t_program *minishell);
 void			token_wildcard(const char **input, t_token **head);
 // void			token_paranthesis(const char **input, t_token **head);
 
@@ -177,11 +177,11 @@ t_token			*parser_env(t_token *token, t_command *command, t_program *minishell);
 t_token			*parser_status(t_token *token, t_program *minishell);
 int				parser_argument(t_command *command, const char *value);
 int				parser_builtin(const char *command);
-int				parser_sequence(t_token *tokens);
+int				parser_sequence(t_token *tokens, t_program *minishell);
 
 // PARSER BONUS
 t_token			*parser_wildcard(t_token *token, t_command *command);
-t_token *parser_logical(t_token *token, t_command **command, t_pipeline *pipeline);
+t_token			*parser_logical(t_token *token, t_command **command, t_pipeline *pipeline);
 // t_token		*parser_and(t_token *token, t_command **command, t_pipeline *pipeline);
 // t_token		*parser_or(t_token *token, t_command **command, t_pipeline *pipeline);
 
