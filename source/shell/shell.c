@@ -27,7 +27,7 @@ int	handle_input(char *input, t_program *minishell)
 	t_token		*tokens;
 	t_pipeline	*pipeline;
 
-	if (!quote_counter(input))
+	if (!quote_tracker(input))
 	{
 		free(input);
 		return (0);
@@ -35,9 +35,9 @@ int	handle_input(char *input, t_program *minishell)
 	if (input && *input)
 		add_history(input);
 	tokens = tokenizer(input, minishell);
-	print_tokens(tokens); // testing tokenizer
+	// print_tokens(tokens); // testing tokenizer
 	pipeline = parser(tokens, minishell);
-	print_pipeline(pipeline); // testing parser
+	// print_pipeline(pipeline); // testing parser
 	execute_pipeline(pipeline, minishell);
 	free_list(tokens);
 	free_pipeline(pipeline);

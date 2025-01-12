@@ -1,5 +1,30 @@
 #include "../../include/minishell.h"
 
+// tracks open/closed single and double quotes
+int	quote_tracker(const char *input)
+{
+	int	single_quote;
+	int	double_quote;
+
+	single_quote = 0;
+	double_quote = 0;
+	while (*input)
+	{
+		if (*input == '\'')
+		{
+			if (!double_quote)
+				single_quote = !single_quote;
+		}
+		else if (*input == '"')
+		{
+			if (!single_quote)
+				double_quote = !double_quote;
+		}
+		input++;
+	}
+	return (!(single_quote || double_quote));
+}
+
 // extract env name
 char	*env_name(const char **input)
 {
@@ -46,18 +71,3 @@ void	env_token(t_token **head, t_program *minishell, const char *key)
 		token_add(head, token_new(TKN_ENV, value));
 }
 
-// char	*env_quote(t_program *minishell, const char *input)
-// {
-// 	char	*key;
-// 	char	*value;
-
-// 	key = env_name(&input);
-// 	if (!key)
-// 		return (NULL);
-// 	value = env_value(minishell, key);
-// 	free(key);
-// 	if (value)
-// 		return (ft_strdup(value));
-// 	else
-// 		return (NULL);
-// }
