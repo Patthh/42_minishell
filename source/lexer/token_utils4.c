@@ -1,63 +1,63 @@
 #include "../../include/minishell.h"
 
-// extract env name
-char	*env_name(const char **input)
+void	token_unquoted(const char **input, char **result,
+	t_program *minishell)
+{
+	while (**input && !ft_isspace(**input) && **input != '\'' && **input != '"')
+	{
+		if (**input == '$')
+			env_word(input, result, minishell);
+		else
+			token_regular(input, result);
+	}
+}
+
+// Process content within double quotes and handle variable expansion
+void	token_double(const char **input, char **result, t_program *minishell)
+{
+	(*input)++;
+	while (**input && **input != '"')
+	{
+		if (**input == '$')
+			env_word(input, result, minishell);
+		else
+			token_regular(input, result);
+	}
+	if (**input == '"')
+		(*input)++;
+}
+
+// process content within single quotes
+// treat as literal
+void	token_single(const char **input, char **result)
 {
 	const char	*start;
-	const char	*end;
+	char		*content;
 
-	while (**input == '$')
-		(*input)++;
+	(*input)++;
 	start = *input;
-	end = start;
-	while (*end && (ft_isalnum(*end) || *end == '_'
-			|| *end == '-' || *end == '.'))
-		end++;
-	if (start == end)
-		return (NULL);
-	*input = end;
-	return (ft_strndup(start, end - start));
-}
-
-// retrieve env value
-char	*env_value(t_program *minishell, const char *key)
-{
-	t_env	*current;
-
-	if (!key)
-		return (NULL);
-	current = minishell->env_list;
-	while (current)
+	while (**input && **input != '\'')
+		(*input)++;
+	if (**input)
 	{
-		if (ft_strcmp(current->key, key) == 0)
-			return (current->value);
-		current = current->next;
+		content = ft_strndup(start, *input - start);
+		*result = token_join(*result, content);
+		free(content);
+		(*input)++;
 	}
-	return (getenv(key));
 }
 
-// create token for env
-void	env_token(t_token **head, t_program *minishell, const char *key)
+void	token_assign(const char **input, t_token **head)
 {
+	char	*key;
 	char	*value;
 
-	value = env_value(minishell, key);
-	if (value)
-		token_add(head, token_new(TKN_ENV, value));
+	key = ft_strndup(*input, ft_strchr(*input, '=') - *input);
+	(*input) = ft_strchr(*input, '=') + 1;
+	value = ft_strdup(*input);
+	while (**input && !ft_isspace(**input))
+		(*input)++;
+	token_add(head, token_new(TKN_ASSIGN, ft_strjoin(key, value)));
+	free(key);
+	free(value);
 }
-
-// char	*env_quote(t_program *minishell, const char *input)
-// {
-// 	char	*key;
-// 	char	*value;
-
-// 	key = env_name(&input);
-// 	if (!key)
-// 		return (NULL);
-// 	value = env_value(minishell, key);
-// 	free(key);
-// 	if (value)
-// 		return (ft_strdup(value));
-// 	else
-// 		return (NULL);
-// }
