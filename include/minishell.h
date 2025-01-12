@@ -42,6 +42,7 @@ typedef enum e_token
 	TKN_DOUBLE,		// 15 double quote
 	TKN_WILDCARD,	// 16 *
 	TKN_WORD,		// 17
+	TKN_ASSIGN		// 18 =
 }	t_token_type;
 
 typedef enum e_logical
@@ -147,25 +148,29 @@ void			init_shell(t_program *program, char **envp);
 void			run_shell(t_program *minishell);
 int				handle_input(char *input, t_program *minishell);
 void			shell_exit(const char *input, t_token *tokens, t_program *minishell);
+int				quote_tracker(const char *input);
+int				parentheses_tracker(const char *input);
 
 // LEXER
 t_token			*tokenizer(const char *input, t_program *minishell);
 t_token			*token_new(t_token_type type, const char *value);
 void			token_add(t_token **head, t_token *new_token);
-t_token			*token_word(const char **input);
 void			token_redirector(const char **input, t_token **head);
 void			token_operator(const char **input, t_token **head);
-void			token_quotes(const char **input, t_token **head, t_program *minishell);
-int				quote_counter(const char *input);
-
 void			token_dollar(const char **input, t_token **head, t_program *minishell);
-char			*env_name(const char **input);
-char			*env_value(t_program *minishell, const char *key);
-void			env_token(t_token **head, t_program *minishell, const char *key);
-
+void			token_unquoted(const char **input, char **result, t_program *minishell);
+void			token_double(const char **input, char **result, t_program *minishell);
+void			token_single(const char **input, char **result);
+void			token_assign(const char **input, t_token **head);
+void			token_env(const char **input, t_token **head, t_program *shell);
+void			token_word(const char **input, t_token **head, t_program *minishell);
 void			token_extra(const char **input, t_token **head, t_program *minishell);
 void			token_wildcard(const char **input, t_token **head);
-// void			token_paranthesis(const char **input, t_token **head);
+void			token_paranthesis(const char **input, t_token **head);
+
+char			*env_name(const char **input);
+char			*env_value(t_program *minishell, const char *key);
+void			env_word(const char **input, char **result, t_program *minishell);
 
 // PARSER
 t_pipeline		*parser(t_token *tokens, t_program *minishell);
@@ -240,6 +245,8 @@ void	nl_handler(int signal);
 
 // UTILS
 void	ft_error(const char *message);
+char	*token_join(char *s1, const char *s2);
+void	token_regular(const char **input, char **result);
 // void	ft_putstr_fd(char *s, int fd);
 // int		ft_strcmp(const char *s1, const char *s2);
 // void	*ft_memset(void *s, int c, size_t n);

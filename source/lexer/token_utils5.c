@@ -48,12 +48,12 @@ void	env_word(const char **input, char **result, t_program *minishell)
 		key = env_name(input);
 		value = env_value(minishell, key);
 		if (value)
-			*result = word_join(*result, value);
+			*result = token_join(*result, value);
 		free(key);
 	}
 	else
 	{
-		*result = word_join(*result, "$");
+		*result = token_join(*result, "$");
 	}
 }
 

@@ -8,7 +8,7 @@ void	token_unquoted(const char **input, char **result,
 		if (**input == '$')
 			env_word(input, result, minishell);
 		else
-			word_regular(input, result);
+			token_regular(input, result);
 	}
 }
 
@@ -21,7 +21,7 @@ void	token_double(const char **input, char **result, t_program *minishell)
 		if (**input == '$')
 			env_word(input, result, minishell);
 		else
-			word_regular(input, result);
+			token_regular(input, result);
 	}
 	if (**input == '"')
 		(*input)++;
@@ -41,7 +41,7 @@ void	token_single(const char **input, char **result)
 	if (**input)
 	{
 		content = ft_strndup(start, *input - start);
-		*result = word_join(*result, content);
+		*result = token_join(*result, content);
 		free(content);
 		(*input)++;
 	}

@@ -38,3 +38,26 @@ void	token_operator(const char **input, t_token **head)
 	else if (**input == '&')
 		token_ampersand(input, head);
 }
+
+// helper to join strings and handle memory
+char	*token_join(char *s1, const char *s2)
+{
+	char	*temp;
+
+	if (!s1)
+		return (ft_strdup(s2));
+	temp = ft_strjoin(s1, s2);
+	free(s1);
+	return (temp);
+}
+
+// helper function to handle regular characters
+void	token_regular(const char **input, char **result)
+{
+	char	current[2];
+
+	current[0] = **input;
+	current[1] = '\0';
+	*result = token_join(*result, current);
+	(*input)++;
+}
