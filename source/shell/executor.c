@@ -3,16 +3,7 @@
 static void	execute_in_child(char *cmd_path, t_command *command,
 				t_program *minishell);
 
-// Execute group
-// int execute_group(t_group *group, t_program *minishell)
-// {
-// 	if (group->type == GROUP_COMMAND)
-// 		return (execute_command(group->content.command, minishell));
-// 	else
-// 		return (execute_pipeline(group->content.pipeline, minishell));
-// }
-
-// void execute_pipeline(t_pipeline *pipeline, t_program *minishell)
+// PATH
 static char	**get_paths_from_env(char **envp)
 {
 	int		i;
@@ -89,6 +80,7 @@ static char	*find_command_path(char *cmd, char **envp)
 	return (NULL);
 }
 
+// ERR && STATUS
 static void	handle_execution_error(t_command *command, t_program *minishell,
 		char *cmd_path, int error_type)
 {
@@ -118,53 +110,11 @@ static void	handle_execution_status(pid_t pid, t_program *minishell)
 		minishell->status = 128 + WTERMSIG(status);
 }
 
-// static void	execute_in_child(char *cmd_path, t_command *command,
-// 		t_program *minishell)
-// {
-// 	if (execve(cmd_path, command->arguments, minishell->envp) == -1)
-// 	{
-// 		ft_putstr_fd("minishell: ", 2);
-// 		ft_putstr_fd(command->arguments[0], 2);
-// 		ft_putstr_fd(": ", 2);
-// 		ft_putstr_fd(strerror(errno), 2);
-// 		ft_putstr_fd("\n", 2);
-// 		free(cmd_path);
-// 		exit(errno);
-// 	}
-// }
-
-static void	fork_and_execute(char *cmd_path, t_command *command,
-		t_program *minishell)
-{
-	pid_t	pid;
-
-	pid = fork();
-	if (pid == -1)
-	{
-		handle_execution_error(command, minishell, cmd_path, 2);
-		return ;
-	}
-	if (pid == 0)
-		execute_in_child(cmd_path, command, minishell);
-	else
-		handle_execution_status(pid, minishell);
-	free(cmd_path);
-	// printf("execute_command: command = %p\n", command);
-	// printf("execute_command: command->arguments = %p\n", command->arguments);
-	// printf("execute_command: command->is_builtin =
-	//		%d\n"	command->is_builtin);
-	// 	if (command == NULL)
-	// 		return ;
-	// 	if (command->is_builtin)
-	// 		execute_builtin(command, minishell);
-	// else
-	// 	execute_external(command, minishell);
-	// printf("execute_command: finished executing command\n");
-}
-
+// EXEC_UTILS
 static void	execute_external(t_command *command, t_program *minishell)
 {
 	char	*cmd_path;
+	pid_t	pid;
 
 	if (!command->arguments[0])
 		return ;
@@ -174,18 +124,32 @@ static void	execute_external(t_command *command, t_program *minishell)
 		handle_execution_error(command, minishell, NULL, 1);
 		return ;
 	}
-	fork_and_execute(cmd_path, command, minishell);
+	pid = fork();
+	if (pid == -1)
+	{
+		handle_execution_error(command, minishell, cmd_path, 2);
+		return ;
+	}
+	if (pid == 0) // Child process
+	{
+		// No need to handle redirections here - already done in execute_command
+		if (execve(cmd_path, command->arguments, minishell->envp) == -1)
+		{
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
+			ft_putstr_fd(command->arguments[0], STDERR_FILENO);
+			ft_putstr_fd(": ", STDERR_FILENO);
+			ft_putstr_fd(strerror(errno), STDERR_FILENO);
+			ft_putstr_fd("\n", STDERR_FILENO);
+			free(cmd_path);
+			exit(errno);
+		}
+	}
+	else // Parent process
+	{
+		handle_execution_status(pid, minishell);
+		free(cmd_path);
+	}
 }
-
-// void	execute_command(t_command *command, t_program *minishell)
-// {
-// 	if (command == NULL || command->arguments == NULL)
-// 		return ;
-// 	if (command->is_builtin)
-// 		execute_builtin(command, minishell);
-// 	else
-// 		execute_external(command, minishell);
-// }
 
 void	execute_builtin(t_command *command, t_program *minishell)
 {
@@ -204,9 +168,8 @@ void	execute_builtin(t_command *command, t_program *minishell)
 	else if (ft_strcmp(command->arguments[0], "exit") == 0)
 		ft_exit(command, minishell);
 }
+
 /// @brief PIPE HERE
-/// @param pipeline
-/// @param pipe_fds
 static void	setup_pipes(t_pipeline *pipeline, int **pipe_fds)
 {
 	int	i;
@@ -322,11 +285,117 @@ void	execute_pipeline(t_pipeline *pipeline, t_program *minishell)
 	free(pids);
 }
 
-// redir
+// REDIR
+static void	cleanup_redirections(t_command *command)
+{
+	if (!command)
+		return ;
+	if ((command->input || command->heredoc) && command->fd_in != -1)
+	{
+		close(command->fd_in);
+		command->fd_in = -1;
+	}
+	if ((command->output || command->append) && command->fd_out != -1)
+	{
+		close(command->fd_out);
+		command->fd_out = -1;
+	}
+}
+//?HEREDOC
+void	heredoc_exit(int signo)
+{
+	(void)signo;
+	exit(EXIT_FAILURE);
+}
+
+static void	heredoc_child(int pipe_fds[2], t_command *command)
+{
+	char	*line;
+	int		tty_fd;
+
+	signal(SIGINT, heredoc_exit);
+	signal(SIGQUIT, SIG_IGN);
+	close(pipe_fds[0]);
+	if (!isatty(STDIN_FILENO))
+	{
+		tty_fd = open("/dev/tty", O_RDONLY);
+		if (tty_fd != -1)
+		{
+			dup2(tty_fd, STDIN_FILENO);
+			close(tty_fd);
+		}
+	}
+	while (1)
+	{
+		line = readline("> ");
+		if (!line)
+		{
+			close(pipe_fds[1]);
+			exit(0);
+		}
+		fprintf(stderr, "Debug: Current heredoc content '%s'\n",
+			command->heredoc->content);
+		fprintf(stderr, "Debug: Received line '%s'\n", line);
+		if (ft_strcmp(line, command->heredoc->filename) == 0)
+		{
+			free(line);
+			close(pipe_fds[1]);
+			exit(0);
+		}
+		write(pipe_fds[1], line, ft_strlen(line));
+		write(pipe_fds[1], "\n", 1);
+		free(line);
+	}
+}
+
+static int	setup_heredoc(t_command *command)
+{
+	int		pipe_fds[2];
+	int		status;
+	pid_t	pid;
+
+	if (!command->heredoc || !command->heredoc->filename)
+		return (1);
+	if (pipe(pipe_fds) == -1)
+		return (1);
+	pid = fork();
+	if (pid == -1)
+	{
+		close(pipe_fds[0]);
+		close(pipe_fds[1]);
+		return (1);
+	}
+	if (pid == 0)
+		heredoc_child(pipe_fds, command);
+	close(pipe_fds[1]);
+	waitpid(pid, &status, 0);
+	signal(SIGINT, SIG_DFL);
+	if (WIFSIGNALED(status) || (WIFEXITED(status) && WEXITSTATUS(status) != 0))
+	{
+		close(pipe_fds[0]);
+		return (1);
+	}
+	// Store pipe read end
+	if (command->fd_in != -1)
+		close(command->fd_in);
+	command->fd_in = pipe_fds[0];
+	// Set up input redirection
+	if (dup2(pipe_fds[0], STDIN_FILENO) == -1)
+	{
+		close(pipe_fds[0]);
+		command->fd_in = -1;
+		return (1);
+	}
+	return (0);
+}
+
+// REDIR_PT2
 static int	setup_input_redirection(t_command *command)
 {
 	int	fd;
 
+	if (command->heredoc)
+		return (setup_heredoc(command));
 	if (command->input)
 	{
 		fd = open(command->input->filename, O_RDONLY);
@@ -341,7 +410,10 @@ static int	setup_input_redirection(t_command *command)
 		}
 		command->fd_in = fd;
 		if (dup2(fd, STDIN_FILENO) == -1)
+		{
+			close(fd);
 			return (1);
+		}
 	}
 	return (0);
 }
@@ -352,140 +424,63 @@ static int	setup_output_redirection(t_command *command)
 	int		flags;
 	char	*filename;
 
-	if (command->output || command->append)
+	if (!command->output && !command->append)
+		return (0);
+	if (command->append)
 	{
-		flags = O_WRONLY | O_CREAT;
-		if (command->append)
-		{
-			flags |= O_APPEND;
-			filename = command->append->filename;
-		}
-		else
-		{
-			flags |= O_TRUNC;
-			filename = command->output->filename;
-		}
-		fd = open(filename, flags, 0644);
-		if (fd == -1)
-		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			ft_putstr_fd(filename, STDERR_FILENO);
-			ft_putstr_fd(": ", STDERR_FILENO);
-			ft_putstr_fd(strerror(errno), STDERR_FILENO);
-			ft_putstr_fd("\n", STDERR_FILENO);
-			return (1);
-		}
-		command->fd_out = fd;
-		if (dup2(fd, STDOUT_FILENO) == -1)
-			return (1);
+		flags = O_WRONLY | O_CREAT | O_APPEND;
+		filename = command->append->filename;
+	}
+	else
+	{
+		flags = O_WRONLY | O_CREAT | O_TRUNC;
+		filename = command->output->filename;
+	}
+	fd = open(filename, flags, 0644);
+	if (fd == -1)
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(filename, STDERR_FILENO);
+		ft_putstr_fd(": ", STDERR_FILENO);
+		ft_putstr_fd(strerror(errno), STDERR_FILENO);
+		ft_putstr_fd("\n", STDERR_FILENO);
+		return (1);
+	}
+	command->fd_out = fd;
+	if (dup2(fd, STDOUT_FILENO) == -1)
+	{
+		close(fd);
+		return (1);
 	}
 	return (0);
-}
-
-static void	cleanup_redirections(t_command *command)
-{
-	if (!command)
-		return ;
-	if (command->input && command->fd_in != -1)
-	{
-		close(command->fd_in);
-		command->fd_in = -1;
-	}
-	if ((command->output || command->append) && command->fd_out != -1)
-	{
-		close(command->fd_out);
-		command->fd_out = -1;
-	}
 }
 
 static int	handle_redirections(t_command *command)
 {
-	// Setup input redirection
-	if (command->input && setup_input_redirection(command))
-	{
-		cleanup_redirections(command);
+	if (!command)
 		return (1);
+	if (command->heredoc)
+	{
+		if (setup_heredoc(command))
+			return (1);
 	}
-	// Setup output redirection
-	if ((command->output || command->append)
-		&& setup_output_redirection(command))
+	if (command->input && !command->heredoc)
 	{
-		cleanup_redirections(command);
-		return (1);
+		if (setup_input_redirection(command))
+		{
+			cleanup_redirections(command);
+			return (1);
+		}
+	}
+	if (command->output || command->append)
+	{
+		if (setup_output_redirection(command))
+		{
+			cleanup_redirections(command);
+			return (1);
+		}
 	}
 	return (0);
-}
-// static int handle_redirections(t_command *command)
-// {
-//     int setup_input;
-//     int setup_output;
-
-// 	setup_input = 0;
-// 	setup_output = 0;
-//     if (!command)
-//         return (1);
-//     if (command->input)
-//     {
-//         if (setup_input_redirection(command))
-//             return (1);
-//         setup_input = 1;
-//     }
-//     if (command->output || command->append)
-//     {
-//         if (setup_output_redirection(command))
-//         {
-//             if (setup_input)
-//                 cleanup_redirections(command);
-//             return (1);
-//         }
-//         setup_output = 1;
-//     }
-//     return (0);
-// }
-
-void	execute_command(t_command *command, t_program *minishell)
-{
-	int	saved_stdin;
-	int	saved_stdout;
-
-	saved_stdin = -1;
-	saved_stdout = -1;
-	if (!command || !command->arguments || !command->arguments[0])
-		return ;
-	if (command->is_builtin)
-	{
-		// Save current stdin/stdout
-		if ((saved_stdin = dup(STDIN_FILENO)) == -1
-			|| (saved_stdout = dup(STDOUT_FILENO)) == -1)
-		{
-			if (saved_stdin != -1)
-				close(saved_stdin);
-			minishell->status = 1;
-			return ;
-		}
-		// Handle redirections
-		if (handle_redirections(command))
-		{
-			close(saved_stdin);
-			close(saved_stdout);
-			minishell->status = 1;
-			return ;
-		}
-		// Execute builtin
-		execute_builtin(command, minishell);
-		// Restore stdin/stdout
-		if (dup2(saved_stdin, STDIN_FILENO) == -1 || dup2(saved_stdout,
-				STDOUT_FILENO) == -1)
-		{
-			minishell->status = 1;
-		}
-		// // Cleanup
-		close(saved_stdin);
-		close(saved_stdout);
-		// cleanup_redirections(command);
-	}
-	else
-		execute_external(command, minishell);
 }
 
 static void	execute_in_child(char *cmd_path, t_command *command,
@@ -503,4 +498,41 @@ static void	execute_in_child(char *cmd_path, t_command *command,
 		free(cmd_path);
 		exit(errno);
 	}
+}
+
+void	execute_command(t_command *command, t_program *minishell)
+{
+	int	saved_stdin;
+	int	saved_stdout;
+
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
+	if (!command || !command->arguments || !command->arguments[0])
+		return ;
+	// Save original file descriptors
+	if ((saved_stdin) == -1 || (saved_stdout) == -1)
+	{
+		if (saved_stdin != -1)
+			close(saved_stdin);
+		minishell->status = 1;
+		return ;
+	}
+	// Handle redirections (including heredoc)
+	if (handle_redirections(command))
+	{
+		close(saved_stdin);
+		close(saved_stdout);
+		minishell->status = 1;
+		return ;
+	}
+	if (command->is_builtin)
+		execute_builtin(command, minishell);
+	else
+		execute_external(command, minishell);
+	// Restore original file descriptors
+	dup2(saved_stdin, STDIN_FILENO);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdin);
+	close(saved_stdout);
+	cleanup_redirections(command);
 }
