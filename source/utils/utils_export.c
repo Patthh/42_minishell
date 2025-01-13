@@ -63,7 +63,7 @@ static void	sort_env(t_env **array, int size)
 		{
 			if (array[j] == NULL || array[j + 1] == NULL)
 				return ;
-			if (ft_strcmp(array[j]->key, array[j + 1]->key))
+			if (ft_strcmp(array[j]->key, array[j + 1]->key) > 0)
 			{
 				temp = array[j];
 				array[j] = array[j + 1];
