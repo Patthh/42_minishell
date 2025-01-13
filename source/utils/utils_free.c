@@ -48,3 +48,16 @@ void	free_args(char **strings)
 	}
 	free (strings);
 }
+
+void	free_environ(char **envp)
+{
+	int	i;
+
+	i = 0;
+	while (envp[i])
+	{
+		free(envp[i]);
+		i++;
+	}
+	free(envp);
+}

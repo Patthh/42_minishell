@@ -58,13 +58,6 @@ static void	export_extract(const char *argument, char **key, char **value)
 	char	*equals;
 
 	equals = ft_strchr(argument, '=');
-	if (argument[0] == '=')
-	{
-		*key = ft_strdup("");
-		*value = ft_strdup(argument + 1);
-		return ;
-	}
-	equals = ft_strchr(argument, '=');
 	if (equals)
 	{
 		*key = ft_strndup(argument, equals - argument);
@@ -88,18 +81,16 @@ int	export_process(const char *argument, t_program *minishell)
 	{
 		export_error(key);
 		minishell->status = 1;
-		free (key);
-		if (value)
-			free (value);
+		if (key)
+			free (key);
 		return (1);
 	}
-	else if (key && *key)
+	if (key && *key)
 	{
 		export_update(minishell, key, value);
 		minishell->status = 0;
 	}
-	free (key);
-	if (value)
-		free (value);
+	if (key)
+		free (key);
 	return (0);
 }
