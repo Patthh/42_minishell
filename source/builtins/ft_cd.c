@@ -68,6 +68,19 @@ static int	path_update(char *path, t_program *minishell)
 	return (0);
 }
 
+static int	cd_valid(t_command *command, t_program *minishell)
+{
+	if (!command->arguments[1])
+		return (1);
+	if (command->arguments[2])
+	{
+		ft_putstr_fd("minishell: cd: too many arguments\n", STDERR_FILENO);
+		minishell->status = 1;
+		return (1);
+	}
+	return (0);
+}
+
 int ft_cd(t_command *command, t_program *minishell)
 {
 	char	*target;
@@ -75,12 +88,9 @@ int ft_cd(t_command *command, t_program *minishell)
 
 	target = NULL;
 	expanded = NULL;
-	if (!command->arguments[1])
-	{
-		target = path_env(minishell, "HOME", "minishelll: cd: HOME not set\n");
+	if (cd_valid(command, minishell))
 		return (1);
-	}
-	else if (ft_strcmp(command->arguments[1], "-") == 0)
+	if (ft_strcmp(command->arguments[1], "-") == 0)
 		target = path_env(minishell, "OLDPWD", "minishell: cd: OLDPWD not set\n");
 	else
 	{
@@ -90,6 +100,7 @@ int ft_cd(t_command *command, t_program *minishell)
 	if (path_update(target, minishell) != 0)
 	{
 		free (expanded);
+		minishell->status = 1;
 		return (1);
 	}
 	free(expanded);
