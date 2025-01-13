@@ -1,9 +1,16 @@
 #include "../../include/minishell.h"
 
+// validates variable names
+// checks for empty string or null
+// first char must be letter or underscore
+// rest of string must be alphanumeric of underscore
 static int	export_valid(const char *string)
 {
-	if (!string || (!ft_isalpha(*string) && *string != '_'))
+	if (!string || !*string)
 		return (0);
+	if (!ft_isalpha(*string) && *string != '_')
+		return (0);
+	string++;
 	while (*string)
 	{
 		if (!ft_isalnum(*string) && *string != '_')
@@ -13,6 +20,7 @@ static int	export_valid(const char *string)
 	return (1);
 }
 
+// prints error message for invalid identifiers
 static	void	export_error(const char *key)
 {
 	ft_putstr_fd("export:`", STDERR_FILENO);
@@ -20,6 +28,9 @@ static	void	export_error(const char *key)
 	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
 }
 
+// updates and adds env with value expansion
+// handle case with no value
+// expand any variables in the value
 static void	export_update(t_program *minishell, char *key, char *value)
 {
 	char	*expand;
@@ -41,6 +52,7 @@ static void	export_update(t_program *minishell, char *key, char *value)
 }
 
 // extracts key and value from argument
+// handles special case where argument is "="
 static void	export_extract(const char *argument, char **key, char **value)
 {
 	char	*equals;
@@ -56,27 +68,29 @@ static void	export_extract(const char *argument, char **key, char **value)
 	*value = NULL;
 }
 
+// extracts key and value from argument
+// validates the key
+// process if valid key
 int	export_process(const char *argument, t_program *minishell)
 {
 	char	*key;
 	char	*value;
 
 	export_extract(argument, &key, &value);
-	if (key && !export_valid(key))
+	if (!export_valid(key))
 	{
 		export_error(key);
-		free (value);
-		free (key);
+		minishell->status = 1;
+		if (key)
+			free (key);
 		return (1);
 	}
-	if (!key || !*key)
+	if (key && *key)
 	{
-		free (value);
-		free (key);
-		return (0);
+		export_update(minishell, key, value);
+		minishell->status = 0;
 	}
-	export_update(minishell, key, value);
-	free (key);
+	if (key)
+		free (key);
 	return (0);
 }
-
