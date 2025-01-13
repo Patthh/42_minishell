@@ -8,6 +8,16 @@
 // export =
 // export "="
 
+// Test  24: ✅ export hello
+// Test  25: ✅ export HELLO=123
+// Test  26: ❌ export A-
+// Test  27: ✅ export HELLO=123 A
+// Test  28: ✅ export HELLO="123 A-"
+// Test  29: ✅ export hello world
+// Test  30: ❌ export HELLO-=123
+// Test  31: ❌ export =
+// Test  32: ❌ export 123
+// Test  56: ✅ export GHOST=123 | env | grep GHOST
 
 // prints formatted env
 static void	export_print(const char *key, const char *value)
