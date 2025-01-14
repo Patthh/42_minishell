@@ -33,7 +33,7 @@ static	void	export_print_sorted(t_env **sorted, int size)
 	}
 }
 
-void	ft_export(t_command *command, t_program *minishell)
+void ft_export(t_command *command, t_program *minishell)
 {
 	t_env	**sorted;
 	int		size;
@@ -48,16 +48,13 @@ void	ft_export(t_command *command, t_program *minishell)
 			free(sorted);
 		}
 		minishell->status = 0;
-		return ;
+		return;
 	}
+
 	i = 1;
 	while (command->arguments[i])
 	{
-		export_process(command->arguments[i++], minishell);
-		sorted = export_sorting(minishell, &size);
-		if (sorted)
-		{
-			free(sorted);
-		}
+		export_process(command->arguments[i], minishell);
+		i++;
 	}
 }

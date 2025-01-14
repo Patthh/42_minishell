@@ -23,15 +23,20 @@ static int	export_valid(const char *string)
 // prints error message for invalid identifiers
 static	void	export_error(const char *key)
 {
-	ft_putstr_fd("export:`", STDERR_FILENO);
-	ft_putstr_fd((char *)key, STDERR_FILENO);
-	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
+	if (*key == '\0')
+		ft_putstr_fd("minishell: export: `=': not a valid identifier\n", STDERR_FILENO);
+	else
+	{
+		ft_putstr_fd("minishell: export: `", STDERR_FILENO);
+		ft_putstr_fd((char *)key, STDERR_FILENO);
+		ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
+	}
 }
 
 // updates and adds env with value expansion
 // handle case with no value
 // expand any variables in the value
-static void	export_update(t_program *minishell, char *key, char *value)
+void	export_update(t_program *minishell, char *key, char *value)
 {
 	char	*expand;
 
@@ -41,7 +46,6 @@ static void	export_update(t_program *minishell, char *key, char *value)
 		return ;
 	}
 	expand = quote_expand(value, minishell);
-	free (value);
 	if (!expand)
 	{
 		add_env(minishell, key, "");
@@ -68,29 +72,40 @@ static void	export_extract(const char *argument, char **key, char **value)
 	*value = NULL;
 }
 
+static void	free_key_value(char *key, char *value)
+{
+	if (key)
+		free (key);
+	if (value)
+		free (value);
+}
 // extracts key and value from argument
 // validates the key
 // process if valid key
 int	export_process(const char *argument, t_program *minishell)
 {
-	char	*key;
-	char	*value;
+	char *key;
+	char *value;
 
 	export_extract(argument, &key, &value);
 	if (!export_valid(key))
 	{
 		export_error(key);
 		minishell->status = 1;
-		if (key)
-			free (key);
+		free_key_value(key, value);
 		return (1);
 	}
 	if (key && *key)
 	{
+		if (env_value(minishell, key))
+		{
+			minishell->status = 0;
+			free_key_value(key, value);
+			return (1);
+		}
 		export_update(minishell, key, value);
 		minishell->status = 0;
 	}
-	if (key)
-		free (key);
+	free_key_value(key, value);
 	return (0);
 }
