@@ -1,7 +1,7 @@
 #include "../../include/minishell.h"
 
-// static void	execute_in_child(char *cmd_path, t_command *command,
-// 				t_program *minishell);
+static void	execute_in_child(char *cmd_path, t_command *command,
+				t_program *minishell);
 
 // Execute group
 // int execute_group(t_group *group, t_program *minishell)
