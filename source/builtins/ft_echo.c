@@ -7,6 +7,7 @@
 // cc ft_echo.c ../utils/utils_libft.c
 // run ./a.out -n argument
 // flag -n do not output the trailing newline
+
 static int	case_empty(t_program *minishell)
 {
 	ft_putstr_fd("\n", STDOUT_FILENO);
@@ -60,9 +61,8 @@ static void	echo_print(char **arguments, int start)
 	i = start;
 	while (arguments[i])
 	{
-		if (arguments[i][0] != '\0')
-			ft_putstr_fd(arguments[i], STDOUT_FILENO);
-		if (arguments[i + 1] && arguments[i + 1][0] != '\0')
+		ft_putstr_fd(arguments[i], STDOUT_FILENO);
+		if (arguments[i + 1])
 			ft_putstr_fd(" ", STDOUT_FILENO);
 		i++;
 	}

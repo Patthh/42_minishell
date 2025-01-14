@@ -17,10 +17,7 @@ static int	unset_remove(t_program *minishell, const char *key)
 	t_env	*previous;
 
 	if (!key)
-	{
-		ft_putstr_fd("unset: invalid variable name\n", STDERR_FILENO);
 		return (0);
-	}
 	current = minishell->env_list;
 	previous = NULL;
 	while (current)
@@ -32,7 +29,7 @@ static int	unset_remove(t_program *minishell, const char *key)
 			else
 				minishell->env_list = current->next;
 			unset_free(current);
-			return (1);
+			return (0);
 		}
 		previous = current;
 		current = current->next;
@@ -45,14 +42,18 @@ static int	unset_check(const char *name)
 {
 	if (!name || !*name)
 		return (0);
-	if (!(ft_isalnum(*name) || *name == '_'))
-		return (0);
-	while (*name++)
+	if (ft_isalnum(*name) || *name == '_')
 	{
-		if (!(ft_isalnum(*name) || *name == '_'))
-			return (0);
+		name++;
+		while (*name)
+		{
+			if (!(ft_isalnum(*name) || *name == '_'))
+				return (0);
+			name++;
+		}
+		return (1);
 	}
-	return (1);
+	return (0);
 }
 
 // process a single argument
@@ -62,18 +63,12 @@ static int	unset_single(t_program *minishell, char *argument)
 {
 	if (!unset_check(argument))
 	{
-		ft_putstr_fd("unset: ", STDERR_FILENO);
-		ft_putstr_fd(argument, STDERR_FILENO);
-		ft_putstr_fd("`: not a valid identifier\n", STDERR_FILENO);
+		ft_putstr_fd("unset: `", STDERR_FILENO);
+		ft_putstr_fd("argument", STDERR_FILENO);
+		ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
 		return (1);
 	}
-	if (!unset_remove(minishell, argument))
-	{
-		ft_putstr_fd("unset: ", STDERR_FILENO);
-		ft_putstr_fd(argument, STDERR_FILENO);
-		ft_putstr_fd("`: variable not found\n", STDERR_FILENO);
-		return (1);
-	}
+	unset_remove(minishell, argument);
 	return (0);
 }
 
@@ -84,16 +79,12 @@ int	ft_unset(t_command *command, t_program *minishell)
 	int	status;
 
 	if (!command->arguments || !command->arguments[1])
-	{
-		ft_putstr_fd("unset: not enough arguments\n", STDERR_FILENO);
-		minishell->status = 1;
-		return (1);
-	}
+		return (0);
 	i = 1;
 	status = 0;
 	while (command->arguments[i])
 	{
-		if (unset_single(minishell, command->arguments[i]))
+		if (unset_single(minishell, command->arguments[i]) != 0)
 			status = 1;
 		i++;
 	}
