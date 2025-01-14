@@ -66,3 +66,55 @@ void	token_word(const char **input, t_token **head, t_program *minishell)
 		}
 	}
 }
+
+// handles $? special case with following characters
+static void	token_case(const char **input, t_token **head,
+		t_program *minishell)
+{
+	char	*status;
+	char	*result;
+
+	(*input)++;
+	status = ft_itoa(minishell->status);
+	if (!status)
+		return ;
+	if (**input && !ft_isspace(**input))
+	{
+		result = ft_strjoin(status, *input);
+		free(status);
+		if (!result)
+			return ;
+		token_add(head, token_new(TKN_WORD, result));
+		free(result);
+	}
+	else
+	{
+		token_add(head, token_new(TKN_WORD, status));
+		free(status);
+	}
+	while (**input && !ft_isspace(**input))
+		(*input)++;
+}
+
+// handles dollar sign
+// end of input or whitespace after $
+// $?
+// environment variables
+void	token_dollar(const char **input, t_token **head, t_program *minishell)
+{
+	(*input)++;
+	if (!**input || ft_isspace(**input))
+	{
+		token_add(head, token_new(TKN_WORD, "$"));
+		return ;
+	}
+	if (**input == '?')
+	{
+		token_case(input, head, minishell);
+		return ;
+	}
+	if (ft_isalnum(**input) || **input == '_')
+		token_env(input, head, minishell);
+	else
+		token_add(head, token_new(TKN_WORD, "$"));
+}
