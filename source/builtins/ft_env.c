@@ -24,7 +24,8 @@ void	init_env(t_program *minishell, char **envp)
 	}
 }
 
-void	add_env(t_program *minishell, const char *key, const char *value, int sign)
+void	add_env(t_program *minishell, const char *key, const char *value,
+			int sign)
 {
 	t_env	*new;
 

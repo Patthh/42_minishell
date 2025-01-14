@@ -193,27 +193,32 @@ t_token			*parser_logical(t_token *token, t_command **command, t_pipeline *pipel
 // t_token		*parser_or(t_token *token, t_command **command, t_pipeline *pipeline);
 
 // BUILTINS
-int		ft_cd(t_command *command, t_program *minishell);
-int		ft_echo(t_command *command, t_program *minishell);
-int		ft_env(t_program *minishell);
-int		ft_exit(t_command *command, t_program *minishell);
-void	ft_export(t_command *command, t_program *minishell);
-int		ft_pwd(t_program *minishell);
-int		ft_unset(t_command *command, t_program *minishell);
-int		ft_cd(t_command *command, t_program *minishell);
+int				ft_cd(t_command *command, t_program *minishell);
+int				ft_echo(t_command *command, t_program *minishell);
+int				ft_env(t_program *minishell);
+int				ft_exit(t_command *command, t_program *minishell);
+void			ft_export(t_command *command, t_program *minishell);
+int				ft_pwd(t_program *minishell);
+int				ft_unset(t_command *command, t_program *minishell);
+int				ft_cd(t_command *command, t_program *minishell);
 
 // BUILTINS UTILS
 t_env			**export_sorting(t_program *minishell, int *size);
-void export_update(t_program *minishell, char *key, char *value, int sign);
+void 			export_update(t_program *minishell, char *key, char *value, int sign);
 void			export_extract(const char *argument, char **key, char **value, int *sign);
 int				export_process(const char *argument, t_program *minishell);
 void			export_remove(t_program *minishell, const char *key);
-void	free_key_value(char *key, char *value);
+void			export_argument(t_command *command, t_program *minishell);
+t_env			**export_sorting(t_program *minishell, int *size);
+void			export_error(const char *key);
+int				export_valid(const char *string);
+void			print_export(t_program *minishell);
+void			free_key_value(char *key, char *value);
 
 // EXECUTION
-void	execute_pipeline(t_pipeline *pipeline, t_program *minishell);
-void	execute_command(t_command *command, t_program *minishell);
-void	execute_builtin(t_command *command, t_program *minishell);
+void			execute_pipeline(t_pipeline *pipeline, t_program *minishell);
+void			execute_command(t_command *command, t_program *minishell);
+void			execute_builtin(t_command *command, t_program *minishell);
 
 t_pipeline		*create_pipeline(void);
 t_command		*create_command(void);
