@@ -3,61 +3,89 @@
 // handles without memory leaks
 // export
 // export a
+// export b=
+// export c=qwe
+// export d="qwe"
+// export e='qwe'
+// export f=""
+// export g=''
 // export a b c d e f g h
 // export VAR=$USER
 // export =
 // export "="
 
-// prints formatted env
-static	void	export_print(const char *key, const char *value)
+// extracts key and value from argument
+// handles special case where argument is "="
+void	export_extract(const char *argument, char **key,
+	char **value, int *sign)
 {
-	ft_putstr_fd("declare -x ", STDOUT_FILENO);
-	ft_putstr_fd((char *)key, STDOUT_FILENO);
-	if (value && *value != '\0')
+	char	*equals;
+
+	equals = ft_strchr(argument, '=');
+	if (equals)
 	{
-		ft_putstr_fd("=", STDOUT_FILENO);
-		ft_putstr_fd((char *)value, STDOUT_FILENO);
+		*key = ft_strndup(argument, equals - argument);
+		*value = ft_strdup(equals + 1);
+		*sign = 0;
 	}
-	ft_putstr_fd("\n", STDOUT_FILENO);
+	else
+	{
+		*key = ft_strdup(argument);
+		*value = NULL;
+		*sign = 1;
+	}
 }
 
-static	void	export_print_sorted(t_env **sorted, int size)
+// extracts key and value from argument
+// validates the key
+// process if valid key
+int	export_process(const char *argument, t_program *minishell)
 {
-	int	i;
+	char	*key;
+	char	*value;
+	int		sign;
 
-	i = 0;
-	while (i < size)
+	export_extract(argument, &key, &value, &sign);
+	if (!export_valid(key))
 	{
-		export_print(sorted[i]->key, sorted[i]->value);
+		export_error(key);
+		minishell->status = 1;
+		free_key_value(key, value);
+		return (1);
+	}
+	if (key && *key)
+	{
+		export_update(minishell, key, value, sign);
+		minishell->status = 0;
+	}
+	free_key_value(key, value);
+	return (0);
+}
+
+// process each argument passed to the export command
+// updates the environment
+void	export_argument(t_command *command, t_program *minishell)
+{
+	int		i;
+	char	*key;
+	char	*value;
+	int		sign;
+
+	i = 1;
+	while (command->arguments[i])
+	{
+		export_extract(command->arguments[i], &key, &value, &sign);
+		export_process(command->arguments[i], minishell);
+		free_key_value(key, value);
 		i++;
 	}
 }
 
+// handles export command
 void	ft_export(t_command *command, t_program *minishell)
 {
-	t_env	**sorted;
-	int		size;
-	int		i;
-
 	if (!command->arguments[1])
-	{
-		sorted = export_sorting(minishell, &size);
-		if (sorted)
-		{
-			export_print_sorted(sorted, size);
-			free(sorted);
-		}
-		minishell->status = 0;
-		return ;
-	}
-	i = 1;
-	while (command->arguments[i])
-	{
-		export_process(command->arguments[i++], minishell);
-		sorted = export_sorting(minishell, &size);
-		if (sorted)
-		{
-			free(sorted);
-		}
-	}
+		print_export(minishell);
+	else
+		export_argument(command, minishell);
 }
