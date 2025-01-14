@@ -75,6 +75,31 @@ static void	sort_env(t_env **array, int size)
 	}
 }
 
+void	export_remove(t_program *minishell, const char *key)
+{
+	t_env	*current;
+	t_env	*previous;
+
+	current = minishell->env_list;
+	previous = NULL;
+	while (current)
+	{
+		if (ft_strcmp(current->key, key) == 0)
+		{
+			if (previous)
+				previous->next = current->next;
+			else
+				minishell->env_list = current->next;
+			free(current->key);
+			free(current->value);
+			free(current);
+			return ;
+		}
+		previous = current;
+		current = current->next;
+	}
+}
+
 // Main function to sort and return the environment array
 t_env	**export_sorting(t_program *minishell, int *size)
 {

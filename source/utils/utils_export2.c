@@ -36,43 +36,48 @@ static	void	export_error(const char *key)
 // updates and adds env with value expansion
 // handle case with no value
 // expand any variables in the value
-void	export_update(t_program *minishell, char *key, char *value)
+void export_update(t_program *minishell, char *key, char *value, int sign)
 {
-	char	*expand;
+	char *expand;
 
-	if (!value)
+	export_remove(minishell, key);
+	if (!value || ft_strcmp(value, "") == 0)
 	{
-		add_env(minishell, key, "");
-		return ;
+		add_env(minishell, key, "", sign);
+		return;
 	}
 	expand = quote_expand(value, minishell);
 	if (!expand)
 	{
-		add_env(minishell, key, "");
-		return ;
+		add_env(minishell, key, "", sign);
+		return;
 	}
-	add_env(minishell, key, expand);
-	free (expand);
+	add_env(minishell, key, expand, sign);
+	free(expand);
 }
 
 // extracts key and value from argument
 // handles special case where argument is "="
-static void	export_extract(const char *argument, char **key, char **value)
+void export_extract(const char *argument, char **key, char **value, int *sign)
 {
-	char	*equals;
+	char *equals;
 
 	equals = ft_strchr(argument, '=');
 	if (equals)
 	{
 		*key = ft_strndup(argument, equals - argument);
 		*value = ft_strdup(equals + 1);
-		return ;
+		*sign = 0;
 	}
-	*key = ft_strdup(argument);
-	*value = NULL;
+	else
+	{
+		*key = ft_strdup(argument);
+		*value = NULL;
+		*sign = 1;
+	}
 }
 
-static void	free_key_value(char *key, char *value)
+void	free_key_value(char *key, char *value)
 {
 	if (key)
 		free (key);
@@ -82,30 +87,25 @@ static void	free_key_value(char *key, char *value)
 // extracts key and value from argument
 // validates the key
 // process if valid key
-int	export_process(const char *argument, t_program *minishell)
+int export_process(const char *argument, t_program *minishell)
 {
 	char *key;
 	char *value;
+	int sign;
 
-	export_extract(argument, &key, &value);
+	export_extract(argument, &key, &value, &sign);
 	if (!export_valid(key))
 	{
 		export_error(key);
 		minishell->status = 1;
 		free_key_value(key, value);
-		return (1);
+		return 1;
 	}
 	if (key && *key)
 	{
-		if (env_value(minishell, key))
-		{
-			minishell->status = 0;
-			free_key_value(key, value);
-			return (1);
-		}
-		export_update(minishell, key, value);
+		export_update(minishell, key, value, sign);
 		minishell->status = 0;
 	}
 	free_key_value(key, value);
-	return (0);
+	return 0;
 }

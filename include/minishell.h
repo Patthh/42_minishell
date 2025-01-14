@@ -127,6 +127,7 @@ typedef struct s_env
 {
 	char					*key;
 	char					*value;
+	int						sign;
 	struct s_env			*next;
 }	t_env;
 
@@ -171,6 +172,7 @@ void			token_paranthesis(const char **input, t_token **head);
 char			*env_name(const char **input);
 char			*env_value(t_program *minishell, const char *key);
 void			env_word(const char **input, char **result, t_program *minishell);
+t_env			*env_find(t_env *env_list, const char *key);
 
 // PARSER
 t_pipeline		*parser(t_token *tokens, t_program *minishell);
@@ -201,8 +203,12 @@ int		ft_unset(t_command *command, t_program *minishell);
 int		ft_cd(t_command *command, t_program *minishell);
 
 // BUILTINS UTILS
-t_env	**export_sorting(t_program *minishell, int *size);
-int	export_process(const char *argument, t_program *minishell);
+t_env			**export_sorting(t_program *minishell, int *size);
+void export_update(t_program *minishell, char *key, char *value, int sign);
+void			export_extract(const char *argument, char **key, char **value, int *sign);
+int				export_process(const char *argument, t_program *minishell);
+void			export_remove(t_program *minishell, const char *key);
+void	free_key_value(char *key, char *value);
 
 // EXECUTION
 void	execute_pipeline(t_pipeline *pipeline, t_program *minishell);
@@ -238,7 +244,7 @@ void	free_env(t_env *head);
 
 // env
 void	init_env(t_program *minishell, char **envp);
-void	add_env(t_program *minishell, const char *key, const char *value);
+void	add_env(t_program *minishell, const char *key, const char *value, int sign);
 
 // SIGNAL
 void	nl_handler(int signal);
