@@ -76,31 +76,3 @@ void	token_env(const char **input, t_token **head, t_program *shell)
 	else
 		token_add(head, token_new(TKN_WORD, "$"));
 }
-
-// handles dollar sign
-// end of input or whitespace after $
-// $?
-// environment variables
-void	token_dollar(const char **input, t_token **head, t_program *minishell)
-{
-	char	*status;
-
-	(*input)++;
-	if (!**input || ft_isspace(**input))
-	{
-		token_add(head, token_new(TKN_WORD, "$"));
-		return ;
-	}
-	if (**input == '?')
-	{
-		status = ft_itoa(minishell->status);
-		token_add(head, token_new(TKN_STATUS, status));
-		free(status);
-		(*input)++;
-		return ;
-	}
-	if (ft_isalnum(**input) || **input == '_')
-		token_env(input, head, minishell);
-	else
-		token_add(head, token_new(TKN_WORD, "$"));
-}

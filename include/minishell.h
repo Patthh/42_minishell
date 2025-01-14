@@ -167,6 +167,7 @@ void			token_env(const char **input, t_token **head, t_program *shell);
 void			token_word(const char **input, t_token **head, t_program *minishell);
 void			token_extra(const char **input, t_token **head, t_program *minishell);
 void			token_wildcard(const char **input, t_token **head);
+char	*token_env_word(const char **input, t_program *minishell);
 void			token_paranthesis(const char **input, t_token **head);
 
 char			*env_name(const char **input);

@@ -1,27 +1,56 @@
 #include "../../include/minishell.h"
 
-void	token_unquoted(const char **input, char **result,
-	t_program *minishell)
+// handle unquoted token
+// allocate memory for temp
+// handle $?
+// handle regular character
+void	token_unquoted(const char **input, char **result, t_program *minishell)
 {
-	while (**input && !ft_isspace(**input) && **input != '\'' && **input != '"')
+	char	*temp;
+	char	*status;
+	char	*c;
+
+	temp = ft_strndup(*input, 2);
+	if (temp && ft_strcmp(temp, "$?") == 0)
 	{
-		if (**input == '$')
-			env_word(input, result, minishell);
-		else
-			token_regular(input, result);
+		status = ft_itoa(minishell->status);
+		*result = token_join(*result, status);
+		free(status);
+		*input += 2;
 	}
+	else
+	{
+		c = ft_strndup(*input, 1);
+		*result = token_join(*result, c);
+		free (c);
+		(*input)++;
+	}
+	free(temp);
 }
 
-// Process content within double quotes and handle variable expansion
+// process content within double quotes
+// handles variable expansion
 void	token_double(const char **input, char **result, t_program *minishell)
 {
+	char	*tmp;
+
 	(*input)++;
 	while (**input && **input != '"')
 	{
-		if (**input == '$')
+		if (**input == '$' && *(*input + 1) == '?')
+		{
+			tmp = ft_itoa(minishell->status);
+			*result = token_join(*result, tmp);
+			free(tmp);
+			*input += 2;
+		}
+		else if (**input == '$')
 			env_word(input, result, minishell);
 		else
-			token_regular(input, result);
+		{
+			*result = token_join(*result, ft_strndup(*input, 1));
+			(*input)++;
+		}
 	}
 	if (**input == '"')
 		(*input)++;

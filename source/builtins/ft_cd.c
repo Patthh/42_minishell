@@ -63,8 +63,8 @@ static int	path_update(char *path, t_program *minishell)
 		ft_putstr_fd("minishell: cd: error getting new directory\n", STDERR_FILENO);
 		return (1);
 	}
-	add_env(minishell, "OLDPWD", old);
-	add_env(minishell, "PWD", new);
+	add_env(minishell, "OLDPWD", old, 1);
+	add_env(minishell, "PWD", new, 1);
 	return (0);
 }
 
