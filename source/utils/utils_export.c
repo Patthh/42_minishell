@@ -111,7 +111,7 @@ t_env	**export_sorting(t_program *minishell, int *size)
 // 	}
 // 	if (!(ft_isalpha(name[0]) || name[0] == '_'))
 // 	{
-// 		*error = ft_strdup("variable name must begin with a \
+// 		*error = ft_strdup("variable name must begin with a 
 // 				letter or underscore");
 // 		return (1);
 // 	}
@@ -120,7 +120,7 @@ t_env	**export_sorting(t_program *minishell, int *size)
 // 	{
 // 		if (!(ft_isalnum(name[i]) || name[i] == '_'))
 // 		{
-// 			*error = ft_strdup("variable name can only contain \
+// 			*error = ft_strdup("variable name can only contain 
 // 				letters, digits, and underscores");
 // 			return (1);
 // 		}

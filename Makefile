@@ -1,5 +1,7 @@
 ################################################################################
 ## VARIABLES
+MAKEFLAGS += --no-print-directory
+
 NAME			=	minishell
 LIBFT_NAME		=	libft.a
 
@@ -42,31 +44,23 @@ DEPS			=	$(OBJS:.o=.d)
 ################################################################################
 ## RULES
 all:				$(DIR_LIBFT)$(LIBFT_NAME) $(NAME)
+					@echo -e "$(GREEN)Build complete! $(NAME) has been created.$(NC)"
 
 $(NAME):			$(OBJS)
-					@echo "$(YELLOW)Linking$(NC) $(NAME)"
 					@$(CC) $(CFLAGS) $(OBJS) $(DIR_LIBFT)/$(LIBFT_NAME) $(READLINE) -o $(NAME)
-					@echo "$(GREEN)Build completed: $(NAME)$(NC)"
-
+					
 $(DIR_LIBFT)$(LIBFT_NAME):
-					@echo "$(YELLOW)Building libft$(NC)"
 					@$(MAKE) -C $(DIR_LIBFT) || (echo "$(RED)Error building libft$(NC)" && exit 1)
 
 %.o: %.c
-					@echo "$(YELLOW)Compiling$(NC) $<"
 					@$(CC) $(CFLAGS) $(HEADERS) -c $< -o $@
-					@echo "$(GREEN)Compiled$(NC) $<"
-
+					
 clean:
-					@echo "$(YELLOW)Cleaning object files$(NC)"
 					@$(RM) $(OBJS) $(OBJS:.o=.d)
-					@echo "$(GREEN)Clean completed$(NC)"
 					@$(MAKE) -C $(DIR_LIBFT) clean
 
 fclean:				clean
-					@echo "$(YELLOW)Cleaning executable$(NC)"
 					@$(RM) $(NAME)
-					@echo "$(GREEN)Executable removed$(NC)"
 					@$(MAKE) -C $(DIR_LIBFT) fclean
 
 re:					fclean all

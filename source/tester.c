@@ -74,13 +74,13 @@ void print_pipeline(t_pipeline *pipeline)
         }
 
         // Print the logical operator status
-        printf(" Logical Operator: ");
-        if (command->logical == LOG_AND)
-            printf("&&\n");
-        else if (command->logical == LOG_OR)
-            printf("||\n");
-        else
-            printf("None\n");
+        // printf(" Logical Operator: ");
+        // if (command->logical == LOG_AND)
+        //     printf("&&\n");
+        // else if (command->logical == LOG_OR)
+        //     printf("||\n");
+        // else
+        //     printf("None\n");
 
         i++;
     }

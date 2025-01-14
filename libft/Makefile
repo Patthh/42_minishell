@@ -1,5 +1,7 @@
 ################################################################################
 ## ARGUMENTS
+MAKEFLAGS += --no-print-directory
+
 NAME		= libft.a
 HEADERS		= libft.h
 
@@ -88,16 +90,17 @@ DIR_TO		=	$(SRC_DIR)ft_to/ft_atoi_base.c \
 				$(SRC_DIR)ft_to/ft_tolower.c \
 				$(SRC_DIR)ft_to/ft_toupper.c
 
-DIR_PF		=	$(SRC_DIR)ft_printf/ft_printf_character.c \
-				$(SRC_DIR)ft_printf/ft_printf_hex.c \
-				$(SRC_DIR)ft_printf/ft_printf_number.c \
-				$(SRC_DIR)ft_printf/ft_printf_pointer.c \
-				$(SRC_DIR)ft_printf/ft_printf_string.c \
-				$(SRC_DIR)ft_printf/ft_printf_unsigned_number.c \
-				$(SRC_DIR)ft_printf/ft_printf.c \
-				$(SRC_DIR)ft_printf/ft_utoa.c
+# DIR_PF		=	$(SRC_DIR)ft_printf/ft_printf_character.c \
+# 				$(SRC_DIR)ft_printf/ft_printf_hex.c \
+# 				$(SRC_DIR)ft_printf/ft_printf_number.c \
+# 				$(SRC_DIR)ft_printf/ft_printf_pointer.c \
+# 				$(SRC_DIR)ft_printf/ft_printf_string.c \
+# 				$(SRC_DIR)ft_printf/ft_printf_unsigned_number.c \
+# 				$(SRC_DIR)ft_printf/ft_printf.c \
+# 				$(SRC_DIR)ft_printf/ft_utoa.c
 
-SRCS 		= $(DIR_IS) $(DIR_LST) $(DIR_MEM) $(DIR_PUT) $(DIR_STR) $(DIR_TO) $(DIR_PF)
+SRCS 		= $(DIR_IS) $(DIR_LST) $(DIR_MEM) $(DIR_PUT) $(DIR_STR) $(DIR_TO) 
+# $(DIR_PF)
 OBJS		= $(SRCS:.c=.o)
 
 ################################################################################
@@ -109,25 +112,17 @@ OBJS		= $(SRCS:.c=.o)
 all:				$(NAME)
 
 $(NAME):			$(OBJS)
-					@echo "$(YELLOW)Archiving$(NC) $(NAME)"
 					@$(AR) $(NAME) $(OBJS)
-					@echo "$(GREEN)Archive created: $(NAME)$(NC)"
-
+					
 %.o: %.c
-					@echo "$(YELLOW)Compiling$(NC) $<"
 					@$(CC) $(CFLAGS) -I $(INC_DIR) -c $< -o $@
-					@echo "$(GREEN)Compiled$(NC) $<"
-
+					
 clean:
-					@echo "$(YELLOW)Cleaning object files$(NC)"
 					@$(RM) $(OBJS)
-					@echo "$(GREEN)Clean completed$(NC)"
-
+					
 fclean:				clean
-					@echo "$(YELLOW)Cleaning archive$(NC)"
 					@$(RM) $(NAME)
-					@echo "$(GREEN)Archive removed$(NC)"
-
+					
 re:					fclean all
 
 .PHONY: 			all clean fclean re
