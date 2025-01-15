@@ -80,7 +80,8 @@ static void	heredoc_expand(t_redirection *heredoc, t_program *minishell)
 		ft_error("Heredoc: failed to expand heredoc\n");
 }
 
-void	heredoc_read(t_redirection *heredoc, t_command *command, t_program *minishell)
+void	heredoc_read(t_redirection *heredoc, t_command *command,
+	t_program *minishell)
 {
 	if (!heredoc)
 		return ;
@@ -98,21 +99,3 @@ void	heredoc_read(t_redirection *heredoc, t_command *command, t_program *minishe
 	free(heredoc->content);
 	heredoc->content = NULL;
 }
-
-// to test it
-// cc -Wall -Werror -Wextra *.c  ../utils/utils_libft.c ../lexer/*.c ../utils/utils.c -lreadline -O0 -g
-
-// int main(void)
-// {
-// 	t_redirection 	*heredoc = create_redirection("HEREDOC", "EOF", 0);
-// 	t_program		*minishell = NULL;
-
-// 	heredoc_read(heredoc, minishell);
-
-// 	printf("%s\n", heredoc->content);
-// 	free(heredoc->content);
-// 	free(heredoc->type);
-// 	free(heredoc->filename);
-// 	free(heredoc);
-// 	return (0);
-// }

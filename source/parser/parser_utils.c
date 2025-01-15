@@ -2,11 +2,13 @@
 
 // parse token and build commands
 // update command and pipeline as needed
-t_token	*parser_token(t_token *token, t_command **command, t_program *minishell, t_pipeline *pipeline)
+t_token	*parser_token(t_token *token, t_command **command,
+	t_program *minishell, t_pipeline *pipeline)
 {
 	if (token->type == TKN_WORD)
 		return (parser_word(token, *command));
-	if (token->type == TKN_IN || token->type == TKN_OUT || token->type == TKN_RDA || token->type == TKN_RDH)
+	if (token->type == TKN_IN || token->type == TKN_OUT
+		|| token->type == TKN_RDA || token->type == TKN_RDH)
 		return (parser_redirection(token, *command, minishell));
 	if (token->type == TKN_ENV)
 		return (parser_env(token, *command, minishell));

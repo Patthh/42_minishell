@@ -42,7 +42,8 @@ typedef enum e_token
 	TKN_DOUBLE,		// 15 double quote
 	TKN_WILDCARD,	// 16 *
 	TKN_WORD,		// 17
-	TKN_ASSIGN		// 18 =
+	TKN_ASSIGN,		// 18 =
+	TKN_EMPTY		// 19 $EMPTY
 }	t_token_type;
 
 typedef enum e_logical
@@ -252,6 +253,13 @@ void	free_args(char **strings);
 void	free_env(t_env *head);
 // void	free_parser(t_pipeline *pipeline);
 
+// ERRORS
+void	error_command(char *command, t_program *minishell);
+void	error_eof(char *token, t_program *minishell);
+void	error_syntax(char *message, t_program *minishell);
+void	error_file_not_found(char *path, t_program *minishell);
+void	error_arguments(char *command, t_program *minishell);
+void	error_malloc(t_program *minishell);
 
 // env
 void	init_env(t_program *minishell, char **envp);

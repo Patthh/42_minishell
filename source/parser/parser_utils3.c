@@ -47,7 +47,12 @@ t_token	*parser_env(t_token *token, t_command *command, t_program *minishell)
 
 	key = token->value;
 	value = env_value(minishell, key);
-	if (value)
+	if (!value)
+	{
+		error_file_not_found(key, minishell);
+		return (NULL);
+	}
+	else
 	{
 		if (!parser_argument(command, value))
 			ft_error("Parse: failed to add argument\n");
@@ -61,7 +66,10 @@ t_token	*parser_status(t_token *token, t_program *minishell)
 
 	status = ft_itoa(minishell->status);
 	if (!status)
+	{
+		error_malloc(minishell);
 		return (NULL);
+	}
 	if (token->value)
 		free(token->value);
 	token->type = TKN_WORD;
