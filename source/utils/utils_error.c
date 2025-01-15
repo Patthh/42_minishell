@@ -1,11 +1,11 @@
 #include "../../include/minishell.h"
 
-void	error_command(char *command, t_program *minishell)
+void error_command(char *command, t_program *minishell)
 {
-	ft_putstr_fd("minishell: command not found: ", STDERR_FILENO);
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	if (command)
 		ft_putstr_fd(command, STDERR_FILENO);
-	ft_putstr_fd("\n", STDERR_FILENO);
+	ft_putstr_fd(": command not found\n", STDERR_FILENO);
 	minishell->status = 127;
 }
 
