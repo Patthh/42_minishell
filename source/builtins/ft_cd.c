@@ -18,7 +18,7 @@ void	cd_error(char *path, char *message)
 static int	chdir_error(char *target_path)
 {
 	if (access(target_path, F_OK) == -1)
-		cd_error(target_path, "no such file or directory");
+		cd_error(target_path, "No such file or directory");
 	else if (access(target_path, X_OK) == -1)
 		cd_error(target_path, "permission denied");
 	else
