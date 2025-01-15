@@ -7,7 +7,10 @@ char	*expand_var(const char **pointer, t_program *minishell)
 
 	key = env_name(pointer);
 	if (!key)
+	{
+		error_syntax("$", minishell);
 		return (ft_strdup("$"));
+	}
 	if (ft_strcmp(key, "?") == 0)
 	{
 		value = ft_itoa(minishell->status);
@@ -16,10 +19,12 @@ char	*expand_var(const char **pointer, t_program *minishell)
 	}
 	value = env_value(minishell, key);
 	free(key);
-	if (value)
-		return (ft_strdup(value));
-	else
+	if (!value)
+	{
+		error_file_not_found(key, minishell);
 		return (ft_strdup(""));
+	}
+	return (ft_strdup(value));
 }
 
 // expand the exit status "$?"
@@ -28,6 +33,11 @@ char	*expand_exit(t_program *minishell)
 	char	*status;
 
 	status = ft_itoa(minishell->status);
+	if (!status)
+	{
+		error_malloc(minishell);
+		return (NULL);
+	}
 	return (status);
 }
 
@@ -37,7 +47,10 @@ char	*expand_single(const char **string, t_program *minishell)
 	char	*result;
 
 	if (!string || !*string || !**string)
+	{
+		error_eof("", minishell);
 		return (NULL);
+	}
 	if (**string == '$')
 	{
 		if (*(*string + 1) == '?')
@@ -69,7 +82,10 @@ char	*quote_expand(char *string, t_program *minishell)
 	temp = NULL;
 	pointer = string;
 	if (!string)
+	{
+		error_eof("", minishell);
 		return (NULL);
+	}
 	while (*pointer)
 	{
 		temp = expand_single(&pointer, minishell);

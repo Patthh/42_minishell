@@ -21,7 +21,8 @@ static int	redir_filename(t_token *token)
 {
 	if (!token || token->type != TKN_WORD || !token->value || !token->value[0])
 	{
-		ft_putstr_fd("minishell: syntax error near unexpected token\n", STDERR_FILENO);
+		ft_putstr_fd("minishell: syntax error near unexpected token\n",
+			STDERR_FILENO);
 		return (0);
 	}
 	return (1);
@@ -39,7 +40,8 @@ static void	redir_free(t_redirection *redirection)
 
 // input: IN or HEREDOC
 // output: OUT or APPEND
-static void	redir_add(t_command *command, t_redirection *redirection, int index)
+static void	redir_add(t_command *command, t_redirection *redirection,
+	int index)
 {
 	t_redirection	**list;
 
@@ -73,7 +75,8 @@ static void	redir_add(t_command *command, t_redirection *redirection, int index)
 // each file should be treated as a target
 // previous ones are just opened and closed/replaced
 // not treated as arguments to the command
-t_token	*parser_redirection(t_token *token, t_command *command, t_program *minishell)
+t_token	*parser_redirection(t_token *token, t_command *command,
+	t_program *minishell)
 {
 	const char		*types[] = {"INT", "OUT", "APPEND", "HEREDOC"};
 	t_redirection	*redirection;
@@ -83,11 +86,15 @@ t_token	*parser_redirection(t_token *token, t_command *command, t_program *minis
 	index = redir_index(token->type);
 	token = token->next;
 	if (!redir_filename(token))
+	{
+		error_syntax(token->value, minishell);
 		return (NULL);
+	}
 	delimiter = token->value;
 	if (token->type == TKN_SINGLE || token->type == TKN_DOUBLE)
 		delimiter = ft_substr(delimiter, 1, ft_strlen(delimiter) - 2);
-	redirection = create_redirection(types[index], token->value, token->type == TKN_SINGLE || token->type == TKN_DOUBLE);
+	redirection = create_redirection(types[index], token->value,
+			token->type == TKN_SINGLE || token->type == TKN_DOUBLE);
 	if (!redirection)
 		return (NULL);
 	redir_add(command, redirection, index);

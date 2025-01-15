@@ -36,7 +36,8 @@ t_command	*create_command(void)
 	return (command);
 }
 
-t_redirection	*create_redirection(const char *type, const char *filename, int quoted)
+t_redirection	*create_redirection(const char *type, const char *filename,
+	int quoted)
 {
 	t_redirection	*redirection;
 
@@ -66,7 +67,6 @@ t_redirection	*create_redirection(const char *type, const char *filename, int qu
 // 	return (group);
 // }
 
-
 // Preparation
 // Verify input token are valid
 // Prepare data structures for parsing
@@ -81,6 +81,11 @@ t_pipeline	*parser(t_token *tokens, t_program *minishell)
 	if (!parser_sequence(tokens, minishell))
 		return (NULL);
 	pipeline = create_pipeline();
+	if (!pipeline)
+	{
+		error_malloc(minishell);
+		return (NULL);
+	}
 	command = create_command();
 	pipeline->commands[0] = command;
 	pipeline->cmd_count = 1;

@@ -2,7 +2,8 @@
 
 int	parser_builtin(const char *command)
 {
-	const char	*builtins[] = {"echo", "cd", "pwd", "export", "unset", "env", "exit", NULL};
+	const char	*builtins[] = {"echo", "cd", "pwd", "export",
+		"unset", "env", "exit", NULL};
 	int			i;
 
 	i = 0;
@@ -46,7 +47,12 @@ t_token	*parser_env(t_token *token, t_command *command, t_program *minishell)
 
 	key = token->value;
 	value = env_value(minishell, key);
-	if (value)
+	if (!value)
+	{
+		error_file_not_found(key, minishell);
+		return (NULL);
+	}
+	else
 	{
 		if (!parser_argument(command, value))
 			ft_error("Parse: failed to add argument\n");
@@ -60,34 +66,13 @@ t_token	*parser_status(t_token *token, t_program *minishell)
 
 	status = ft_itoa(minishell->status);
 	if (!status)
+	{
+		error_malloc(minishell);
 		return (NULL);
+	}
 	if (token->value)
 		free(token->value);
 	token->type = TKN_WORD;
 	token->value = status;
 	return (token);
-}
-
-int	parser_sequence(t_token *tokens, t_program *minishell)
-{
-	t_token	*token;
-
-	token = tokens;
-	while (token)
-	{
-		if (token->type == TKN_PIPE && (!token->next || token->next->type == TKN_PIPE))
-		{
-			ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", STDERR_FILENO);
-			minishell->status = 2;
-			return (0);
-		}
-		if ((token->type == TKN_IN || token->type == TKN_OUT || token->type == TKN_RDA || token->type == TKN_RDH) && (!token->next || token->next->type != TKN_WORD))
-		{
-			ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", STDERR_FILENO);
-			minishell->status = 2;
-			return (0);
-		}
-		token = token->next;
-	}
-	return (1);
 }
