@@ -18,14 +18,18 @@ void	error_eof(char *token, t_program *minishell)
 	minishell->status = 2;
 }
 
-void	error_syntax(char *message, t_program *minishell)
+void error_syntax(char *message, t_program *minishell)
 {
-	ft_putstr_fd("minishell: syntax error near unexpected token `", STDERR_FILENO);
-	if (message == NULL)
-		ft_putstr_fd("newline", STDERR_FILENO);
-	else
+	if (message && *message)
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `", STDERR_FILENO);
 		ft_putstr_fd(message, STDERR_FILENO);
-	ft_putstr_fd("'\n", STDERR_FILENO);
+		ft_putstr_fd("'\n", STDERR_FILENO);
+	}
+	else
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", STDERR_FILENO);
+	}
 	minishell->status = 2;
 }
 
@@ -52,4 +56,48 @@ void	error_malloc(t_program *minishell)
 	ft_putstr_fd("minishell: memory allocation failed\n", STDERR_FILENO);
 	minishell->status = 1;
 	(void)exit(minishell->status);
+}
+
+void error_unexpected_eof(t_program *minishell)
+{
+	ft_putstr_fd("minishell: unexpected end of file\n", STDERR_FILENO);
+	minishell->status = 2;
+}
+
+void error_newline(t_program *minishell)
+{
+	ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", STDERR_FILENO);
+	minishell->status = 2;
+}
+
+void error_brace(char *brace, t_program *minishell)
+{
+	ft_putstr_fd("minishell: syntax error near unexpected token `", STDERR_FILENO);
+	ft_putstr_fd(brace, STDERR_FILENO);
+	ft_putstr_fd("'\n", STDERR_FILENO);
+	minishell->status = 2;
+}
+
+void error_permission(char *command, t_program *minishell)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(command, STDERR_FILENO);
+	ft_putstr_fd(": Permission denied\n", STDERR_FILENO);
+	minishell->status = 126;
+}
+
+void error_directory(char *command, t_program *minishell)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(command, STDERR_FILENO);
+	ft_putstr_fd(": Is a directory\n", STDERR_FILENO);
+	minishell->status = 126;
+}
+
+void error_not_found(char *command, t_program *minishell)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(command, STDERR_FILENO);
+	ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+	minishell->status = 127;
 }

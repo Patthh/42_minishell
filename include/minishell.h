@@ -194,6 +194,11 @@ t_token			*parser_logical(t_token *token, t_command **command, t_pipeline *pipel
 // t_token		*parser_and(t_token *token, t_command **command, t_pipeline *pipeline);
 // t_token		*parser_or(t_token *token, t_command **command, t_pipeline *pipeline);
 
+// PIPELINE
+int	validate_pipeline(t_pipeline *pipeline, t_program *minishell);
+int	validate_command(t_command *command, t_program *minishell);
+int	valid_cmd_name(const char *name);
+
 // BUILTINS
 int				ft_cd(t_command *command, t_program *minishell);
 int				ft_echo(t_command *command, t_program *minishell);
@@ -260,6 +265,12 @@ void	error_syntax(char *message, t_program *minishell);
 void	error_file_not_found(char *path, t_program *minishell);
 void	error_arguments(char *command, t_program *minishell);
 void	error_malloc(t_program *minishell);
+void	error_unexpected_eof(t_program *minishell);
+void	error_newline(t_program *minishell);
+void	error_brace(char *brace, t_program *minishell);
+void	error_not_found(char *command, t_program *minishell);
+void	error_directory(char *command, t_program *minishell);
+void	error_permission(char *command, t_program *minishell);
 
 // env
 void	init_env(t_program *minishell, char **envp);
