@@ -216,6 +216,11 @@ int				export_valid(const char *string);
 void			print_export(t_program *minishell);
 void			free_key_value(char *key, char *value);
 
+int				update_pwd(t_program *minishell);
+char			*get_target(t_command *command, t_program *minishell);
+char			*get_path(t_program *minishell, char *variable, char *error);
+void			cd_error(char *path, char *message);
+
 // EXECUTION
 void			execute_pipeline(t_pipeline *pipeline, t_program *minishell);
 void			execute_command(t_command *command, t_program *minishell);
