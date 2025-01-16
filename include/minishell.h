@@ -8,6 +8,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <sys/wait.h>
+# include <sys/stat.h>
 # include <signal.h>
 # include <string.h>
 # include <errno.h>
@@ -224,7 +225,7 @@ void			free_key_value(char *key, char *value);
 
 int				update_pwd(t_program *minishell);
 char			*get_target(t_command *command, t_program *minishell);
-char			*get_path(t_program *minishell, char *variable, char *error);
+char			*get_path(t_program *minishell, char *variable);
 void			cd_error(char *path, char *message);
 
 // EXECUTION

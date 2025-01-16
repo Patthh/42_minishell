@@ -50,3 +50,5 @@ int validate_pipeline(t_pipeline *pipeline, t_program *minishell)
 	}
 	return 1;
 }
+
+
