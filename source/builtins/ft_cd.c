@@ -9,12 +9,10 @@ static int	chdir_error(char *target_path, t_program *minishell)
 
 	if (stat(target_path, &path_stat) == -1)
 	{
-		if (errno == ENOENT)
+		if (access(target_path, F_OK) == -1)
 			error_not_found(target_path, minishell);
-		else if (errno == EACCES)
-			error_permission(target_path, minishell);
 		else
-			error_file_not_found(target_path, minishell);
+			error_permission(target_path, minishell);
 	}
 	else
 	{
@@ -30,37 +28,35 @@ static int	validate_arguments(t_command *command, t_program *minishell)
 {
 	if (command->arguments && command->arguments[1] && command->arguments[2])
 	{
-		error_arguments("NULL", minishell);
+		error_arguments("cd", minishell);
 		return (0);
 	}
 	return (1);
 }
 
-static int validate_path(char *target_path, t_program *minishell)
+static int	validate_path(char *target_path, t_program *minishell)
 {
-    struct stat path_stat;
+	struct stat	path_stat;
 
-    if (stat(target_path, &path_stat) == -1)
-    {
-        if (errno == ENOENT)
-            error_not_found(target_path, minishell); // Use error_utils function
-        else if (errno == EACCES)
-            error_permission(target_path, minishell); // Use error_utils function
-        else
-            error_file_not_found(target_path, minishell); // Use error_utils function
-        return (0);
-    }
-    if (!S_ISDIR(path_stat.st_mode))
-    {
-        error_directory(target_path, minishell); // Use error_utils function
-        return (0);
-    }
-    if (access(target_path, X_OK) == -1)
-    {
-        error_permission(target_path, minishell); // Use error_utils function
-        return (0);
-    }
-    return (1);
+	if (stat(target_path, &path_stat) == -1)
+	{
+		if (access(target_path, F_OK) == -1)
+			error_not_found(target_path, minishell);
+		else
+			error_permission(target_path, minishell);
+		return (0);
+	}
+	if (!S_ISDIR(path_stat.st_mode))
+	{
+		error_directory(target_path, minishell);
+		return (0);
+	}
+	if (access(target_path, X_OK) == -1)
+	{
+		error_permission(target_path, minishell);
+		return (0);
+	}
+	return (1);
 }
 
 int	ft_cd(t_command *command, t_program *minishell)

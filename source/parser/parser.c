@@ -67,25 +67,12 @@ t_redirection	*create_redirection(const char *type, const char *filename,
 // 	return (group);
 // }
 
-// Preparation
-// Verify input token are valid
-// Prepare data structures for parsing
-// Create pipeline to hold commands
-// Prepare to track current command being built
-t_pipeline	*parser(t_token *tokens, t_program *minishell)
+static int	parser_commands(t_token *tokens, t_pipeline *pipeline,
+	t_program *minishell)
 {
-	t_pipeline	*pipeline;
 	t_command	*command;
 	t_token		*token;
 
-	if (!parser_sequence(tokens, minishell))
-		return (NULL);
-	pipeline = create_pipeline();
-	if (!pipeline)
-	{
-		error_malloc(minishell);
-		return (NULL);
-	}
 	command = create_command();
 	pipeline->commands[0] = command;
 	pipeline->cmd_count = 1;
@@ -95,6 +82,42 @@ t_pipeline	*parser(t_token *tokens, t_program *minishell)
 		token = parser_token(token, &command, minishell, pipeline);
 		if (token && token->type == TKN_PIPE)
 			command = command->next;
+	}
+	if (pipeline->cmd_count == 1 && !pipeline->commands[0]->arguments)
+	{
+		if (tokens)
+		{
+			error_syntax("newline", minishell);
+			minishell->status = 2;
+		}
+		else
+			minishell->status = 0;
+		return (0);
+	}
+	return (1);
+}
+
+// Preparation
+// Verify input token are valid
+// Prepare data structures for parsing
+// Create pipeline to hold commands
+// Prepare to track current command being built
+t_pipeline	*parser(t_token *tokens, t_program *minishell)
+{
+	t_pipeline	*pipeline;
+
+	if (!parser_sequence(tokens, minishell))
+		return (NULL);
+	pipeline = create_pipeline();
+	if (!pipeline)
+	{
+		error_malloc(minishell);
+		return (NULL);
+	}
+	if (!parser_commands(tokens, pipeline, minishell))
+	{
+		free_pipeline(pipeline);
+		return (NULL);
 	}
 	return (pipeline);
 }
