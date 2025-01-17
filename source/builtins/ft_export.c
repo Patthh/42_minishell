@@ -48,16 +48,12 @@ int	export_process(const char *argument, t_program *minishell)
 	export_extract(argument, &key, &value, &sign);
 	if (!export_valid(key))
 	{
-		export_error(key);
-		minishell->status = 1;
+		export_error(key, minishell);
 		free_key_value(key, value);
 		return (1);
 	}
 	if (key && *key)
-	{
 		export_update(minishell, key, value, sign);
-		minishell->status = 0;
-	}
 	free_key_value(key, value);
 	return (0);
 }

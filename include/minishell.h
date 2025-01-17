@@ -43,8 +43,7 @@ typedef enum e_token
 	TKN_DOUBLE,		// 15 double quote
 	TKN_WILDCARD,	// 16 *
 	TKN_WORD,		// 17
-	TKN_ASSIGN,		// 18 =
-	TKN_EMPTY		// 19 $EMPTY
+	TKN_ASSIGN		// 18 =
 }	t_token_type;
 
 typedef enum e_logical
@@ -171,6 +170,7 @@ void			token_extra(const char **input, t_token **head, t_program *minishell);
 void			token_wildcard(const char **input, t_token **head);
 char	*token_env_word(const char **input, t_program *minishell);
 void			token_paranthesis(const char **input, t_token **head);
+void			token_hash(const char **input, t_token **head);
 
 char			*env_name(const char **input);
 char			*env_value(t_program *minishell, const char *key);
@@ -218,7 +218,7 @@ int				export_process(const char *argument, t_program *minishell);
 void			export_remove(t_program *minishell, const char *key);
 void			export_argument(t_command *command, t_program *minishell);
 t_env			**export_sorting(t_program *minishell, int *size);
-void			export_error(const char *key);
+void			export_error(const char *key, t_program *minishell);
 int				export_valid(const char *string);
 void			print_export(t_program *minishell);
 void			free_key_value(char *key, char *value);

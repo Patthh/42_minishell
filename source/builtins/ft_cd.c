@@ -65,10 +65,7 @@ int	ft_cd(t_command *command, t_program *minishell)
 	int		ret;
 
 	if (!validate_arguments(command, minishell))
-	{
-		minishell->status = 1;
 		return (1);
-	}
 	target_path = get_target(command, minishell);
 	if (!target_path)
 	{
@@ -78,18 +75,15 @@ int	ft_cd(t_command *command, t_program *minishell)
 	if (!validate_path(target_path, minishell))
 	{
 		free(target_path);
-		minishell->status = 1;
 		return (1);
 	}
 	if (chdir(target_path) == -1)
 	{
 		ret = chdir_error(target_path, minishell);
 		free(target_path);
-		minishell->status = 1;
 		return (ret);
 	}
 	ret = update_pwd(minishell);
 	free(target_path);
-	minishell->status = (ret != 0);
 	return (ret);
 }

@@ -66,12 +66,12 @@ void	error_unexpected_eof(t_program *minishell)
 	minishell->status = 2;
 }
 
-void	error_newline(t_program *minishell)
-{
-	ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n",
-		STDERR_FILENO);
-	minishell->status = 2;
-}
+// void	error_newline(t_program *minishell)
+// {
+// 	ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n",
+// 		STDERR_FILENO);
+// 	minishell->status = 2;
+// }
 
 void	error_brace(char *brace, t_program *minishell)
 {

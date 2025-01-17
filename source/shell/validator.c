@@ -23,7 +23,6 @@ static int	validate_empty(t_command *command, t_program *minishell)
 		}
 		else
 			error_syntax("newline", minishell);
-		minishell->status = 2;
 		return (0);
 	}
 	return (1);
@@ -34,13 +33,11 @@ static int	validate_content(t_command *command, t_program *minishell)
 	if (command->arguments[0][0] == '{')
 	{
 		error_unexpected_eof(minishell);
-		minishell->status = 2;
 		return (0);
 	}
 	if (command->arguments[0][0] == '}')
 	{
 		error_brace("}", minishell);
-		minishell->status = 2;
 		return (0);
 	}
 	if (!valid_cmd_name(command->arguments[0]))
@@ -49,7 +46,6 @@ static int	validate_content(t_command *command, t_program *minishell)
 			error_command("$?", minishell);
 		else
 			error_command(command->arguments[0], minishell);
-		minishell->status = 127;
 		return (0);
 	}
 	return (1);

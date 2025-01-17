@@ -85,13 +85,8 @@ static int	parser_commands(t_token *tokens, t_pipeline *pipeline,
 	}
 	if (pipeline->cmd_count == 1 && !pipeline->commands[0]->arguments)
 	{
-		if (tokens)
-		{
+		if (tokens && tokens->value && *tokens->value)
 			error_syntax("newline", minishell);
-			minishell->status = 2;
-		}
-		else
-			minishell->status = 0;
 		return (0);
 	}
 	return (1);

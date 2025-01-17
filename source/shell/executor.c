@@ -93,12 +93,7 @@ static void	handle_execution_error(t_command *command, t_program *minishell,
 		char *cmd_path, int error_type)
 {
 	if (error_type == 1) // Command not found
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(command->arguments[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
-		minishell->status = 127;
-	}
+		error_command(command->arguments[0], minishell);
 	else if (error_type == 2) // Fork failure
 	{
 		ft_putstr_fd("minishell: fork failed\n", 2);
