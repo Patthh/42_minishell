@@ -35,15 +35,13 @@ static int	exit_number(const char *string, char **end)
 	return (1);
 }
 
-static int	exit_arguments(char *argument, long *status)
+static int	exit_arguments(char *argument, long *status, t_program *minishell)
 {
 	char	*end;
 
 	if (exit_number(argument, &end) < 0)
 	{
-		ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
-		ft_putstr_fd(argument, STDERR_FILENO);
-		ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
+		error_numeric(argument, minishell);
 		return (2);
 	}
 	*status = ft_strtol(argument, &end);
@@ -79,10 +77,10 @@ int	ft_exit(t_command *command, t_program *minishell)
 		return (exit_set(minishell, minishell->status));
 	if (length > 2)
 	{
-		ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
+		error_arguments("exit", minishell);
 		return (exit_set(minishell, 1));
 	}
-	if (exit_arguments(command->arguments[1], &status) != 0)
+	if (exit_arguments(command->arguments[1], &status, minishell) != 0)
 		return (exit_set(minishell, 2));
 	exit_set(minishell, status);
 	return (status);

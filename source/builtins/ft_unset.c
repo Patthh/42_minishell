@@ -63,9 +63,7 @@ static int	unset_single(t_program *minishell, char *argument)
 {
 	if (!unset_check(argument))
 	{
-		ft_putstr_fd("unset: `", STDERR_FILENO);
-		ft_putstr_fd("argument", STDERR_FILENO);
-		ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
+		error_identifier(argument, minishell);
 		return (1);
 	}
 	unset_remove(minishell, argument);

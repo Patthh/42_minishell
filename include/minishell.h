@@ -272,6 +272,8 @@ void	error_brace(char *brace, t_program *minishell);
 void	error_not_found(char *command, t_program *minishell);
 void	error_directory(char *command, t_program *minishell);
 void	error_permission(char *command, t_program *minishell);
+void	error_numeric(char *command, t_program *minishell);
+void	error_identifier(char *identifier, t_program *minishell);
 
 // env
 void	init_env(t_program *minishell, char **envp);

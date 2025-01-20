@@ -105,3 +105,19 @@ void	error_not_found(char *path, t_program *minishell)
 	ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
 	minishell->status = 1;
 }
+
+void	error_numeric(char *command, t_program *minishell)
+{
+	ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
+	ft_putstr_fd(command, STDERR_FILENO);
+	ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
+	minishell->status = 2;
+}
+
+void	error_identifier(char *identifier, t_program *minishell)
+{
+	ft_putstr_fd("minishell: unset: ", STDERR_FILENO);
+	ft_putstr_fd(identifier, STDERR_FILENO);
+	ft_putstr_fd(": not a valid identifier\n", STDERR_FILENO);
+	minishell->status = 1;
+}
