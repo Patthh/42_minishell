@@ -29,8 +29,13 @@ static int	exit_number(const char *string, char **end)
 	if (!string || !end)
 		return (0);
 	*end = (char *)string;
-	ft_strtol(string, end);
-	if (*end == string || **end != '\0' || errno == ERANGE)
+	while (ft_isspace(**end))
+		(*end)++;
+	if (**end == '+' || **end == '-')
+		(*end)++;
+	while (ft_isdigit(**end))
+		(*end)++;
+	if (*end == string || (**end != '\0' && !ft_isspace(**end)))
 		return (-1);
 	return (1);
 }
@@ -38,15 +43,28 @@ static int	exit_number(const char *string, char **end)
 static int	exit_arguments(char *argument, long *status, t_program *minishell)
 {
 	char	*end;
+	long	result;
+	int		sign;
 
 	if (exit_number(argument, &end) < 0)
 	{
 		error_numeric(argument, minishell);
 		return (2);
 	}
-	*status = ft_strtol(argument, &end);
-	if (*status < 0 || *status > 255)
-		*status = *status % 256;
+	sign = 1;
+	if (*argument == '+' || *argument == '-')
+	{
+		if (*argument == '-')
+			sign = -1;
+		argument++;
+	}
+	result = 0;
+	while (*argument && ft_isdigit(*argument))
+	{
+		result = (result * 10 + (*argument - '0') % 256);
+		argument++;
+	}
+	*status = (result * sign + 256) % 256;
 	return (0);
 }
 

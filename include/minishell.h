@@ -199,6 +199,8 @@ t_token			*parser_logical(t_token *token, t_command **command, t_pipeline *pipel
 int	validate_pipeline(t_pipeline *pipeline, t_program *minishell);
 int	validate_command(t_command *command, t_program *minishell);
 int	valid_cmd_name(const char *name);
+int	validate_content(t_command *command, t_program *minishell);
+int	validate_redirection_path(char *path, t_program *minishell);
 
 // BUILTINS
 int				ft_cd(t_command *command, t_program *minishell);
@@ -274,6 +276,7 @@ void	error_directory(char *command, t_program *minishell);
 void	error_permission(char *command, t_program *minishell);
 void	error_numeric(char *command, t_program *minishell);
 void	error_identifier(char *identifier, t_program *minishell);
+void	error_file_not_found_127(char *path, t_program *minishell);
 
 // env
 void	init_env(t_program *minishell, char **envp);
@@ -284,6 +287,7 @@ void	nl_handler(int signal);
 
 // UTILS
 void	ft_error(const char *message);
+int	ft_isredirect(char *argument);
 char	*token_join(char *s1, const char *s2);
 void	token_regular(const char **input, char **result);
 // void	ft_putstr_fd(char *s, int fd);

@@ -14,6 +14,8 @@ t_token	*tokenizer(const char *input, t_program *minishell)
 			input++;
 		if (!*input)
 			break ;
+		else if (*input == '#')
+			break ;
 		else if (*input == '<' || *input == '>')
 			token_redirector(&input, &head);
 		else if (*input == '|' || *input == '&')

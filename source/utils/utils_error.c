@@ -1,14 +1,22 @@
 #include "../../include/minishell.h"
 
+// void	error_command(char *command, t_program *minishell)
+// {
+// 	if (ft_strcmp(command, "$?") == 0)
+// 	{
+// 		ft_putstr_fd("1: command not found\n", STDERR_FILENO);
+// 		minishell->status = 127;
+// 		return ;
+// 	}
+// 	ft_putstr_fd("minishell: ", STDERR_FILENO);
+// 	ft_putstr_fd(command, STDERR_FILENO);
+// 	ft_putstr_fd(": command not found\n", STDERR_FILENO);
+// 	minishell->status = 127;
+// }
+
 void	error_command(char *command, t_program *minishell)
 {
-	if (ft_strcmp(command, "$?") == 0)
-	{
-		ft_putstr_fd("1: command not found\n", STDERR_FILENO);
-		minishell->status = 127;
-		return ;
-	}
-	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	// ft_putstr_fd("minishell: ", STDERR_FILENO);
 	ft_putstr_fd(command, STDERR_FILENO);
 	ft_putstr_fd(": command not found\n", STDERR_FILENO);
 	minishell->status = 127;
@@ -120,4 +128,12 @@ void	error_identifier(char *identifier, t_program *minishell)
 	ft_putstr_fd(identifier, STDERR_FILENO);
 	ft_putstr_fd(": not a valid identifier\n", STDERR_FILENO);
 	minishell->status = 1;
+}
+
+void	error_file_not_found_127(char *path, t_program *minishell)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(path, STDERR_FILENO);
+	ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+	minishell->status = 127;
 }

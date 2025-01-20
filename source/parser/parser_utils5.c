@@ -1,36 +1,33 @@
 #include "../../include/minishell.h"
 
-// checks if redirection tokens are followed by a word
-static int	sequence_redirection(t_token *token, t_program *minishell)
+static int	sequence_next(t_token *current, t_program *minishell)
 {
-	if (!token->next)
+	if (!current->next || !current->next->value)
 	{
 		error_syntax("newline", minishell);
-		return (0);
-	}
-	if (token->next->type != TKN_WORD)
-	{
-		if (token->next->type == TKN_PIPE)
-			error_syntax("|", minishell);
-		else if (token->next->type == TKN_IN)
-			error_syntax("<", minishell);
-		else if (token->next->type == TKN_OUT)
-			error_syntax(">", minishell);
-		else if (token->next->type == TKN_RDA)
-			error_syntax(">>", minishell);
-		else if (token->next->type == TKN_RDH)
-			error_syntax("<<", minishell);
-		else
-			error_syntax(token->next->value, minishell);
 		return (0);
 	}
 	return (1);
 }
 
-// checks if command line starts with a pipe (42-minishell_tester)
-static int	sequence_start_pipe(t_token *token, t_program *minishell)
+static int	sequence_operators(t_token *current, t_token *previous,
+	t_program *minishell)
 {
-	if (token && token->type == TKN_PIPE)
+	if (previous && (ft_isredirect_token(previous)
+			|| previous->type == TKN_PIPE))
+	{
+		if (ft_isredirect_token(current) || current->type == TKN_PIPE)
+		{
+			error_syntax(current->value, minishell);
+			return (0);
+		}
+		if (!current->value || !*current->value)
+		{
+			error_syntax("newline", minishell);
+			return (0);
+		}
+	}
+	if (!previous && current->type == TKN_PIPE)
 	{
 		error_syntax("|", minishell);
 		return (0);
@@ -38,52 +35,63 @@ static int	sequence_start_pipe(t_token *token, t_program *minishell)
 	return (1);
 }
 
-// processes each token
-// validates its syntax
-static int	sequence_process(t_token *token, int *flag, t_program *minishell)
+static int	sequence_redirect(t_token *current, t_program *minishell)
 {
-	if (token->type == TKN_WORD)
+	if (ft_isredirect_token(current))
 	{
-		*flag = 1;
-		return (1);
-	}
-	if (token->type == TKN_PIPE)
-	{
-		if (!*flag || !token->next || token->next->type == TKN_PIPE)
+		if (!sequence_next(current, minishell))
+			return (0);
+		if (current->next->type == TKN_PIPE)
 		{
 			error_syntax("|", minishell);
 			return (0);
 		}
-		*flag = 0;
-	}
-	else if (token->type == TKN_IN || token->type == TKN_OUT
-		|| token->type == TKN_RDA || token->type == TKN_RDH)
-	{
-		if (!sequence_redirection(token, minishell))
+		if (ft_isredirect_token(current->next))
+		{
+			error_syntax(current->next->value, minishell);
 			return (0);
+		}
 	}
 	return (1);
 }
 
-int	parser_sequence(t_token *tokens, t_program *minishell)
+static int	sequence_pipes(t_token *current, t_program *minishell)
 {
-	t_token	*token;
-	int		flag;
-
-	token = tokens;
-	flag = 0;
-	if (!token)
+	if (current->type == TKN_PIPE)
 	{
-		minishell->status = 0;
-		return (1);
-	}
-	if (!sequence_start_pipe(token, minishell))
-		return (0);
-	while (token)
-	{
-		if (!sequence_process(token, &flag, minishell))
+		if (!sequence_next(current, minishell))
 			return (0);
-		token = token->next;
+		if (current->next->type == TKN_PIPE)
+		{
+			error_syntax("|", minishell);
+			return (0);
+		}
+		if (ft_isredirect_token(current->next))
+		{
+			error_syntax(current->next->value, minishell);
+			return (0);
+		}
+	}
+	return (1);
+}
+
+int	parser_sequence(t_token *token, t_program *minishell)
+{
+	t_token	*current;
+	t_token	*previous;
+
+	current = token;
+	previous = NULL;
+	while (current)
+	{
+		if (!sequence_operators(current, previous, minishell))
+			return (0);
+		if (!sequence_redirect(current, minishell))
+			return (0);
+		if (!sequence_pipes(current, minishell))
+			return (0);
+		previous = current;
+		current = current->next;
 	}
 	return (1);
 }

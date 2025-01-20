@@ -28,29 +28,6 @@ static int	validate_empty(t_command *command, t_program *minishell)
 	return (1);
 }
 
-static int	validate_content(t_command *command, t_program *minishell)
-{
-	if (command->arguments[0][0] == '{')
-	{
-		error_unexpected_eof(minishell);
-		return (0);
-	}
-	if (command->arguments[0][0] == '}')
-	{
-		error_brace("}", minishell);
-		return (0);
-	}
-	if (!valid_cmd_name(command->arguments[0]))
-	{
-		if (ft_strcmp(command->arguments[0], "$?") == 0)
-			error_command("$?", minishell);
-		else
-			error_command(command->arguments[0], minishell);
-		return (0);
-	}
-	return (1);
-}
-
 int	validate_pipeline(t_pipeline *pipeline, t_program *minishell)
 {
 	int	i;
