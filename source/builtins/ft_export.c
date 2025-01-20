@@ -48,7 +48,7 @@ int	export_process(const char *argument, t_program *minishell)
 	export_extract(argument, &key, &value, &sign);
 	if (!export_valid(key))
 	{
-		error_arguments(key, minishell);
+		export_error(key, minishell);
 		free_key_value(key, value);
 		return (1);
 	}
