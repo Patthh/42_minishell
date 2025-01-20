@@ -223,7 +223,7 @@ int				export_valid(const char *string);
 void			print_export(t_program *minishell);
 void			free_key_value(char *key, char *value);
 
-int				update_pwd(t_program *minishell);
+int				update_pwd(t_program *minishell, const char *old_pwd);
 char			*get_target(t_command *command, t_program *minishell);
 char			*get_path(t_program *minishell, char *variable);
 void			cd_error(char *path, char *message);

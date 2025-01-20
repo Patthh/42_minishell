@@ -52,16 +52,10 @@ char	*get_target(t_command *command, t_program *minishell)
 }
 
 // updates OLDPWD and PWD
-int	update_pwd(t_program *minishell)
+int	update_pwd(t_program *minishell, const char *old_pwd)
 {
-	char	old_pwd[PATH_MAX];
 	char	new_pwd[PATH_MAX];
 
-	if (!getcwd(old_pwd, PATH_MAX))
-	{
-		error_file_not_found("getcwd", minishell);
-		return (1);
-	}
 	if (env_value(minishell, "OLDPWD"))
 		add_env(minishell, "OLDPWD", old_pwd, 1);
 	if (!getcwd(new_pwd, PATH_MAX))

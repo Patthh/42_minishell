@@ -59,31 +59,47 @@ static int	validate_path(char *target_path, t_program *minishell)
 	return (1);
 }
 
-int	ft_cd(t_command *command, t_program *minishell)
+static char	*prepare_path(t_command *command, t_program *minishell)
 {
 	char	*target_path;
-	int		ret;
 
 	if (!validate_arguments(command, minishell))
-		return (1);
+		return (NULL);
 	target_path = get_target(command, minishell);
 	if (!target_path)
 	{
 		minishell->status = 1;
-		return (1);
+		return (NULL);
 	}
 	if (!validate_path(target_path, minishell))
 	{
 		free(target_path);
+		return (NULL);
+	}
+	return (target_path);
+}
+
+int	ft_cd(t_command *command, t_program *minishell)
+{
+	char	*target_path;
+	char	old_pwd[PATH_MAX];
+	int		ret;
+
+	if (!getcwd(old_pwd, PATH_MAX))
+	{
+		error_file_not_found("getcwd", minishell);
 		return (1);
 	}
+	target_path = prepare_path(command, minishell);
+	if (!target_path)
+		return (1);
 	if (chdir(target_path) == -1)
 	{
 		ret = chdir_error(target_path, minishell);
 		free(target_path);
 		return (ret);
 	}
-	ret = update_pwd(minishell);
+	ret = update_pwd(minishell, old_pwd);
 	free(target_path);
 	return (ret);
 }
