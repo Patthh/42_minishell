@@ -137,3 +137,11 @@ void	error_file_not_found_127(char *path, t_program *minishell)
 	ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
 	minishell->status = 127;
 }
+
+void error_not_valid_identifier(char *command, t_program *minishell)
+{
+    ft_putstr_fd("minishell: ", STDERR_FILENO);
+    ft_putstr_fd(command, STDERR_FILENO);
+    ft_putstr_fd(": not a valid identifier\n", STDERR_FILENO);
+    minishell->status = 127;
+}

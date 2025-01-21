@@ -1,40 +1,37 @@
 #include "../../include/minishell.h"
 
-// handles input and heredoc redirections
-static void	token_input(const char **input, t_token **head)
+// handles the creation of token based on redirection sequence
+static void token_redirector_create(char *value, t_token **head)
 {
-	if (*(*input + 1) == '<')
-	{
+	if (ft_strcmp(value, "<<") == 0)
 		token_add(head, token_new(TKN_RDH, "<<"));
-		(*input) += 2;
-	}
-	else
-	{
-		token_add(head, token_new(TKN_IN, "<"));
-		(*input)++;
-	}
-}
-
-// handles output and append redirections
-static void	token_output(const char **input, t_token **head)
-{
-	if (*(*input + 1) == '>')
-	{
+	else if (ft_strcmp(value, ">>") == 0)
 		token_add(head, token_new(TKN_RDA, ">>"));
-		(*input) += 2;
-	}
-	else
-	{
+	else if (ft_strcmp(value, "<") == 0)
+		token_add(head, token_new(TKN_IN, "<"));
+	else if (ft_strcmp(value, ">") == 0)
 		token_add(head, token_new(TKN_OUT, ">"));
-		(*input)++;
-	}
+	else
+		error_syntax(value, NULL);
 }
 
-// handles redirection tokens
+// validates the redirection sequence
 void	token_redirector(const char **input, t_token **head)
 {
-	if (**input == '<')
-		token_input(input, head);
-	else if (**input == '>')
-		token_output(input, head);
+	int		i;
+	char	value[3] = {0};
+
+	i = 0;
+	while ((**input == '<' || **input == '>') && i < 2)
+	{
+		value[i] = **input;
+		(*input)++;
+		i++;
+	}
+	if (i > 2 || (i == 2 && value[0] != value[1]))
+	{
+		error_syntax(value, NULL);
+		return ;
+	}
+	token_redirector_create(value, head);
 }

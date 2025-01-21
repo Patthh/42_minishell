@@ -171,6 +171,7 @@ void			token_wildcard(const char **input, t_token **head);
 char	*token_env_word(const char **input, t_program *minishell);
 void			token_paranthesis(const char **input, t_token **head);
 void			token_hash(const char **input, t_token **head);
+void	token_expand(const char	**input, char **result, t_program *minishell);
 
 char			*env_name(const char **input);
 char			*env_value(t_program *minishell, const char *key);
@@ -277,6 +278,7 @@ void	error_permission(char *command, t_program *minishell);
 void	error_numeric(char *command, t_program *minishell);
 void	error_identifier(char *identifier, t_program *minishell);
 void	error_file_not_found_127(char *path, t_program *minishell);
+void error_not_valid_identifier(char *command, t_program *minishell);
 
 // env
 void	init_env(t_program *minishell, char **envp);
@@ -287,7 +289,8 @@ void	nl_handler(int signal);
 
 // UTILS
 void	ft_error(const char *message);
-int	ft_isredirect(char *argument);
+int		ft_isredirect(char *argument);
+int		ft_isredirect_token(t_token *token);
 char	*token_join(char *s1, const char *s2);
 void	token_regular(const char **input, char **result);
 // void	ft_putstr_fd(char *s, int fd);

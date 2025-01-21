@@ -52,6 +52,8 @@ void	token_word(const char **input, t_token **head, t_program *minishell)
 			token_single(input, &result);
 		else if (**input == '"')
 			token_double(input, &result, minishell);
+		else if (**input == '$')
+			env_word(input, &result, minishell);
 		else
 			token_unquoted(input, &result, minishell);
 	}
@@ -118,3 +120,4 @@ void	token_dollar(const char **input, t_token **head, t_program *minishell)
 	else
 		token_add(head, token_new(TKN_WORD, "$"));
 }
+
