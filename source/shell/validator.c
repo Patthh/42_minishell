@@ -2,7 +2,11 @@
 
 int	valid_cmd_name(const char *name)
 {
-	return (name && *name && *name != '{' && *name != '}');
+	if (!name || !*name)
+		return (0);
+	if (*name == '(' || *name == ')' || *name == '{' || *name == '}')
+		return (0);
+	return (1);
 }
 
 static int	validate_empty(t_command *command, t_program *minishell)

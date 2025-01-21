@@ -21,6 +21,9 @@ static int	is_path_command(char *arg)
 		|| (arg[0] == '.' && arg[1] == '.' && arg[2] == '/'));
 }
 
+// checks if path exists
+// check if it's a regular file
+// check if it's a directory
 static int	validate_path(char *path, t_program *minishell)
 {
 	struct stat	path_stat;
@@ -54,6 +57,9 @@ static int	validate_command_name(char *arg, t_program *minishell)
 	{
 		if (ft_strcmp(arg, "$?") == 0)
 			error_command("$?", minishell);
+		else if (arg[0] == '(' || arg[0] == ')'
+			|| arg[0] == '{' || arg[0] == '}')
+			error_syntax(arg, minishell);
 		else
 			error_command(arg, minishell);
 		return (0);
