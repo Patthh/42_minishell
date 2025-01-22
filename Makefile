@@ -23,7 +23,7 @@ INCLUDE			=	-I include -I libft/include
 ################################################################################
 ## COMPILATION & FLAGS
 CC				=	cc
-CFLAGS			=	-Wall -Wextra -Werror -g -O0
+CFLAGS			=	-Wall -Wextra -Werror -g -O0 -fsanitize=address
 HEADERS			=	-I$(DIR_INC) -I include -I libft/include
 READLINE		=	-lreadline
 RM				=	rm -rf
