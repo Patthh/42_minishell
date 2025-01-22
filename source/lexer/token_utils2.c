@@ -1,7 +1,7 @@
 #include "../../include/minishell.h"
 
 // handles the creation of token based on redirection sequence
-static void token_redirector_create(char *value, t_token **head)
+static void	token_redirector_create(char *value, t_token **head)
 {
 	if (ft_strcmp(value, "<<") == 0)
 		token_add(head, token_new(TKN_RDH, "<<"));
@@ -19,9 +19,10 @@ static void token_redirector_create(char *value, t_token **head)
 void	token_redirector(const char **input, t_token **head)
 {
 	int		i;
-	char	value[3] = {0};
+	char	value[3];
 
 	i = 0;
+	ft_memset(value, 0, 3);
 	while ((**input == '<' || **input == '>') && i < 2)
 	{
 		value[i] = **input;

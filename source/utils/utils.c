@@ -16,3 +16,16 @@ int	ft_isnumeric(const char *string)
 	}
 	return (1);
 }
+
+int	ft_isspecial(char c)
+{
+	const char	*special_chars = "!@#$%^&*()-_=+[]{}|;:,.<>?/~`";
+
+	while (*special_chars)
+	{
+		if (c == *special_chars)
+			return (1);
+		special_chars++;
+	}
+	return (0);
+}

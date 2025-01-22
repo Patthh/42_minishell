@@ -120,4 +120,3 @@ void	token_dollar(const char **input, t_token **head, t_program *minishell)
 	else
 		token_add(head, token_new(TKN_WORD, "$"));
 }
-

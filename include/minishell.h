@@ -279,6 +279,8 @@ void	error_numeric(char *command, t_program *minishell);
 void	error_identifier(char *identifier, t_program *minishell);
 void	error_file_not_found_127(char *path, t_program *minishell);
 void error_not_valid_identifier(char *command, t_program *minishell);
+void	error_out_of_range(char *argument, t_program *minishell);
+void	error_option(char *argument, t_program *minishell);
 
 // env
 void	init_env(t_program *minishell, char **envp);
@@ -289,6 +291,8 @@ void	nl_handler(int signal);
 
 // UTILS
 void	ft_error(const char *message);
+int		ft_isnumeric(const char *string);
+int	ft_isspecial(char c);
 int		ft_isredirect(char *argument);
 int		ft_isredirect_token(t_token *token);
 char	*token_join(char *s1, const char *s2);

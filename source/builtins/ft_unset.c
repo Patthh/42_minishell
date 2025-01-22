@@ -108,7 +108,7 @@ int	ft_unset(t_command *command, t_program *minishell)
 			error_option(command->arguments[i], minishell);
 			return (1);
 		}
-		if (unset_single(command->arguments[i]) == 0)
+		if (unset_single(command->arguments[i]) == 1)
 		{
 			unset_remove(minishell, command->arguments[i]);
 		}

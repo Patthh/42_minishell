@@ -33,8 +33,6 @@ void	token_extra(const char **input, t_token **head, t_program *minishell)
 {
 	if (**input == '*')
 		token_wildcard(input, head);
-	// else if (**input == '(' || **input == ')')
-	//     token_paranthesis(input, head);
 	else
 		token_word(input, head, minishell);
 }

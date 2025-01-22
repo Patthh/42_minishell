@@ -152,7 +152,7 @@ void	error_file_not_found_127(char *path, t_program *minishell)
 	minishell->status = 127;
 }
 
-void error_not_valid_identifier(char *command, t_program *minishell)
+void	error_not_valid_identifier(char *command, t_program *minishell)
 {
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	ft_putstr_fd(command, STDERR_FILENO);
@@ -168,3 +168,10 @@ void	error_out_of_range(char *argument, t_program *minishell)
 	minishell->status = 2;
 }
 
+void	error_option(char *argument, t_program *minishell)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(argument, STDERR_FILENO);
+	ft_putstr_fd(": invalid option\n", STDERR_FILENO);
+	minishell->status = 2;
+}
