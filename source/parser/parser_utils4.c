@@ -18,12 +18,12 @@ char	*expand_var(const char **pointer, t_program *minishell)
 		return (value);
 	}
 	value = env_value(minishell, key);
-	free(key);
 	if (!value)
 	{
 		error_file_not_found(key, minishell);
 		return (ft_strdup(""));
 	}
+	free(key);
 	return (ft_strdup(value));
 }
 
