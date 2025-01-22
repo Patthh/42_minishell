@@ -1,6 +1,7 @@
 #include "../../include/minishell.h"
 
-static t_command	**logical_pipeline(t_pipeline *pipeline, t_command *commands)
+static t_command	**logical_pipeline(t_pipeline *pipeline,
+	t_command *commands)
 {
 	t_command	**new;
 	int			count;
@@ -19,9 +20,10 @@ static t_command	**logical_pipeline(t_pipeline *pipeline, t_command *commands)
 	return (new);
 }
 
-t_token *parser_logical(t_token *token, t_command **command, t_pipeline *pipeline)
+t_token	*parser_logical(t_token *token, t_command **command,
+	t_pipeline *pipeline)
 {
-	t_command *new;
+	t_command	*new;
 
 	new = create_command();
 	if (*command)

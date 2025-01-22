@@ -1,81 +1,38 @@
 #include "../../include/minishell.h"
 
-// handles pipe and logical OR
-static void	token_pipe(const char **input, t_token **head)
+// handles the creation of token based on redirection sequence
+static void	token_redirector_create(char *value, t_token **head)
 {
-	if (*(*input + 1) == '|')
-	{
-		token_add(head, token_new(TKN_OR, "||"));
-		(*input) += 2;
-	}
+	if (ft_strcmp(value, "<<") == 0)
+		token_add(head, token_new(TKN_RDH, "<<"));
+	else if (ft_strcmp(value, ">>") == 0)
+		token_add(head, token_new(TKN_RDA, ">>"));
+	else if (ft_strcmp(value, "<") == 0)
+		token_add(head, token_new(TKN_IN, "<"));
+	else if (ft_strcmp(value, ">") == 0)
+		token_add(head, token_new(TKN_OUT, ">"));
 	else
+		error_syntax(value, NULL);
+}
+
+// validates the redirection sequence
+void	token_redirector(const char **input, t_token **head)
+{
+	int		i;
+	char	value[3];
+
+	i = 0;
+	ft_memset(value, 0, 3);
+	while ((**input == '<' || **input == '>') && i < 2)
 	{
-		token_add(head, token_new(TKN_PIPE, "|"));
+		value[i] = **input;
 		(*input)++;
+		i++;
 	}
-}
-
-// handle background and logical AND
-static void	token_ampersand(const char **input, t_token **head)
-{
-	if (*(*input + 1) == '&')
+	if (i > 2 || (i == 2 && value[0] != value[1]))
 	{
-		token_add(head, token_new(TKN_AND, "&&"));
-		(*input) += 2;
+		error_syntax(value, NULL);
+		return ;
 	}
-	else
-	{
-		token_add(head, token_new(TKN_BG, "&"));
-		(*input)++;
-	}
-}
-
-// handles redirection tokens
-void	token_operator(const char **input, t_token **head)
-{
-	if (**input == '|')
-		token_pipe(input, head);
-	else if (**input == '&')
-		token_ampersand(input, head);
-}
-
-static void	token_string(const char **input, t_token **head, t_program *shell)
-{
-	char	*key;
-	char	*value;
-
-	key = env_name(input);
-	if (key)
-	{
-		value = env_value(shell, key);
-		if (value)
-			token_add(head, token_new(TKN_ENV, key));
-		free (key);
-	}
-	else
-		token_add(head, token_new(TKN_WORD, "$"));
-}
-
-// handles special case for $?, retrievew exit status and creates token
-// checks if lone $, creates TKN_WORD
-// exec commands should update minishell-status
-// extract env name if valid
-void	token_dollar(const char **input, t_token **head, t_program *minishell)
-{
-	char	*status;
-
-	(*input)++;
-	if (**input == '?')
-	{
-		status = ft_itoa(minishell->status);
-		token_add(head, token_new(TKN_WORD, status));
-		free (status);
-		(*input)++;
-	}
-	else if (**input == '\0' || ft_isspace(**input))
-		token_add(head, token_new(TKN_WORD, "$"));
-	else if (!ft_isalnum(**input) && **input != '_')
-		token_add(head, token_new(TKN_ENV, expand_var(input, minishell)));
-	else
-		token_string(input, head, minishell);
+	token_redirector_create(value, head);
 }

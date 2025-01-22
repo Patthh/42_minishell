@@ -7,31 +7,85 @@
 // cc ft_echo.c ../utils/utils_libft.c
 // run ./a.out -n argument
 // flag -n do not output the trailing newline
-int	ft_echo(t_command *command, t_program *minishell)
+
+static int	case_empty(t_program *minishell)
+{
+	ft_putstr_fd("\n", STDOUT_FILENO);
+	minishell->status = 0;
+	return (0);
+}
+
+static int	flag_valid(const char *argument)
 {
 	int	i;
-	int	nl;
 
-	i = 1;
-	nl = 0;
-	while (command->arguments[i] && ft_strcmp(command->arguments[i], "-n") == 0)
+	if (!argument || argument[0] != '-' || argument[1] != 'n')
+		return (0);
+	i = 2;
+	while (argument[i])
 	{
-		nl = 1;
+		if (argument[i] != 'n')
+			return (0);
 		i++;
 	}
-	while (command->arguments[i])
+	return (1);
+}
+
+static int	echo_flag(char **arguments, int *i)
+{
+	int	new_line;
+	int	valid;
+
+	new_line = 0;
+	valid = 0;
+	while (arguments[*i])
 	{
-		ft_putstr_fd(command->arguments[i], STDOUT_FILENO);
-		if (command->arguments[i + 1])
+		if (!valid && flag_valid(arguments[*i]))
+		{
+			new_line = 1;
+			(*i)++;
+		}
+		else
+		{
+			valid = 1;
+			break ;
+		}
+	}
+	return (new_line);
+}
+
+static void	echo_print(char **arguments, int start)
+{
+	int	i;
+
+	i = start;
+	while (arguments[i])
+	{
+		ft_putstr_fd(arguments[i], STDOUT_FILENO);
+		if (arguments[i + 1])
 			ft_putstr_fd(" ", STDOUT_FILENO);
 		i++;
 	}
-	if (!nl)
+}
+
+int	ft_echo(t_command *command, t_program *minishell)
+{
+	int	i;
+	int	new_line;
+
+	i = 1;
+	if (!command->arguments[i])
+		return (case_empty(minishell));
+	new_line = echo_flag(command->arguments, &i);
+	echo_print(command->arguments, i);
+	if (!new_line)
 		ft_putstr_fd("\n", STDOUT_FILENO);
 	minishell->status = 0;
 	return (0);
 }
 
+// FOR TESTING
+// cc -Wall -Werror -Wextra ft_echo.c ../../libft/libft.a
 // int main(int argc, char **argv)
 // {
 // 	t_command	command;

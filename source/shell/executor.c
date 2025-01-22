@@ -3,21 +3,19 @@
 static void	execute_in_child(char *cmd_path, t_command *command,
 				t_program *minishell);
 
-// PATH
-static char	**get_paths_from_env(char **envp)
-{
-	int		i;
-	char	**paths;
 
-	if (!envp)
-		return (NULL);
-	i = 0;
-	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5))
-		i++;
-	if (!envp[i])
-		return (NULL);
-	paths = ft_split(envp[i] + 5, ':');
-	return (paths);
+static char	**get_paths_from_env(t_program *minishell)
+{
+	t_env	*current;
+
+	current = minishell->env_list;
+	while (current)
+	{
+		if (ft_strcmp(current->key, "PATH") == 0)
+			return (ft_split(current->value, ':'));
+		current = current->next;
+	}
+	return (NULL);
 }
 
 static char	*get_full_path(char *dir, char *cmd)
@@ -52,7 +50,7 @@ static void	free_paths(char **paths)
 	free(paths);
 }
 
-static char	*find_command_path(char *cmd, char **envp)
+static char	*find_command_path(char *cmd, t_program *minishell)
 {
 	char	**paths;
 	char	*full_path;
@@ -62,7 +60,7 @@ static char	*find_command_path(char *cmd, char **envp)
 		return (NULL);
 	if (access(cmd, X_OK) == 0)
 		return (ft_strdup(cmd));
-	paths = get_paths_from_env(envp);
+	paths = get_paths_from_env(minishell);
 	if (!paths)
 		return (NULL);
 	i = 0;
@@ -99,6 +97,7 @@ static void	handle_execution_error(t_command *command, t_program *minishell,
 	free(cmd_path);
 }
 
+
 static void	handle_execution_status(pid_t pid, t_program *minishell)
 {
 	int	status;
@@ -129,7 +128,7 @@ static void	execute_external(t_command *command, t_program *minishell)
 
 	if (!command->arguments[0])
 		return ;
-	cmd_path = find_command_path(command->arguments[0], minishell->envp);
+	cmd_path = find_command_path(command->arguments[0], minishell);
 	if (!cmd_path)
 		return (handle_execution_error(command, minishell, NULL, 1));
 	pid = fork();
@@ -221,7 +220,7 @@ static void	execute_piped_command(t_command *command, t_program *minishell)
 		execute_builtin(command, minishell);
 		exit(minishell->status);
 	}
-	cmd_path = find_command_path(command->arguments[0], minishell->envp);
+	cmd_path = find_command_path(command->arguments[0], minishell);
 	if (!cmd_path)
 	{
 		handle_execution_error(command, minishell, NULL, 1);

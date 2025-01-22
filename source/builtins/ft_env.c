@@ -5,18 +5,18 @@ void	init_env(t_program *minishell, char **envp)
 	int		i;
 	char	*key;
 	char	*value;
-	char	*equals_sign;
+	char	*sign;
 
 	minishell->env_list = NULL;
 	i = 0;
 	while (envp[i])
 	{
-		equals_sign = ft_strchr(envp[i], '=');
-		if (equals_sign)
+		sign = ft_strchr(envp[i], '=');
+		if (sign)
 		{
-			key = ft_strndup(envp[i], equals_sign - envp[i]);
-			value = ft_strdup(equals_sign + 1);
-			add_env(minishell, key, value);
+			key = ft_strndup(envp[i], sign - envp[i]);
+			value = ft_strdup(sign + 1);
+			add_env(minishell, key, value, 0);
 			free(key);
 			free(value);
 		}
@@ -24,7 +24,8 @@ void	init_env(t_program *minishell, char **envp)
 	}
 }
 
-void	add_env(t_program *minishell, const char *key, const char *value)
+void	add_env(t_program *minishell, const char *key, const char *value,
+			int sign)
 {
 	t_env	*new;
 
@@ -36,6 +37,7 @@ void	add_env(t_program *minishell, const char *key, const char *value)
 		new->value = ft_strdup(value);
 	else
 		new->value = NULL;
+	new->sign = sign;
 	new->next = minishell->env_list;
 	minishell->env_list = new;
 }
@@ -52,6 +54,20 @@ void	free_env(t_env *head)
 		free(temp->value);
 		free(temp);
 	}
+}
+
+t_env	*env_find(t_env *env_list, const char *key)
+{
+	t_env	*current;
+
+	current = env_list;
+	while (current)
+	{
+		if (ft_strcmp(current->key, key) == 0)
+			return (current);
+		current = current->next;
+	}
+	return (NULL);
 }
 
 int	ft_env(t_program *minishell)

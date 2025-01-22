@@ -1,15 +1,5 @@
 #include "../include/minishell.h"
 
-// void	shell_exit(const char *input, t_token *tokens, t_program *minishell)
-// {
-// 	printf("inside exit status: %d\n", minishell->status);
-// 	if (tokens)
-// 		free_list(tokens);
-// 	free((char *)input);
-// 	free_shell(minishell);
-// 	exit(0);
-// }
-
 void	shell_exit(const char *input, t_token *tokens, t_program *minishell)
 {
 	int	exit_status;
@@ -27,7 +17,7 @@ int	handle_input(char *input, t_program *minishell)
 	t_token		*tokens;
 	t_pipeline	*pipeline;
 
-	if (!quote_counter(input))
+	if (!quote_tracker(input))
 	{
 		free(input);
 		return (0);
@@ -38,6 +28,13 @@ int	handle_input(char *input, t_program *minishell)
 	// print_tokens(tokens); // testing tokenizer
 	pipeline = parser(tokens, minishell);
 	// print_pipeline(pipeline); // testing parser
+	if (pipeline && !validate_pipeline(pipeline, minishell))
+	{
+		free_list(tokens);
+		free_pipeline(pipeline);
+		free(input);
+		return (1);
+	}
 	execute_pipeline(pipeline, minishell);
 	free_list(tokens);
 	free_pipeline(pipeline);

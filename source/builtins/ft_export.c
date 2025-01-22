@@ -1,7 +1,23 @@
 #include "../../include/minishell.h"
 
+// handles without memory leaks
+// export
+// export a
+// export b=
+// export c=qwe
+// export d="qwe"
+// export e='qwe'
+// export f=""
+// export g=''
+// export a b c d e f g h
+// export VAR=$USER
+// export =
+// export "="
+
 // extracts key and value from argument
-static void	export_extract(const char *argument, char **key, char **value)
+// handles special case where argument is "="
+void	export_extract(const char *argument, char **key,
+	char **value, int *sign)
 {
 	char	*equals;
 
@@ -10,75 +26,62 @@ static void	export_extract(const char *argument, char **key, char **value)
 	{
 		*key = ft_strndup(argument, equals - argument);
 		*value = ft_strdup(equals + 1);
+		*sign = 0;
 	}
 	else
 	{
 		*key = ft_strdup(argument);
 		*value = NULL;
+		*sign = 1;
 	}
 }
 
-static int	export_process(const char *argument, t_program *minishell)
+// extracts key and value from argument
+// validates the key
+// process if valid key
+int	export_process(const char *argument, t_program *minishell)
 {
 	char	*key;
 	char	*value;
-	char	*expand;
+	int		sign;
 
-	export_extract(argument, &key, &value);
-	if (value)
+	export_extract(argument, &key, &value, &sign);
+	if (!export_valid(key))
 	{
-		expand = quote_expand(value, minishell);
-		free(value);
-		if (expand)
-		{
-			add_env(minishell, key, expand);
-			free(expand);
-		}
-		else
-			add_env(minishell, key, "");
+		export_error(key, minishell);
+		free_key_value(key, value);
+		return (1);
 	}
-	else
-		add_env(minishell, key, "");
-	free(key);
+	if (key && *key)
+		export_update(minishell, key, value, sign);
+	free_key_value(key, value);
 	return (0);
 }
 
-// prints formatted env
-static void	export_print(t_env *env)
+// process each argument passed to the export command
+// updates the environment
+void	export_argument(t_command *command, t_program *minishell)
 {
-	ft_putstr_fd("declare -x ", STDOUT_FILENO);
-	ft_putstr_fd(env->key, STDOUT_FILENO);
-	if (env->value && *env->value != '\0')
-	{
-		ft_putstr_fd("=", STDOUT_FILENO);
-		ft_putstr_fd(env->value, STDOUT_FILENO);
-	}
-	ft_putstr_fd("\n", STDOUT_FILENO);
-}
-
-void	ft_export(t_command *command, t_program *minishell)
-{
-	t_env	**sorted;
-	int		size;
 	int		i;
+	char	*key;
+	char	*value;
+	int		sign;
 
-	if (!command->arguments[1])
-	{
-		sorted = export_sorting(minishell, &size);
-		if (sorted)
-		{
-			i = 0;
-			while (i < size)
-				export_print(sorted[i++]);
-			free (sorted);
-		}
-		minishell->status = 0;
-		return ;
-	}
 	i = 1;
 	while (command->arguments[i])
 	{
+		export_extract(command->arguments[i], &key, &value, &sign);
 		export_process(command->arguments[i], minishell);
+		free_key_value(key, value);
 		i++;
 	}
+}
+
+// handles export command
+void	ft_export(t_command *command, t_program *minishell)
+{
+	if (!command->arguments[1])
+		print_export(minishell);
+	else
+		export_argument(command, minishell);
 }

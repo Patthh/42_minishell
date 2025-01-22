@@ -1,158 +1,105 @@
 #include "../../include/minishell.h"
 
-// int ft_cd(t_command *command, t_program *minishell)
-// {
-//     char *path;
-//     // printf("ft_cd: Starting cd command\n");
-//     // printf("ft_cd: Number of arguments: %d\n",
-		// command ? (command->arguments ? 2 : 0) : 0);
-
-//     if (!command->arguments[1] || ft_strcmp(command->arguments[1], "~") == 0)
-//     {
-//         // printf("ft_cd: No argument or '~' provided,
-		// trying to get HOME\n");
-//         path = env_value(minishell, "HOME");
-//         if (!path)
-//         {
-//             // printf("ft_cd: HOME environment variable not found\n");
-//             ft_putstr_fd("minishell: cd: HOME not set\n", STDERR_FILENO);
-//             minishell->status = 1;
-//             return (1);
-//         }
-//         printf("ft_cd: HOME path = '%s'\n", path);
-//     }
-//     if (!command->arguments[1] || ft_strcmp(command->arguments[1], "-") == 0)
-//     {
-//         // printf("ft_cd: No argument or '~' provided,
-		// trying to get HOME\n");
-//         path = env_value(minishell, "OLDPWD");
-//         // if (!path)
-//         // {
-//         //     // printf("ft_cd: HOME environment variable not found\n");
-//         //     // ft_putstr_fd("minishell: cd: HOME not set\n",
-		// STDERR_FILENO);
-//         //     minishell->status = 1;
-//         //     return (1);
-//         // }
-//         printf("ft_cd: PREVIOUS path = '%s'\n", path);
-//     }
-//     else
-//     {
-//         path = command->arguments[1];
-//         printf("ft_cd: Using provided path = '%s'\n", path);
-//     }
-//     printf("ft_cd: Attempting to change directory to '%s'\n", path);
-//     if (chdir(path) == -1)
-//     {
-//         printf("ft_cd: chdir failed with errno = %d\n", errno);
-//         ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
-//         ft_putstr_fd(path, STDERR_FILENO);
-//         ft_putstr_fd(": ", STDERR_FILENO);
-//         ft_putstr_fd(strerror(errno), STDERR_FILENO);
-//         ft_putstr_fd("\n", STDERR_FILENO);
-//         minishell->status = 1;
-//         return (1);
-//     }
-//     printf("ft_cd: Successfully changed directory to '%s'\n", path);
-//     char cwd[PATH_MAX];
-//     if (getcwd(cwd, sizeof(cwd)) != NULL)
-//         printf("ft_cd: Current working directory is: %s\n", cwd);
-//     else
-//         printf("ft_cd: Failed to get current working directory\n");
-//     minishell->status = 0;
-//     return (0);
-// }
-static char	*expand_path(const char *original_path, t_program *minishell)
+// access() checks whether the calling process can access the file pathname.
+// If pathname is a symbolic link, it is dereferenced.
+// helper functions in utils/utils_cd.c
+static int	chdir_error(char *target_path, t_program *minishell)
 {
-	char	*home_path;
-	char	*expanded_path;
-	char	*oldpwd;
+	struct stat	path_stat;
 
-	if (!original_path)
+	if (stat(target_path, &path_stat) == -1)
+	{
+		if (access(target_path, F_OK) == -1)
+			error_not_found(target_path, minishell);
+		else
+			error_permission(target_path, minishell);
+	}
+	else
+	{
+		if (!S_ISDIR(path_stat.st_mode))
+			error_directory(target_path, minishell);
+		else if (access(target_path, X_OK) == -1)
+			error_permission(target_path, minishell);
+	}
+	return (1);
+}
+
+static int	validate_arguments(t_command *command, t_program *minishell)
+{
+	if (command->arguments && command->arguments[1] && command->arguments[2])
+	{
+		error_arguments("cd", minishell);
+		return (0);
+	}
+	return (1);
+}
+
+static int	validate_path(char *target_path, t_program *minishell)
+{
+	struct stat	path_stat;
+
+	if (stat(target_path, &path_stat) == -1)
+	{
+		if (access(target_path, F_OK) == -1)
+			error_not_found(target_path, minishell);
+		else
+			error_permission(target_path, minishell);
+		return (0);
+	}
+	if (!S_ISDIR(path_stat.st_mode))
+	{
+		error_directory(target_path, minishell);
+		return (0);
+	}
+	if (access(target_path, X_OK) == -1)
+	{
+		error_permission(target_path, minishell);
+		return (0);
+	}
+	return (1);
+}
+
+static char	*prepare_path(t_command *command, t_program *minishell)
+{
+	char	*target_path;
+
+	if (!validate_arguments(command, minishell))
 		return (NULL);
-	printf("Expanding path: %s\n", original_path);
-	if (ft_strcmp(original_path, "-") == 0)
+	target_path = get_target(command, minishell);
+	if (!target_path)
 	{
-		oldpwd = env_value(minishell, "OLDPWD");
-		if (!oldpwd)
-		{
-			ft_putstr_fd("minishell: cd: OLDPWD not set\n", STDERR_FILENO);
-			return (NULL);
-		}
-		printf("%s\n", oldpwd);
-		return (ft_strdup(oldpwd));
+		minishell->status = 1;
+		return (NULL);
 	}
-	// Handle path starting with ~/ or just ~
-	if (original_path[0] == '~')
+	if (!validate_path(target_path, minishell))
 	{
-		home_path = env_value(minishell, "HOME");
-		if (!home_path)
-		{
-			ft_putstr_fd("minishell: cd: HOME not set\n", STDERR_FILENO);
-			return (NULL);
-		}
-		if (original_path[1] == '\0') // Just ~
-			return (ft_strdup(home_path));
-		else if (original_path[1] == '/') // ~/something
-		{
-			expanded_path = ft_strjoin(home_path, original_path + 1);
-			printf("Expanded ~/ path to: %s\n", expanded_path);
-			return (expanded_path);
-		}
+		free(target_path);
+		return (NULL);
 	}
-	return (ft_strdup(original_path));
+	return (target_path);
 }
 
 int	ft_cd(t_command *command, t_program *minishell)
 {
-	char *path;
-	char *expanded_path;
-	char cwd[PATH_MAX];
+	char	*target_path;
+	char	old_pwd[PATH_MAX];
+	int		ret;
 
-	printf("\n=== CD Command Debug ===\n");
-	printf("Command received: %s\n", command->arguments[0]);
-	printf("Argument: %s\n",
-			command->arguments[1] ? command->arguments[1] : "none");
-
-	if (!command->arguments[1])
+	if (!getcwd(old_pwd, PATH_MAX))
 	{
-		path = env_value(minishell, "HOME");
-		if (!path)
-		{
-			ft_putstr_fd("minishell: cd: HOME not set\n", STDERR_FILENO);
-			minishell->status = 1;
-			return (1);
-		}
-		expanded_path = ft_strdup(path);
-	}
-	else
-	{
-		expanded_path = expand_path(command->arguments[1], minishell);
-		if (!expanded_path)
-		{
-			minishell->status = 1;
-			return (1);
-		}
-	}
-
-	printf("Attempting to cd to: %s\n", expanded_path);
-
-	if (chdir(expanded_path) == -1)
-	{
-		ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
-		ft_putstr_fd(expanded_path, STDERR_FILENO);
-		ft_putstr_fd(": ", STDERR_FILENO);
-		ft_putstr_fd(strerror(errno), STDERR_FILENO);
-		ft_putstr_fd("\n", STDERR_FILENO);
-		free(expanded_path);
-		minishell->status = 1;
+		error_file_not_found("getcwd", minishell);
 		return (1);
 	}
-
-	if (getcwd(cwd, sizeof(cwd)) != NULL)
-		printf("Current directory after cd: %s\n", cwd);
-
-	free(expanded_path);
-	minishell->status = 0;
-	return (0);
+	target_path = prepare_path(command, minishell);
+	if (!target_path)
+		return (1);
+	if (chdir(target_path) == -1)
+	{
+		ret = chdir_error(target_path, minishell);
+		free(target_path);
+		return (ret);
+	}
+	ret = update_pwd(minishell, old_pwd);
+	free(target_path);
+	return (ret);
 }

@@ -2,7 +2,8 @@
 
 int	parser_builtin(const char *command)
 {
-	const char	*builtins[] = {"echo", "cd", "pwd", "export", "unset", "env", "exit", NULL};
+	const char	*builtins[] = {"echo", "cd", "pwd", "export",
+		"unset", "env", "exit", NULL};
 	int			i;
 
 	i = 0;
@@ -39,28 +40,16 @@ int	parser_argument(t_command *command, const char *value)
 	return (1);
 }
 
-t_token	*parser_env(t_token *token, t_command *command, t_program *minishell)
-{
-	char		*key;
-	char		*value;
-
-	key = token->value;
-	value = env_value(minishell, key);
-	if (value)
-	{
-		if (!parser_argument(command, value))
-			ft_error("Parse: failed to add argument\n");
-	}
-	return (token->next);
-}
-
 t_token	*parser_status(t_token *token, t_program *minishell)
 {
 	char	*status;
 
 	status = ft_itoa(minishell->status);
 	if (!status)
+	{
+		error_malloc(minishell);
 		return (NULL);
+	}
 	if (token->value)
 		free(token->value);
 	token->type = TKN_WORD;
@@ -68,24 +57,43 @@ t_token	*parser_status(t_token *token, t_program *minishell)
 	return (token);
 }
 
-int	parser_sequence(t_token *tokens)
+t_token	*parser_variable(t_token *token, t_command *command,
+	t_program *minishell)
 {
-	t_token	*token;
+	char		*value;
 
-	token = tokens;
-	while (token)
+	value = env_value(minishell, token->value);
+	if (!value)
 	{
-		if (token->type == TKN_PIPE && (!token->next || token->next->type == TKN_PIPE))
-		{
-			ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", STDERR_FILENO);
-			return (0);
-		}
-		if ((token->type == TKN_IN || token->type == TKN_OUT || token->type == TKN_RDA || token->type == TKN_RDH) && (!token->next || token->next->type != TKN_WORD))
-		{
-			ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", STDERR_FILENO);
-			return (0);
-		}
-		token = token->next;
+		ft_error("Parse: failed to find environment variable\n");
+		return (NULL);
 	}
-	return (1);
+	if (!parser_argument(command, value))
+	{
+		ft_error("Parse: failed to add argument\n");
+		return (NULL);
+	}
+	return (token->next);
+}
+
+t_token	*parser_env(t_token *token, t_command *command, t_program *minishell)
+{
+	char		*key;
+	char		*value;
+
+	key = token->value;
+	if (ft_strcmp(key, "?") == 0)
+	{
+		value = ft_itoa(minishell->status);
+		if (!value)
+		{
+			ft_error("Parse: failed to allocate memory for exit status\n");
+			return (NULL);
+		}
+		token->type = TKN_WORD;
+		token->value = value;
+		return (token);
+	}
+	else
+		return (parser_variable(token, command, minishell));
 }

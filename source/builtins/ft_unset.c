@@ -17,10 +17,7 @@ static int	unset_remove(t_program *minishell, const char *key)
 	t_env	*previous;
 
 	if (!key)
-	{
-		ft_putstr_fd("unset: invalid variable name\n", STDERR_FILENO);
 		return (0);
-	}
 	current = minishell->env_list;
 	previous = NULL;
 	while (current)
@@ -41,16 +38,35 @@ static int	unset_remove(t_program *minishell, const char *key)
 }
 
 // validates variable name
+// static int	unset_check(const char *name)
+// {
+// 	if (!name || !*name)
+// 		return (0);
+// 	if (ft_isalnum(*name) || *name == '_')
+// 	{
+// 		name++;
+// 		while (*name)
+// 		{
+// 			if (!(ft_isalnum(*name) || *name == '_'))
+// 				return (0);
+// 			name++;
+// 		}
+// 		return (1);
+// 	}
+// 	return (0);
+// }
+
 static int	unset_check(const char *name)
 {
 	if (!name || !*name)
 		return (0);
 	if (!(ft_isalnum(*name) || *name == '_'))
 		return (0);
-	while (*name++)
+	while (*name)
 	{
-		if (!(ft_isalnum(*name) || *name == '_'))
+		if (!(ft_isalnum(*name) || *name == '_' || ft_isspecial(*name)))
 			return (0);
+		name++;
 	}
 	return (1);
 }
@@ -58,23 +74,21 @@ static int	unset_check(const char *name)
 // process a single argument
 // check variable name
 // remove variable from list
-static int	unset_single(t_program *minishell, char *argument)
+static int	unset_single(char *argument)
 {
+	if (!argument || !*argument)
+		return (0);
+	while (*argument)
+	{
+		if (!ft_isspace(*argument))
+			break ;
+		argument++;
+	}
+	if (!*argument)
+		return (0);
 	if (!unset_check(argument))
-	{
-		ft_putstr_fd("unset: ", STDERR_FILENO);
-		ft_putstr_fd(argument, STDERR_FILENO);
-		ft_putstr_fd("`: not a valid identifier\n", STDERR_FILENO);
-		return (1);
-	}
-	if (!unset_remove(minishell, argument))
-	{
-		ft_putstr_fd("unset: ", STDERR_FILENO);
-		ft_putstr_fd(argument, STDERR_FILENO);
-		ft_putstr_fd("`: variable not found\n", STDERR_FILENO);
-		return (1);
-	}
-	return (0);
+		return (0);
+	return (1);
 }
 
 // unset command removes one or more env
@@ -84,17 +98,20 @@ int	ft_unset(t_command *command, t_program *minishell)
 	int	status;
 
 	if (!command->arguments || !command->arguments[1])
-	{
-		ft_putstr_fd("unset: not enough arguments\n", STDERR_FILENO);
-		minishell->status = 1;
-		return (1);
-	}
+		return (0);
 	i = 1;
 	status = 0;
 	while (command->arguments[i])
 	{
-		if (unset_single(minishell, command->arguments[i]))
-			status = 1;
+		if (command->arguments[i][0] == '-')
+		{
+			error_option(command->arguments[i], minishell);
+			return (1);
+		}
+		if (unset_single(command->arguments[i]) == 1)
+		{
+			unset_remove(minishell, command->arguments[i]);
+		}
 		i++;
 	}
 	minishell->status = status;
