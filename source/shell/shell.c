@@ -38,6 +38,13 @@ int	handle_input(char *input, t_program *minishell)
 	// print_tokens(tokens); // testing tokenizer
 	pipeline = parser(tokens, minishell);
 	// print_pipeline(pipeline); // testing parser
+	if (pipeline && !validate_pipeline(pipeline, minishell))
+	{
+		free_list(tokens);
+		free_pipeline(pipeline);
+		free(input);
+		return (1);
+	}
 	execute_pipeline(pipeline, minishell);
 	free_list(tokens);
 	free_pipeline(pipeline);

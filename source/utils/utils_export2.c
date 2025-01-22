@@ -29,7 +29,7 @@ int	export_valid(const char *string)
 }
 
 // prints error message for invalid identifiers
-void	export_error(const char *key)
+void	export_error(const char *key, t_program *minishell)
 {
 	if (*key == '\0')
 		ft_putstr_fd("minishell: export: `=': not a valid identifier\n",
@@ -40,6 +40,7 @@ void	export_error(const char *key)
 		ft_putstr_fd((char *)key, STDERR_FILENO);
 		ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
 	}
+	minishell->status = 1;
 }
 
 // updates and adds env with value expansion

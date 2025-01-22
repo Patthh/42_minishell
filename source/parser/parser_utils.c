@@ -25,6 +25,8 @@ t_token	*parser_token(t_token *token, t_command **command,
 
 t_token	*parser_word(t_token *token, t_command *command)
 {
+	if (!token->value || !token->value[0])
+		return (token->next);
 	if (!parser_argument(command, token->value))
 		ft_error("Parser: Failed to add argument\n");
 	if (command->arguments[0] && parser_builtin(command->arguments[0]))

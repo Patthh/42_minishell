@@ -13,20 +13,18 @@ static void	execute_in_child(char *cmd_path, t_command *command,
 // }
 
 // void execute_pipeline(t_pipeline *pipeline, t_program *minishell)
-static char	**get_paths_from_env(char **envp)
+static char	**get_paths_from_env(t_program *minishell)
 {
-	int		i;
-	char	**paths;
+	t_env	*current;
 
-	if (!envp)
-		return (NULL);
-	i = 0;
-	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5))
-		i++;
-	if (!envp[i])
-		return (NULL);
-	paths = ft_split(envp[i] + 5, ':');
-	return (paths);
+	current = minishell->env_list;
+	while (current)
+	{
+		if (ft_strcmp(current->key, "PATH") == 0)
+			return (ft_split(current->value, ':'));
+		current = current->next;
+	}
+	return (NULL);
 }
 
 static char	*get_full_path(char *dir, char *cmd)
@@ -61,7 +59,7 @@ static void	free_paths(char **paths)
 	free(paths);
 }
 
-static char	*find_command_path(char *cmd, char **envp)
+static char	*find_command_path(char *cmd, t_program *minishell)
 {
 	char	**paths;
 	char	*full_path;
@@ -71,7 +69,7 @@ static char	*find_command_path(char *cmd, char **envp)
 		return (NULL);
 	if (access(cmd, X_OK) == 0)
 		return (ft_strdup(cmd));
-	paths = get_paths_from_env(envp);
+	paths = get_paths_from_env(minishell);
 	if (!paths)
 		return (NULL);
 	i = 0;
@@ -89,23 +87,18 @@ static char	*find_command_path(char *cmd, char **envp)
 	return (NULL);
 }
 
-static void	handle_execution_error(t_command *command, t_program *minishell,
-		char *cmd_path, int error_type)
-{
-	if (error_type == 1) // Command not found
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(command->arguments[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
-		minishell->status = 127;
-	}
-	else if (error_type == 2) // Fork failure
-	{
-		ft_putstr_fd("minishell: fork failed\n", 2);
-		minishell->status = 1;
-	}
-	free(cmd_path);
-}
+// static void	handle_execution_error(t_command *command, t_program *minishell,
+// 		char *cmd_path, int error_type)
+// {
+// 	if (error_type == 1) // Command not found
+// 		error_command(command->arguments[0], minishell);
+// 	else if (error_type == 2) // Fork failure
+// 	{
+// 		ft_putstr_fd("minishell: fork failed\n", 2);
+// 		minishell->status = 1;
+// 	}
+// 	free(cmd_path);
+// }
 
 static void	handle_execution_status(pid_t pid, t_program *minishell)
 {
@@ -159,23 +152,23 @@ static void	handle_execution_status(pid_t pid, t_program *minishell)
 
 // }
 
-// static void	handle_execution_error(t_command *command, t_program *minishell,
-// 		char *cmd_path, int error_type)
-// {
-// 	if (error_type == 1) // Command not found
-// 	{
-// 		ft_putstr_fd("minishell: ", 2);
-// 		ft_putstr_fd(command->arguments[0], 2);
-// 		ft_putstr_fd(": command not found\n", 2);
-// 		minishell->status = 127;
-// 	}
-// 	else if (error_type == 2) // Fork failure
-// 	{
-// 		ft_putstr_fd("minishell: fork failed\n", 2);
-// 		minishell->status = 1;
-// 	}
-// 	free(cmd_path);
-// }
+static void	handle_execution_error(t_command *command, t_program *minishell,
+		char *cmd_path, int error_type)
+{
+	if (error_type == 1) // Command not found
+	{
+		// ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(command->arguments[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
+		minishell->status = 127;
+	}
+	else if (error_type == 2) // Fork failure
+	{
+		ft_putstr_fd("minishell: fork failed\n", 2);
+		minishell->status = 1;
+	}
+	free(cmd_path);
+}
 
 static void	fork_and_execute(char *cmd_path, t_command *command,
 		t_program *minishell)
@@ -206,13 +199,25 @@ static void	fork_and_execute(char *cmd_path, t_command *command,
 	// printf("execute_command: finished executing command\n");
 }
 
+// TO DO
+// The key changes are:
+// Special handling for the "?" key
+// Using TKN_WORD instead of TKN_ENV for the expanded value of $?
+// Making sure the numeric value is used as the command name
+// This should make it behave like bash where:
+// $? gets expanded to "2" (or whatever the status is)
+// The shell tries to execute "2" as a command
+// Since "2" isn't a command, you get "No such file or directory"
+// The difference between TKN_ENV and TKN_WORD is important here because
+// we want the shell to treat the expanded value as a literal command name
+// rather than as an environment variable.
 static void	execute_external(t_command *command, t_program *minishell)
 {
 	char	*cmd_path;
 
 	if (!command->arguments[0])
 		return ;
-	cmd_path = find_command_path(command->arguments[0], minishell->envp);
+	cmd_path = find_command_path(command->arguments[0], minishell);
 	if (!cmd_path)
 	{
 		handle_execution_error(command, minishell, NULL, 1);
@@ -291,7 +296,7 @@ static void	execute_piped_command(t_command *command, t_program *minishell)
 		execute_builtin(command, minishell);
 		exit(minishell->status);
 	}
-	cmd_path = find_command_path(command->arguments[0], minishell->envp);
+	cmd_path = find_command_path(command->arguments[0], minishell);
 	if (!cmd_path)
 	{
 		handle_execution_error(command, minishell, NULL, 1);

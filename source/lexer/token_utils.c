@@ -52,6 +52,8 @@ void	token_word(const char **input, t_token **head, t_program *minishell)
 			token_single(input, &result);
 		else if (**input == '"')
 			token_double(input, &result, minishell);
+		else if (**input == '$')
+			env_word(input, &result, minishell);
 		else
 			token_unquoted(input, &result, minishell);
 	}
@@ -106,12 +108,6 @@ void	token_dollar(const char **input, t_token **head, t_program *minishell)
 	if (!**input || ft_isspace(**input))
 	{
 		token_add(head, token_new(TKN_WORD, "$"));
-		return ;
-	}
-	if (ft_strncmp(*input, "EMPTY", 5) == 0 && !ft_isalnum((*input)[5]) && (*input))
-	{
-		*input += 5;
-		token_add(head, token_new(TKN_EMPTY, ""));
 		return ;
 	}
 	if (**input == '?')

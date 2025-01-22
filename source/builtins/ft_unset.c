@@ -29,7 +29,7 @@ static int	unset_remove(t_program *minishell, const char *key)
 			else
 				minishell->env_list = current->next;
 			unset_free(current);
-			return (0);
+			return (1);
 		}
 		previous = current;
 		current = current->next;
@@ -38,38 +38,57 @@ static int	unset_remove(t_program *minishell, const char *key)
 }
 
 // validates variable name
+// static int	unset_check(const char *name)
+// {
+// 	if (!name || !*name)
+// 		return (0);
+// 	if (ft_isalnum(*name) || *name == '_')
+// 	{
+// 		name++;
+// 		while (*name)
+// 		{
+// 			if (!(ft_isalnum(*name) || *name == '_'))
+// 				return (0);
+// 			name++;
+// 		}
+// 		return (1);
+// 	}
+// 	return (0);
+// }
+
 static int	unset_check(const char *name)
 {
 	if (!name || !*name)
 		return (0);
-	if (ft_isalnum(*name) || *name == '_')
+	if (!(ft_isalnum(*name) || *name == '_'))
+		return (0);
+	while (*name)
 	{
+		if (!(ft_isalnum(*name) || *name == '_' || ft_isspecial(*name)))
+			return (0);
 		name++;
-		while (*name)
-		{
-			if (!(ft_isalnum(*name) || *name == '_'))
-				return (0);
-			name++;
-		}
-		return (1);
 	}
-	return (0);
+	return (1);
 }
 
 // process a single argument
 // check variable name
 // remove variable from list
-static int	unset_single(t_program *minishell, char *argument)
+static int	unset_single(char *argument)
 {
-	if (!unset_check(argument))
+	if (!argument || !*argument)
+		return (0);
+	while (*argument)
 	{
-		ft_putstr_fd("unset: `", STDERR_FILENO);
-		ft_putstr_fd("argument", STDERR_FILENO);
-		ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
-		return (1);
+		if (!ft_isspace(*argument))
+			break ;
+		argument++;
 	}
-	unset_remove(minishell, argument);
-	return (0);
+	if (!*argument)
+		return (0);
+	if (!unset_check(argument))
+		return (0);
+	return (1);
 }
 
 // unset command removes one or more env
@@ -84,8 +103,15 @@ int	ft_unset(t_command *command, t_program *minishell)
 	status = 0;
 	while (command->arguments[i])
 	{
-		if (unset_single(minishell, command->arguments[i]) != 0)
-			status = 1;
+		if (command->arguments[i][0] == '-')
+		{
+			error_option(command->arguments[i], minishell);
+			return (1);
+		}
+		if (unset_single(command->arguments[i]) == 1)
+		{
+			unset_remove(minishell, command->arguments[i]);
+		}
 		i++;
 	}
 	minishell->status = status;

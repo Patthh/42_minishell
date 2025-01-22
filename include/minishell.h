@@ -8,6 +8,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <sys/wait.h>
+# include <sys/stat.h>
 # include <signal.h>
 # include <string.h>
 # include <errno.h>
@@ -42,8 +43,7 @@ typedef enum e_token
 	TKN_DOUBLE,		// 15 double quote
 	TKN_WILDCARD,	// 16 *
 	TKN_WORD,		// 17
-	TKN_ASSIGN,		// 18 =
-	TKN_EMPTY		// 19 $EMPTY
+	TKN_ASSIGN		// 18 =
 }	t_token_type;
 
 typedef enum e_logical
@@ -170,6 +170,8 @@ void			token_extra(const char **input, t_token **head, t_program *minishell);
 void			token_wildcard(const char **input, t_token **head);
 char	*token_env_word(const char **input, t_program *minishell);
 void			token_paranthesis(const char **input, t_token **head);
+void			token_hash(const char **input, t_token **head);
+void	token_expand(const char	**input, char **result, t_program *minishell);
 
 char			*env_name(const char **input);
 char			*env_value(t_program *minishell, const char *key);
@@ -194,6 +196,13 @@ t_token			*parser_logical(t_token *token, t_command **command, t_pipeline *pipel
 // t_token		*parser_and(t_token *token, t_command **command, t_pipeline *pipeline);
 // t_token		*parser_or(t_token *token, t_command **command, t_pipeline *pipeline);
 
+// PIPELINE
+int	validate_pipeline(t_pipeline *pipeline, t_program *minishell);
+int	validate_command(t_command *command, t_program *minishell);
+int	valid_cmd_name(const char *name);
+int	validate_content(t_command *command, t_program *minishell);
+int	validate_redirection_path(char *path, t_program *minishell);
+
 // BUILTINS
 int				ft_cd(t_command *command, t_program *minishell);
 int				ft_echo(t_command *command, t_program *minishell);
@@ -212,14 +221,14 @@ int				export_process(const char *argument, t_program *minishell);
 void			export_remove(t_program *minishell, const char *key);
 void			export_argument(t_command *command, t_program *minishell);
 t_env			**export_sorting(t_program *minishell, int *size);
-void			export_error(const char *key);
+void			export_error(const char *key, t_program *minishell);
 int				export_valid(const char *string);
 void			print_export(t_program *minishell);
 void			free_key_value(char *key, char *value);
 
-int				update_pwd(t_program *minishell);
+int				update_pwd(t_program *minishell, const char *old_pwd);
 char			*get_target(t_command *command, t_program *minishell);
-char			*get_path(t_program *minishell, char *variable, char *error);
+char			*get_path(t_program *minishell, char *variable);
 void			cd_error(char *path, char *message);
 
 // EXECUTION
@@ -260,6 +269,18 @@ void	error_syntax(char *message, t_program *minishell);
 void	error_file_not_found(char *path, t_program *minishell);
 void	error_arguments(char *command, t_program *minishell);
 void	error_malloc(t_program *minishell);
+void	error_unexpected_eof(t_program *minishell);
+void	error_newline(t_program *minishell);
+void	error_brace(char *brace, t_program *minishell);
+void	error_not_found(char *command, t_program *minishell);
+void	error_directory(char *command, t_program *minishell);
+void	error_permission(char *command, t_program *minishell);
+void	error_numeric(char *command, t_program *minishell);
+void	error_identifier(char *identifier, t_program *minishell);
+void	error_file_not_found_127(char *path, t_program *minishell);
+void error_not_valid_identifier(char *command, t_program *minishell);
+void	error_out_of_range(char *argument, t_program *minishell);
+void	error_option(char *argument, t_program *minishell);
 
 // env
 void	init_env(t_program *minishell, char **envp);
@@ -270,6 +291,10 @@ void	nl_handler(int signal);
 
 // UTILS
 void	ft_error(const char *message);
+int		ft_isnumeric(const char *string);
+int	ft_isspecial(char c);
+int		ft_isredirect(char *argument);
+int		ft_isredirect_token(t_token *token);
 char	*token_join(char *s1, const char *s2);
 void	token_regular(const char **input, char **result);
 // void	ft_putstr_fd(char *s, int fd);

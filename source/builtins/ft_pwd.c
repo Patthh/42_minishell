@@ -7,8 +7,7 @@ int	ft_pwd(t_program *minishell)
 	cwd = getcwd(NULL, 0);
 	if (cwd == NULL)
 	{
-		ft_putstr_fd("pwd: error retrieving current directory", STDERR_FILENO);
-		minishell->status = 1;
+		error_file_not_found(NULL, minishell);
 		return (1);
 	}
 	ft_putstr_fd(cwd, STDOUT_FILENO);
