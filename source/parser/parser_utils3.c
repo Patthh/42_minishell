@@ -40,26 +40,6 @@ int	parser_argument(t_command *command, const char *value)
 	return (1);
 }
 
-t_token	*parser_env(t_token *token, t_command *command, t_program *minishell)
-{
-	char		*key;
-	char		*value;
-
-	key = token->value;
-	value = env_value(minishell, key);
-	if (!value)
-	{
-		error_file_not_found(key, minishell);
-		return (NULL);
-	}
-	else
-	{
-		if (!parser_argument(command, value))
-			ft_error("Parse: failed to add argument\n");
-	}
-	return (token->next);
-}
-
 t_token	*parser_status(t_token *token, t_program *minishell)
 {
 	char	*status;
@@ -75,4 +55,45 @@ t_token	*parser_status(t_token *token, t_program *minishell)
 	token->type = TKN_WORD;
 	token->value = status;
 	return (token);
+}
+
+t_token	*parser_variable(t_token *token, t_command *command,
+	t_program *minishell)
+{
+	char		*value;
+
+	value = env_value(minishell, token->value);
+	if (!value)
+	{
+		ft_error("Parse: failed to find environment variable\n");
+		return (NULL);
+	}
+	if (!parser_argument(command, value))
+	{
+		ft_error("Parse: failed to add argument\n");
+		return (NULL);
+	}
+	return (token->next);
+}
+
+t_token	*parser_env(t_token *token, t_command *command, t_program *minishell)
+{
+	char		*key;
+	char		*value;
+
+	key = token->value;
+	if (ft_strcmp(key, "?") == 0)
+	{
+		value = ft_itoa(minishell->status);
+		if (!value)
+		{
+			ft_error("Parse: failed to allocate memory for exit status\n");
+			return (NULL);
+		}
+		token->type = TKN_WORD;
+		token->value = value;
+		return (token);
+	}
+	else
+		return (parser_variable(token, command, minishell));
 }

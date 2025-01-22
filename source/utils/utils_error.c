@@ -159,3 +159,12 @@ void error_not_valid_identifier(char *command, t_program *minishell)
 	ft_putstr_fd(": not a valid identifier\n", STDERR_FILENO);
 	minishell->status = 127;
 }
+
+void	error_out_of_range(char *argument, t_program *minishell)
+{
+	ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
+	ft_putstr_fd(argument, STDERR_FILENO);
+	ft_putstr_fd(": numeric argument out of range\n", STDERR_FILENO);
+	minishell->status = 2;
+}
+

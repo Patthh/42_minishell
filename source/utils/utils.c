@@ -6,3 +6,13 @@ void	ft_error(const char *message)
 	exit(EXIT_FAILURE);
 }
 
+int	ft_isnumeric(const char *string)
+{
+	while (*string)
+	{
+		if (!ft_isdigit(*string))
+			return (0);
+		string++;
+	}
+	return (1);
+}
