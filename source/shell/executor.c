@@ -3,16 +3,7 @@
 static void	execute_in_child(char *cmd_path, t_command *command,
 				t_program *minishell);
 
-// Execute group
-// int execute_group(t_group *group, t_program *minishell)
-// {
-// 	if (group->type == GROUP_COMMAND)
-// 		return (execute_command(group->content.command, minishell));
-// 	else
-// 		return (execute_pipeline(group->content.pipeline, minishell));
-// }
 
-// void execute_pipeline(t_pipeline *pipeline, t_program *minishell)
 static char	**get_paths_from_env(t_program *minishell)
 {
 	t_env	*current;
@@ -87,18 +78,25 @@ static char	*find_command_path(char *cmd, t_program *minishell)
 	return (NULL);
 }
 
-// static void	handle_execution_error(t_command *command, t_program *minishell,
-// 		char *cmd_path, int error_type)
-// {
-// 	if (error_type == 1) // Command not found
-// 		error_command(command->arguments[0], minishell);
-// 	else if (error_type == 2) // Fork failure
-// 	{
-// 		ft_putstr_fd("minishell: fork failed\n", 2);
-// 		minishell->status = 1;
-// 	}
-// 	free(cmd_path);
-// }
+// ERR && STATUS
+static void	handle_execution_error(t_command *command, t_program *minishell,
+		char *cmd_path, int error_type)
+{
+	if (error_type == 1)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(command->arguments[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
+		minishell->status = 127;
+	}
+	else if (error_type == 2)
+	{
+		ft_putstr_fd("minishell: fork failed\n", 2);
+		minishell->status = 1;
+	}
+	free(cmd_path);
+}
+
 
 static void	handle_execution_status(pid_t pid, t_program *minishell)
 {
@@ -111,70 +109,28 @@ static void	handle_execution_status(pid_t pid, t_program *minishell)
 		minishell->status = 128 + WTERMSIG(status);
 }
 
-// static void	free_paths(char **paths)
-// {
-// 	int	i;
-
-// 	if (!paths)
-// 		return ;
-// 	i = 0;
-// 	while (paths[i])
-// 		free(paths[i++]);
-// 	free(paths);
-// }
-
-// static char	*find_command_path(char *cmd, char **envp)
-// {
-// 	char	**paths;
-// 	char	*full_path;
-// 	int		i;
-
-// 	if (!cmd)
-// 		return (NULL);
-// 	if (access(cmd, X_OK) == 0)
-// 		return (ft_strdup(cmd));
-// 	paths = get_paths_from_env(envp);
-// 	if (!paths)
-// 		return (NULL);
-// 	i = 0;
-// 	while (paths[i])
-// 	{
-// 		full_path = get_full_path(paths[i], cmd);
-// 		if (full_path)
-// 		{
-// 			free_paths(paths);
-// 			return (full_path);
-// 		}
-// 		i++;
-// 	}
-// 	free_paths(paths);
-// 	return (NULL);
-
-// }
-
-static void	handle_execution_error(t_command *command, t_program *minishell,
-		char *cmd_path, int error_type)
+// EXEC_UTILS
+void	exec_err_exit(t_command *command, char *cmd_path)
 {
-	if (error_type == 1) // Command not found
-	{
-		// ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(command->arguments[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
-		minishell->status = 127;
-	}
-	else if (error_type == 2) // Fork failure
-	{
-		ft_putstr_fd("minishell: fork failed\n", 2);
-		minishell->status = 1;
-	}
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(command->arguments[0], STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
+	ft_putstr_fd(strerror(errno), STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
 	free(cmd_path);
+	exit(errno);
 }
 
-static void	fork_and_execute(char *cmd_path, t_command *command,
-		t_program *minishell)
+static void	execute_external(t_command *command, t_program *minishell)
 {
+	char	*cmd_path;
 	pid_t	pid;
 
+	if (!command->arguments[0])
+		return ;
+	cmd_path = find_command_path(command->arguments[0], minishell);
+	if (!cmd_path)
+		return (handle_execution_error(command, minishell, NULL, 1));
 	pid = fork();
 	if (pid == -1)
 	{
@@ -182,48 +138,15 @@ static void	fork_and_execute(char *cmd_path, t_command *command,
 		return ;
 	}
 	if (pid == 0)
-		execute_in_child(cmd_path, command, minishell);
-	else
-		handle_execution_status(pid, minishell);
-	free(cmd_path);
-	// printf("execute_command: command = %p\n", command);
-	// printf("execute_command: command->arguments = %p\n", command->arguments);
-	// printf("execute_command: command->is_builtin =
-	//		%d\n"	command->is_builtin);
-	// 	if (command == NULL)
-	// 		return ;
-	// 	if (command->is_builtin)
-	// 		execute_builtin(command, minishell);
-	// else
-	// 	execute_external(command, minishell);
-	// printf("execute_command: finished executing command\n");
-}
-
-// TO DO
-// The key changes are:
-// Special handling for the "?" key
-// Using TKN_WORD instead of TKN_ENV for the expanded value of $?
-// Making sure the numeric value is used as the command name
-// This should make it behave like bash where:
-// $? gets expanded to "2" (or whatever the status is)
-// The shell tries to execute "2" as a command
-// Since "2" isn't a command, you get "No such file or directory"
-// The difference between TKN_ENV and TKN_WORD is important here because
-// we want the shell to treat the expanded value as a literal command name
-// rather than as an environment variable.
-static void	execute_external(t_command *command, t_program *minishell)
-{
-	char	*cmd_path;
-
-	if (!command->arguments[0])
-		return ;
-	cmd_path = find_command_path(command->arguments[0], minishell);
-	if (!cmd_path)
 	{
-		handle_execution_error(command, minishell, NULL, 1);
-		return ;
+		if (execve(cmd_path, command->arguments, minishell->envp) == -1)
+			exec_err_exit(command, cmd_path);
 	}
-	fork_and_execute(cmd_path, command, minishell);
+	else
+	{
+		handle_execution_status(pid, minishell);
+		free(cmd_path);
+	}
 }
 
 void	execute_builtin(t_command *command, t_program *minishell)
@@ -243,20 +166,21 @@ void	execute_builtin(t_command *command, t_program *minishell)
 	else if (ft_strcmp(command->arguments[0], "exit") == 0)
 		ft_exit(command, minishell);
 }
+
 /// @brief PIPE HERE
-/// @param pipeline
-/// @param pipe_fds
 static void	setup_pipes(t_pipeline *pipeline, int **pipe_fds)
 {
 	int	i;
 
-	for (i = 0; i < pipeline->cmd_count - 1; i++)
+	i = 0;
+	while (i < pipeline->cmd_count - 1)
 	{
 		if (pipe(pipe_fds[i]) == -1)
 		{
 			ft_putstr_fd("minishell: pipe creation failed\n", 2);
 			exit(1);
 		}
+		i++;
 	}
 }
 
@@ -275,12 +199,12 @@ static void	close_pipes(t_pipeline *pipeline, int **pipe_fds)
 
 static void	setup_child_pipes(t_pipeline *pipeline, int **pipe_fds, int i)
 {
-	if (i > 0) // Not first command
+	if (i > 0)
 	{
 		dup2(pipe_fds[i - 1][0], STDIN_FILENO);
 		close(pipe_fds[i - 1][1]);
 	}
-	if (i < pipeline->cmd_count - 1) // Not last command
+	if (i < pipeline->cmd_count - 1)
 	{
 		dup2(pipe_fds[i][1], STDOUT_FILENO);
 		close(pipe_fds[i][0]);
@@ -361,11 +285,30 @@ void	execute_pipeline(t_pipeline *pipeline, t_program *minishell)
 	free(pids);
 }
 
-// redir
-static int	setup_input_redirection(t_command *command)
+// REDIR
+static void	cleanup_redirections(t_command *command)
+{
+	if (!command)
+		return ;
+	if ((command->input) && command->fd_in != -1)
+	{
+		close(command->fd_in);
+		command->fd_in = -1;
+	}
+	if ((command->output || command->append) && command->fd_out != -1)
+	{
+		close(command->fd_out);
+		command->fd_out = -1;
+	}
+}
+
+// REDIR_PT2
+static int	setup_input_redirection(t_command *command, t_program *minishell)
 {
 	int	fd;
 
+	if (command->heredoc)
+		return (setup_heredoc(command, minishell));
 	if (command->input)
 	{
 		fd = open(command->input->filename, O_RDONLY);
@@ -380,9 +323,21 @@ static int	setup_input_redirection(t_command *command)
 		}
 		command->fd_in = fd;
 		if (dup2(fd, STDIN_FILENO) == -1)
+		{
+			close(fd);
 			return (1);
+		}
 	}
 	return (0);
+}
+
+void	print_err_nofile(char *filename)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(filename, STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
+	ft_putstr_fd(strerror(errno), STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
 }
 
 static int	setup_output_redirection(t_command *command)
@@ -391,147 +346,63 @@ static int	setup_output_redirection(t_command *command)
 	int		flags;
 	char	*filename;
 
-	if (command->output || command->append)
+	if (!command->output && !command->append)
+		return (0);
+	if (command->append)
 	{
-		flags = O_WRONLY | O_CREAT;
-		if (command->append)
-		{
-			flags |= O_APPEND;
-			filename = command->append->filename;
-		}
-		else
-		{
-			flags |= O_TRUNC;
-			filename = command->output->filename;
-		}
-		fd = open(filename, flags, 0644);
-		if (fd == -1)
-		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			ft_putstr_fd(filename, STDERR_FILENO);
-			ft_putstr_fd(": ", STDERR_FILENO);
-			ft_putstr_fd(strerror(errno), STDERR_FILENO);
-			ft_putstr_fd("\n", STDERR_FILENO);
-			return (1);
-		}
-		command->fd_out = fd;
-		if (dup2(fd, STDOUT_FILENO) == -1)
-			return (1);
-	}
-	return (0);
-}
-
-static void	cleanup_redirections(t_command *command)
-{
-	if (!command)
-		return ;
-	if (command->input && command->fd_in != -1)
-	{
-		close(command->fd_in);
-		command->fd_in = -1;
-	}
-	if ((command->output || command->append) && command->fd_out != -1)
-	{
-		close(command->fd_out);
-		command->fd_out = -1;
-	}
-}
-
-static int	handle_redirections(t_command *command)
-{
-	// Setup input redirection
-	if (command->input && setup_input_redirection(command))
-	{
-		cleanup_redirections(command);
-		return (1);
-	}
-	// Setup output redirection
-	if ((command->output || command->append)
-		&& setup_output_redirection(command))
-	{
-		cleanup_redirections(command);
-		return (1);
-	}
-	return (0);
-}
-// static int handle_redirections(t_command *command)
-// {
-//     int setup_input;
-//     int setup_output;
-
-// 	setup_input = 0;
-// 	setup_output = 0;
-//     if (!command)
-//         return (1);
-//     if (command->input)
-//     {
-//         if (setup_input_redirection(command))
-//             return (1);
-//         setup_input = 1;
-//     }
-//     if (command->output || command->append)
-//     {
-//         if (setup_output_redirection(command))
-//         {
-//             if (setup_input)
-//                 cleanup_redirections(command);
-//             return (1);
-//         }
-//         setup_output = 1;
-//     }
-//     return (0);
-// }
-
-void	execute_command(t_command *command, t_program *minishell)
-{
-	int	saved_stdin;
-	int	saved_stdout;
-
-	saved_stdin = -1;
-	saved_stdout = -1;
-	if (!command || !command->arguments || !command->arguments[0])
-		return ;
-	if (command->is_builtin)
-	{
-		// Save current stdin/stdout
-		if ((saved_stdin = dup(STDIN_FILENO)) == -1
-			|| (saved_stdout = dup(STDOUT_FILENO)) == -1)
-		{
-			if (saved_stdin != -1)
-				close(saved_stdin);
-			minishell->status = 1;
-			return ;
-		}
-		// Handle redirections
-		if (handle_redirections(command))
-		{
-			close(saved_stdin);
-			close(saved_stdout);
-			minishell->status = 1;
-			return ;
-		}
-		// Execute builtin
-		execute_builtin(command, minishell);
-		// Restore stdin/stdout
-		if (dup2(saved_stdin, STDIN_FILENO) == -1 || dup2(saved_stdout,
-				STDOUT_FILENO) == -1)
-		{
-			minishell->status = 1;
-		}
-		// // Cleanup
-		close(saved_stdin);
-		close(saved_stdout);
-		// cleanup_redirections(command);
+		flags = O_WRONLY | O_CREAT | O_APPEND;
+		filename = command->append->filename;
 	}
 	else
-		execute_external(command, minishell);
+	{
+		flags = O_WRONLY | O_CREAT | O_TRUNC;
+		filename = command->output->filename;
+	}
+	fd = open(filename, flags, 0644);
+	if (fd == -1)
+		return (print_err_nofile(filename), 1);
+	command->fd_out = fd;
+	if (dup2(fd, STDOUT_FILENO) == -1)
+		return (close(fd), 1);
+	return (0);
+}
+
+static int	handle_redirections(t_command *command, t_program *minishell)
+{
+	if (!command)
+		return (1);
+	if (command->heredoc)
+	{
+		if (setup_heredoc(command, minishell))
+			return (1);
+	}
+	if (command->input && !command->heredoc)
+	{
+		if (setup_input_redirection(command, minishell))
+		{
+			cleanup_redirections(command);
+			return (1);
+		}
+	}
+	if (command->output || command->append)
+	{
+		if (setup_output_redirection(command))
+		{
+			cleanup_redirections(command);
+			return (1);
+		}
+	}
+	return (0);
 }
 
 static void	execute_in_child(char *cmd_path, t_command *command,
 		t_program *minishell)
 {
-	if (handle_redirections(command))
+	if (handle_redirections(command, minishell))
+	{
+		free(cmd_path);
 		exit(1);
+	}
 	if (execve(cmd_path, command->arguments, minishell->envp) == -1)
 	{
 		ft_putstr_fd("minishell: ", STDERR_FILENO);
@@ -544,3 +415,39 @@ static void	execute_in_child(char *cmd_path, t_command *command,
 	}
 }
 
+void	restore_std_fds(int saved_stdin, int saved_stdout)
+{
+	dup2(saved_stdin, STDIN_FILENO);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdin);
+	close(saved_stdout);
+}
+
+void	execute_command(t_command *command, t_program *minishell)
+{
+	int	saved_stdin;
+	int	saved_stdout;
+
+	if (!command || !command->arguments || !command->arguments[0])
+		return ;
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
+	if (saved_stdin == -1 || saved_stdout == -1)
+	{
+		if (saved_stdin != -1)
+			close(saved_stdin);
+		minishell->status = 1;
+		return ;
+	}
+	if (handle_redirections(command, minishell))
+	{
+		restore_std_fds(saved_stdin, saved_stdout);
+		return ;
+	}
+	if (command->is_builtin)
+		execute_builtin(command, minishell);
+	else
+		execute_external(command, minishell);
+	restore_std_fds(saved_stdin, saved_stdout);
+	cleanup_redirections(command);
+}
