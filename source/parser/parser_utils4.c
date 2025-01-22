@@ -18,12 +18,12 @@ char	*expand_var(const char **pointer, t_program *minishell)
 		return (value);
 	}
 	value = env_value(minishell, key);
-	free(key);
 	if (!value)
 	{
 		error_file_not_found(key, minishell);
 		return (ft_strdup(""));
 	}
+	free(key);
 	return (ft_strdup(value));
 }
 
@@ -82,10 +82,7 @@ char	*quote_expand(char *string, t_program *minishell)
 	temp = NULL;
 	pointer = string;
 	if (!string)
-	{
-		error_eof("", minishell);
-		return (NULL);
-	}
+		return (error_eof("", minishell), NULL);
 	while (*pointer)
 	{
 		temp = expand_single(&pointer, minishell);
@@ -97,6 +94,7 @@ char	*quote_expand(char *string, t_program *minishell)
 			result = new;
 		}
 	}
+	free (new);
 	return (result);
 }
 
