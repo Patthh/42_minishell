@@ -17,13 +17,9 @@ static int	heredoc_append(t_redirection *heredoc, char *line)
 	char	*append;
 
 	if (!heredoc->content)
-	{
 		return (0);
-	}
 	if (heredoc->content[0] == '\0')
-	{
 		temp = ft_strdup(line);
-	}
 	else
 	{
 		temp = ft_strjoin(heredoc->content, "\n");
@@ -37,10 +33,7 @@ static int	heredoc_append(t_redirection *heredoc, char *line)
 		temp = append;
 	}
 	if (!temp)
-	{
-		ft_error("Heredoc: memory allocation failed");
-		return (0);
-	}
+		return (ft_error("Heredoc: memory allocation failed"), 0);
 	free(heredoc->content);
 	heredoc->content = temp;
 	return (1);
@@ -61,15 +54,13 @@ static int	heredoc_lines(t_redirection *heredoc)
 		}
 		if (ft_strcmp(line, heredoc->filename) == 0)
 		{
-			free(line);
 			rl_clear_history();
-			return (1);
+			return (free(line), 1);
 		}
 		if (!heredoc_append(heredoc, line))
 		{
-			free(line);
 			rl_clear_history();
-			return (0);
+			return (free(line), 0);
 		}
 		add_history(line);
 		free(line);
@@ -123,6 +114,7 @@ int	setup_heredoc(t_command *command, t_program *minishell)
 		close(fd[0]);
 		len = ft_strlen(command->heredoc->content);
 		written = write(fd[1], command->heredoc->content, len);
+		write(fd[1], "\n", 1);
 		close(fd[1]);
 		if (written == -1)
 			exit(1);
@@ -146,9 +138,7 @@ int	setup_heredoc(t_command *command, t_program *minishell)
 		waitpid(pid, &status, 0);
 		close(fd[0]);
 		if (WIFEXITED(status))
-		{
 			minishell->status = WEXITSTATUS(status);
-		}
 		else if (WIFSIGNALED(status))
 			minishell->status = 128 + WTERMSIG(status);
 		return (0);
@@ -180,8 +170,6 @@ void	heredoc_read(t_redirection *heredoc, t_command *command,
 				ft_error("heredoc: memory allocation failed");
 				return ;
 			}
-            free(command->heredoc->content);
-            command->heredoc->content = NULL;
 		}
 	}
 }
