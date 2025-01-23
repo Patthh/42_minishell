@@ -291,6 +291,7 @@ void	token_regular(const char **input, char **result);
 // TESTING
 void	print_tokens(t_token *head);
 void	print_pipeline(t_pipeline *pipeline);
+void	print_redirection(t_redirection *redirection);
 
 
 #endif

@@ -70,38 +70,39 @@ char	*expand_single(const char **string, t_program *minishell)
 	return (result);
 }
 
-// Expand environment variables within string
-	// free (new);
-char	*quote_expand(char *string, t_program *minishell)
+static char	*expand_append(char *result, char *expanded, t_program *minishell)
 {
-	const char	*pointer;
-	char		*result;
-	char		*temp;
-	char		*new;
+	char	*new;
 
-	result = ft_strdup("");
-	temp = NULL;
-	pointer = string;
-	if (!string)
-		return (error_eof("", minishell), NULL);
-	while (*pointer)
-	{
-		temp = expand_single(&pointer, minishell);
-		if (temp)
-		{
-			new = ft_strjoin(result, temp);
-			free (temp);
-			free (result);
-			result = new;
-		}
-	}
-	return (result);
+	new = ft_strjoin(result, expanded);
+	free(expanded);
+	free(result);
+	if (!new)
+		error_malloc(minishell);
+	return (new);
 }
 
-int	ft_isredirect_token(t_token *token)
+char	*quote_expand(char *string, t_program *minishell)
 {
-	if (token->type == TKN_IN || token->type == TKN_OUT
-		|| token->type == TKN_RDA || token->type == TKN_RDH)
-		return (1);
-	return (0);
+	char	*result;
+	char	*expanded;
+
+	if (!string)
+		return (error_eof("", minishell), NULL);
+	result = ft_strdup("");
+	if (!result)
+		error_malloc(minishell);
+	while (*string)
+	{
+		expanded = expand_single((const char **)&string, minishell);
+		if (!expanded)
+		{
+			free(result);
+			return (NULL);
+		}
+		result = expand_append(result, expanded, minishell);
+		if (!result)
+			return (NULL);
+	}
+	return (result);
 }
