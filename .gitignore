@@ -1,6 +1,6 @@
-# Ignore object files and compiled library
+#Ignore object files and compiled library
 *.o
-
+*.a
 # Ignore editor and OS-specific files
 *.swp
 *.DS_Store
@@ -20,3 +20,9 @@ test_*
 
 # Ignore .gch files
 *.gch
+
+examples/
+*.txt
+ew
+minishell
+*.sh

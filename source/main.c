@@ -8,6 +8,6 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	init_shell(&minishell, envp);
 	run_shell(&minishell);
-	// free_shell(&minishell);
+	free_shell(&minishell);
 	return (0);
 }
