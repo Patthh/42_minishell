@@ -8,12 +8,26 @@ void	free_key_value(char *key, char *value)
 		free (value);
 }
 
+static int	ft_export_valid(const char *key)
+{
+	if (ft_isdigit(key[0]))
+		return (0);
+	if (ft_strchr(key, '-') || ft_strchr(key, '+') || ft_strchr(key, '.')
+		|| ft_strchr(key, '@') || ft_strchr(key, '!') || ft_strchr(key, '^')
+		|| ft_strchr(key, '~') || ft_strchr(key, '#') || ft_strchr(key, '*'))
+		return (0);
+	return (1);
+}
+
 // validates variable names
 // checks for empty string or null
 // first char must be letter or underscore
 // rest of string must be alphanumeric of underscore
 int	export_valid(const char *string)
 {
+	const char	*check;
+
+	check = string;
 	if (!string || !*string)
 		return (0);
 	if (!ft_isalpha(*string) && *string != '_')
@@ -25,21 +39,17 @@ int	export_valid(const char *string)
 			return (0);
 		string++;
 	}
+	if (!ft_export_valid(check))
+		return (0);
 	return (1);
 }
 
 // prints error message for invalid identifiers
-void	export_error(const char *key, t_program *minishell)
+void	export_error(const char *argument, t_program *minishell)
 {
-	if (*key == '\0')
-		ft_putstr_fd("minishell: export: `=': not a valid identifier\n",
-			STDERR_FILENO);
-	else
-	{
-		ft_putstr_fd("minishell: export: `", STDERR_FILENO);
-		ft_putstr_fd((char *)key, STDERR_FILENO);
-		ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
-	}
+	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
+	ft_putstr_fd((char *)argument, STDERR_FILENO);
+	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
 	minishell->status = 1;
 }
 

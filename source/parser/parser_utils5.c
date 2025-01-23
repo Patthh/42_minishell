@@ -75,6 +75,20 @@ static int	sequence_pipes(t_token *current, t_program *minishell)
 	return (1);
 }
 
+static int	sequence_heredoc(t_token *token, t_program *minishell)
+{
+	if (token->type == TKN_RDH)
+	{
+		if (!token->next)
+		{
+			error_syntax("newline", minishell);
+			return (0);
+		}
+		return (1);
+	}
+	return (1);
+}
+
 int	parser_sequence(t_token *token, t_program *minishell)
 {
 	t_token	*current;
@@ -82,8 +96,12 @@ int	parser_sequence(t_token *token, t_program *minishell)
 
 	current = token;
 	previous = NULL;
+	if (!token || ((!token->value || !*token->value) && !token->next))
+		return (0);
 	while (current)
 	{
+		if (!sequence_heredoc(current, minishell))
+			return (0);
 		if (!sequence_operators(current, previous, minishell))
 			return (0);
 		if (!sequence_redirect(current, minishell))

@@ -82,10 +82,7 @@ char	*quote_expand(char *string, t_program *minishell)
 	temp = NULL;
 	pointer = string;
 	if (!string)
-	{
-		error_eof("", minishell);
-		return (NULL);
-	}
+		return (error_eof("", minishell), NULL);
 	while (*pointer)
 	{
 		temp = expand_single(&pointer, minishell);

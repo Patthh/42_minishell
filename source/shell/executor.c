@@ -84,7 +84,7 @@ static void	handle_execution_error(t_command *command, t_program *minishell,
 {
 	if (error_type == 1)
 	{
-		ft_putstr_fd("minishell: ", 2);
+		// ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(command->arguments[0], 2);
 		ft_putstr_fd(": command not found\n", 2);
 		minishell->status = 127;

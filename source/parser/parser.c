@@ -85,8 +85,11 @@ static int	parser_commands(t_token *tokens, t_pipeline *pipeline,
 	}
 	if (pipeline->cmd_count == 1 && !pipeline->commands[0]->arguments)
 	{
-		if (tokens && tokens->value && *tokens->value)
-			error_syntax("newline", minishell);
+		if (!command->heredoc && !command->input && !command->output && !command->append)
+		{
+			if (tokens && tokens->value && *tokens->value)
+				error_syntax("newline", minishell);
+		}
 		return (0);
 	}
 	return (1);
