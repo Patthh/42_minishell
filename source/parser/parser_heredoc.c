@@ -111,3 +111,4 @@ void	heredoc_read(t_redirection *heredoc, t_command *command,
 		}
 	}
 }
+
