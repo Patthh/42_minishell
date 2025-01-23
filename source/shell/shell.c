@@ -52,15 +52,14 @@ void	run_shell(t_program *minishell)
 	{
 		cwd = getcwd(NULL, 0);
 		if (cwd == NULL || access(cwd, F_OK) != 0)
-		{
-			ft_putendl_fd("exit", STDOUT_FILENO);
-			exit(EXIT_SUCCESS);
-		}
+			cwd_exit(cwd);
+		free(cwd);
 		signal(SIGINT, nl_handler);
 		signal(SIGQUIT, SIG_IGN);
 		input = readline("minishell$ ");
 		if (!input)
 		{
+			free_env (minishell->env_list);
 			ft_putendl_fd("exit", STDOUT_FILENO);
 			break ;
 		}
@@ -78,4 +77,5 @@ void	init_shell(t_program *program, char **envp)
 	program->status = 0;
 	program->exit = 0;
 	init_env(program, envp);
+	update_shlvl(program);
 }
