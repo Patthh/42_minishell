@@ -58,31 +58,20 @@ int	export_process(const char *argument, t_program *minishell)
 	return (0);
 }
 
-// process each argument passed to the export command
-// updates the environment
-void	export_argument(t_command *command, t_program *minishell)
-{
-	int		i;
-	// char	*key;
-	// char	*value;
-	// int		sign;
-
-	i = 1;
-	while (command->arguments[i])
-	{
-		// export_extract(command->arguments[i], &key, &value, &sign);
-		// export_process(command->arguments[i], minishell);
-		// free_key_value(key, value);
-		export_process(command->arguments[i], minishell);
-		i++;
-	}
-}
-
 // handles export command
 void	ft_export(t_command *command, t_program *minishell)
 {
 	if (!command->arguments[1])
 		print_export(minishell);
 	else
-		export_argument(command, minishell);
+	{
+		int	i;
+
+		i = 1;
+		while (command->arguments[i])
+		{
+			export_process(command->arguments[i], minishell);
+			i++;
+		}
+	}
 }
