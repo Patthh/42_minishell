@@ -57,7 +57,7 @@ void	execute_in_child(char *cmd_path, t_command *command,
 	}
 	if (execve(cmd_path, command->arguments, minishell->envp) == -1)
 	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		// ft_putstr_fd("minishell: ", STDERR_FILENO);
 		ft_putstr_fd(command->arguments[0], STDERR_FILENO);
 		ft_putstr_fd(": ", STDERR_FILENO);
 		ft_putstr_fd(strerror(errno), STDERR_FILENO);

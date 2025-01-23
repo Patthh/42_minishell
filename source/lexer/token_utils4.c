@@ -34,22 +34,21 @@ void	token_double(const char **input, char **result, t_program *minishell)
 {
 	char	*tmp;
 
+	tmp = NULL;
 	(*input)++;
 	while (**input && **input != '"')
 	{
-		if (**input == '$' && *(*input + 1) == '?')
-		{
-			tmp = ft_itoa(minishell->status);
-			*result = token_join(*result, tmp);
-			free(tmp);
-			*input += 2;
-		}
-		else if (**input == '$')
+		if (**input == '$')
 			env_word(input, result, minishell);
 		else
 		{
-			*result = token_join(*result, ft_strndup(*input, 1));
-			(*input)++;
+			tmp = ft_strndup(*input, 1);
+			if (tmp)
+			{
+				*result = token_join(*result, tmp);
+				free(tmp);
+				(*input)++;
+			}
 		}
 	}
 	if (**input == '"')

@@ -1,19 +1,5 @@
 #include "../../include/minishell.h"
 
-// void	error_command(char *command, t_program *minishell)
-// {
-// 	if (ft_strcmp(command, "$?") == 0)
-// 	{
-// 		ft_putstr_fd("1: command not found\n", STDERR_FILENO);
-// 		minishell->status = 127;
-// 		return ;
-// 	}
-// 	ft_putstr_fd("minishell: ", STDERR_FILENO);
-// 	ft_putstr_fd(command, STDERR_FILENO);
-// 	ft_putstr_fd(": command not found\n", STDERR_FILENO);
-// 	minishell->status = 127;
-// }
-
 void	error_command(char *command, t_program *minishell)
 {
 	char	*status_str;
@@ -87,13 +73,6 @@ void	error_unexpected_eof(t_program *minishell)
 	ft_putstr_fd("minishell: unexpected end of file\n", STDERR_FILENO);
 	minishell->status = 2;
 }
-
-// void	error_newline(t_program *minishell)
-// {
-// 	ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n",
-// 		STDERR_FILENO);
-// 	minishell->status = 2;
-// }
 
 void	error_brace(char *brace, t_program *minishell)
 {

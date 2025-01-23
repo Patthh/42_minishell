@@ -51,6 +51,14 @@ void	env_word(const char **input, char **result, t_program *minishell)
 			*result = token_join(*result, value);
 		free(key);
 	}
+	else if (**input == '?')
+	{
+		value = ft_itoa(minishell->status);
+		if (value)
+			*result = token_join(*result, value);
+		free(value);
+		(*input)++;
+	}
 	else
 	{
 		*result = token_join(*result, "$");

@@ -164,7 +164,7 @@ t_token			*parser_pipe(t_token *token, t_command **command, t_pipeline *pipeline
 t_token			*parser_redirection(t_token *token, t_command *command, t_program *minishell);
 t_token			*parser_env(t_token *token, t_command *command, t_program *minishell);
 t_token			*parser_status(t_token *token, t_program *minishell);
-int				parser_argument(t_command *command, const char *value);
+int				parser_argument(t_command *command, char *value);
 int				parser_builtin(const char *command);
 int				parser_sequence(t_token *tokens, t_program *minishell);
 
