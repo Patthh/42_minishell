@@ -16,7 +16,7 @@ int	parser_builtin(const char *command)
 	return (0);
 }
 
-int	parser_argument(t_command *command, const char *value)
+int	parser_argument(t_command *command, char *value)
 {
 	int		count;
 	char	**new;
