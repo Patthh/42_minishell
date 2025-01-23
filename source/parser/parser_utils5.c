@@ -75,6 +75,20 @@ static int	sequence_pipes(t_token *current, t_program *minishell)
 	return (1);
 }
 
+int	check_redirection(t_token *token, t_token *previous, t_program *minishell)
+{
+	if (token->type == TKN_IN || token->type == TKN_OUT
+		|| token->type == TKN_RDA || token->type == TKN_RDH)
+	{
+		if (!previous || previous->type != TKN_WORD)
+		{
+			error_syntax("newline", minishell);
+			return (0);
+		}
+	}
+	return (1);
+}
+
 int	parser_sequence(t_token *token, t_program *minishell)
 {
 	t_token	*current;
@@ -82,8 +96,15 @@ int	parser_sequence(t_token *token, t_program *minishell)
 
 	current = token;
 	previous = NULL;
+	if (!token || ((!token->value || !*token->value) && !token->next))
+	{
+		// error_syntax("newline", minishell);
+		return (0);
+	}
 	while (current)
 	{
+		if (!check_redirection(current, previous, minishell))
+			return (0);
 		if (!sequence_operators(current, previous, minishell))
 			return (0);
 		if (!sequence_redirect(current, minishell))

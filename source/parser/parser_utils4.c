@@ -94,7 +94,6 @@ char	*quote_expand(char *string, t_program *minishell)
 			result = new;
 		}
 	}
-	free (new);
 	return (result);
 }
 
