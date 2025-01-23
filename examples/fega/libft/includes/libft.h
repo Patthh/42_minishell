@@ -14,6 +14,8 @@
 # define LIBFT_H
 
 # include <stdlib.h>
+# include <stdint.h>
+# include <stddef.h>
 
 // Mandatory part
 int		ft_isalpha(int c);

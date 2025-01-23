@@ -229,6 +229,7 @@ static void	execute_piped_command(t_command *command, t_program *minishell)
 	execute_in_child(cmd_path, command, minishell);
 }
 
+//FORMER execute_pipeline
 void	execute_pipeline(t_pipeline *pipeline, t_program *minishell)
 {
 	int		**pipe_fds;
