@@ -10,6 +10,7 @@ void	free_redirection(t_redirection *redirection)
 		redirection = redirection->next;
 		free(temp->type);
 		free(temp->filename);
+		free(temp->content);
 		free(temp);
 	}
 }
