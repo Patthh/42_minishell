@@ -59,17 +59,21 @@ $(DIR_LIBFT)$(LIBFT_NAME):
 %.o: %.c
 					@$(eval COMPILED_FILES=$(shell echo $$(($(COMPILED_FILES) + 1))))
 					@DOTS_LEFT=$(shell echo "$(DOTS)" | cut -c$(COMPILED_FILES)-) ; \
-					printf "\r$(CYAN)Compiling: [$(COMPILED_FILES)/$(TOTAL_FILES)] 🟡%s$(NC)" "$${DOTS_LEFT}"
+					printf "\r$(CYAN)Currently compiling: $< $(COMPILED_FILES)/$(TOTAL_FILES)$(NC) 🟡%s" 
 					@$(CC) $(CFLAGS) $(HEADERS) -c $< -o $@
 					@if [ $(COMPILED_FILES) -eq $(TOTAL_FILES) ]; then echo; fi
 					
 clean:
+					@echo -e "$(YELLOW)Cleaning object files...$(NC)"
 					@$(RM) $(OBJS) $(OBJS:.o=.d)
 					@$(MAKE) -C $(DIR_LIBFT) clean
+					@echo -e "\r$(GREEN)Object files cleaned!$(NC)"
 
 fclean:             clean
+					@echo -e "$(YELLOW)Cleaning minishell executable...$(NC)"
 					@$(RM) $(NAME)
 					@$(MAKE) -C $(DIR_LIBFT) fclean
+					@echo -e "\r$(GREEN)Executable cleaned!$(NC)"
 
 re:                 fclean all
 
@@ -79,5 +83,6 @@ re:                 fclean all
 ## COLORS
 GREEN = \033[0;32m
 CYAN = \033[0;36m
+YELLOW = \033[0;33m
 RED = \033[0;31m
 NC = \033[0m
