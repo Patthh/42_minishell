@@ -29,3 +29,11 @@ int	ft_isspecial(char c)
 	}
 	return (0);
 }
+
+int	ft_isredirect_token(t_token *token)
+{
+	if (token->type == TKN_IN || token->type == TKN_OUT
+		|| token->type == TKN_RDA || token->type == TKN_RDH)
+		return (1);
+	return (0);
+}

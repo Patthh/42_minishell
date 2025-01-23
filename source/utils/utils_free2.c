@@ -10,6 +10,7 @@ void	free_redirection(t_redirection *redirection)
 		redirection = redirection->next;
 		free(temp->type);
 		free(temp->filename);
+		free(temp->content);
 		free(temp);
 	}
 }
@@ -52,13 +53,3 @@ void	free_pipeline(t_pipeline *pipeline)
 	pipeline->commands = NULL;
 	free(pipeline);
 }
-
-
-// void	free_parser(t_pipeline *pipeline)
-// {
-// 	if (pipeline)
-// 	{
-// 		free_pipeline(pipeline);
-// 		free (pipeline);
-// 	}
-// }
