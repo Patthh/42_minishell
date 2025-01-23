@@ -208,9 +208,22 @@ char			*get_path(t_program *minishell, char *variable);
 void			cd_error(char *path, char *message);
 
 // EXECUTION
+char			*find_command_path(char *cmd, t_program *minishell);
+int				handle_redirections(t_command *command, t_program *minishell);
+void			cleanup_redirections(t_command *command);
+void			handle_execution_status(pid_t pid, t_program *minishell);
+void			handle_execution_error(t_command *command, t_program *minishell,
+		char *cmd_path, int error_type);
+void			setup_pipes(t_pipeline *pipeline, int **pipe_fds);
+void			close_pipes(t_pipeline *pipeline, int **pipe_fds);
+void			setup_child_pipes(t_pipeline *pipeline, int **pipe_fds, int i);
+void			execute_piped_command(t_command *command, t_program *minishell);
+void			exec_err_exit(t_command *command, char *cmd_path);
 void			execute_pipeline(t_pipeline *pipeline, t_program *minishell);
 void			execute_command(t_command *command, t_program *minishell);
 void			execute_builtin(t_command *command, t_program *minishell);
+void			execute_in_child(char *cmd_path, t_command *command, t_program *minishell);
+
 
 t_pipeline		*create_pipeline(void);
 t_command		*create_command(void);
@@ -218,8 +231,9 @@ t_redirection	*create_redirection(const char *type, const char *filename, int qu
 
 
 
-
+//HEREDOC
 void			heredoc_read(t_redirection *heredoc, t_command *command, t_program *minishell);
+int				setup_heredoc(t_command *command, t_program *minishell);
 char			*quote_expand(char *string, t_program *minishell);
 char			*expand_single(const char **string, t_program *minishell);
 char			*expand_exit(t_program *minishell);

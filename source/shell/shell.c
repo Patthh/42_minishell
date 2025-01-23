@@ -12,6 +12,8 @@ void	shell_exit(const char *input, t_token *tokens, t_program *minishell)
 	exit(exit_status);
 }
 
+	// print_tokens(tokens); // testing tokenizer
+	// print_pipeline(pipeline); // testing parser
 int	handle_input(char *input, t_program *minishell)
 {
 	t_token		*tokens;
@@ -25,9 +27,7 @@ int	handle_input(char *input, t_program *minishell)
 	if (input && *input)
 		add_history(input);
 	tokens = tokenizer(input, minishell);
-	// print_tokens(tokens); // testing tokenizer
 	pipeline = parser(tokens, minishell);
-	// print_pipeline(pipeline); // testing parser
 	if (pipeline && !validate_pipeline(pipeline, minishell))
 	{
 		free_list(tokens);

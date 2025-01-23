@@ -71,6 +71,7 @@ char	*expand_single(const char **string, t_program *minishell)
 }
 
 // Expand environment variables within string
+	// free (new);
 char	*quote_expand(char *string, t_program *minishell)
 {
 	const char	*pointer;
@@ -94,7 +95,6 @@ char	*quote_expand(char *string, t_program *minishell)
 			result = new;
 		}
 	}
-	// free (new);
 	return (result);
 }
 
