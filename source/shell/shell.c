@@ -45,15 +45,25 @@ int	handle_input(char *input, t_program *minishell)
 void	run_shell(t_program *minishell)
 {
 	char	*input;
+	char	*cwd;
 	int		result;
 
 	while (1)
 	{
+		cwd = getcwd(NULL, 0);
+		if (cwd == NULL || access(cwd, F_OK) != 0)
+		{
+			ft_putendl_fd("exit", STDOUT_FILENO);
+			exit(EXIT_SUCCESS);
+		}
 		signal(SIGINT, nl_handler);
 		signal(SIGQUIT, SIG_IGN);
 		input = readline("minishell$ ");
 		if (!input)
+		{
+			ft_putendl_fd("exit", STDOUT_FILENO);
 			break ;
+		}
 		result = handle_input(input, minishell);
 		if (result < 0)
 			break ;
