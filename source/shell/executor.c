@@ -82,6 +82,7 @@ void	execute_command(t_command *command, t_program *minishell)
 
 	if (!command || !command->arguments || !command->arguments[0])
 		return ;
+	signal(SIGINT, handle_sigint);
 	if (signal(SIGQUIT, handle_sigquit))
 		minishell->status = 131;
 	saved_stdin = dup(STDIN_FILENO);

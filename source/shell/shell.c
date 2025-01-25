@@ -72,11 +72,6 @@ void	run_shell(t_program *minishell)
 // initialize minishell's structure with default values
 void	init_shell(t_program *program, char **envp)
 {
-	struct termios termios_p;
-
-	tcgetattr(STDIN_FILENO, &termios_p);
-	termios_p.c_iflag |= ICRNL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &termios_p);
 	ft_memset(program, 0, sizeof(*program));
 	program->envp = envp;
 	program->status = 0;

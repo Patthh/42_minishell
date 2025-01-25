@@ -280,6 +280,7 @@ void	add_env(t_program *minishell, const char *key, const char *value, int sign)
 // SIGNAL
 void	nl_handler(int signal);
 void	handle_sigquit(int sig);
+void	handle_sigint(int sig);
 void    cwd_exit(char *cwd);
 void 	update_shlvl(t_program *minishell);
 
