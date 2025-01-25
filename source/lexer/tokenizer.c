@@ -32,7 +32,7 @@ t_token	*tokenizer(const char *input, t_program *minishell)
 void	token_extra(const char **input, t_token **head, t_program *minishell)
 {
 	if (**input == '*')
-		token_wildcard(input, head);
+		token_wildcard(input, head, minishell);
 	else
 		token_word(input, head, minishell);
 }

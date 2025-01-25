@@ -154,3 +154,20 @@ void	error_option(char *argument, t_program *minishell)
 	ft_putstr_fd(": invalid option\n", STDERR_FILENO);
 	minishell->status = 2;
 }
+
+void	error_no_match(char *pattern, t_program *minishell)
+{
+	ft_putstr_fd("minishell: cannot access: `", STDERR_FILENO);
+	ft_putstr_fd(pattern, STDERR_FILENO);
+	ft_putstr_fd("': No such file or directory\n", STDERR_FILENO);
+	minishell->status = 2;
+}
+
+void	error_heredoc(char *delimiter)
+{
+	ft_putstr_fd("minishell: warning: here-document at line 1 \
+		delimited by end-of-file (wanted `", STDERR_FILENO);
+	ft_putstr_fd(delimiter, STDERR_FILENO);
+	ft_putstr_fd("')", STDERR_FILENO);
+	rl_clear_history();
+}

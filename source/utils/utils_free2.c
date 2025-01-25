@@ -20,6 +20,8 @@ void	free_command(t_command *command)
 	int	i;
 
 	i = 0;
+	if (command == NULL)
+		return ;
 	if (command->arguments)
 	{
 		while (command->arguments[i])
@@ -45,6 +47,8 @@ void	free_pipeline(t_pipeline *pipeline)
 		return ;
 	while (i < pipeline->cmd_count)
 	{
+		if (pipeline->commands == NULL)
+			return ;
 		free_command(pipeline->commands[i]);
 		pipeline->commands[i] = NULL;
 		i++;

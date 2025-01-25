@@ -61,12 +61,12 @@ int	export_process(const char *argument, t_program *minishell)
 // handles export command
 void	ft_export(t_command *command, t_program *minishell)
 {
+	int	i;
+
 	if (!command->arguments[1])
 		print_export(minishell);
 	else
 	{
-		int	i;
-
 		i = 1;
 		while (command->arguments[i])
 		{

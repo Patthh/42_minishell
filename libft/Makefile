@@ -62,6 +62,7 @@ DIR_PUT		=	$(SRC_DIR)ft_put/ft_putchar_fd.c \
 DIR_STR		=	$(SRC_DIR)ft_str/ft_split.c \
 				$(SRC_DIR)ft_str/ft_strchr.c \
 				$(SRC_DIR)ft_str/ft_strcmp.c \
+				$(SRC_DIR)ft_str/ft_strcpy.c \
 				$(SRC_DIR)ft_str/ft_strcspn.c \
 				$(SRC_DIR)ft_str/ft_strdup.c \
 				$(SRC_DIR)ft_str/ft_striteri.c \
@@ -99,7 +100,7 @@ DIR_TO		=	$(SRC_DIR)ft_to/ft_atoi_base.c \
 # 				$(SRC_DIR)ft_printf/ft_printf.c \
 # 				$(SRC_DIR)ft_printf/ft_utoa.c
 
-SRCS 		= $(DIR_IS) $(DIR_LST) $(DIR_MEM) $(DIR_PUT) $(DIR_STR) $(DIR_TO) 
+SRCS 		= $(DIR_IS) $(DIR_LST) $(DIR_MEM) $(DIR_PUT) $(DIR_STR) $(DIR_TO)
 # $(DIR_PF)
 OBJS		= $(SRCS:.c=.o)
 
@@ -113,16 +114,16 @@ all:				$(NAME)
 
 $(NAME):			$(OBJS)
 					@$(AR) $(NAME) $(OBJS)
-					
+
 %.o: %.c
 					@$(CC) $(CFLAGS) -I $(INC_DIR) -c $< -o $@
-					
+
 clean:
 					@$(RM) $(OBJS)
-					
+
 fclean:				clean
 					@$(RM) $(NAME)
-					
+
 re:					fclean all
 
 .PHONY: 			all clean fclean re

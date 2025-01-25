@@ -59,3 +59,28 @@ t_token	*parser_pipe(t_token *token, t_command **command, t_pipeline *pipeline)
 	*command = new;
 	return (token->next);
 }
+
+int	parser_sequence(t_token *token, t_program *minishell)
+{
+	t_token	*current;
+	t_token	*previous;
+
+	current = token;
+	previous = NULL;
+	if (!token || ((!token->value || !*token->value) && !token->next))
+		return (0);
+	while (current)
+	{
+		if (!sequence_heredoc(current, minishell))
+			return (0);
+		if (!sequence_operators(current, previous, minishell))
+			return (0);
+		if (!sequence_redirect(current, minishell))
+			return (0);
+		if (!sequence_pipes(current, minishell))
+			return (0);
+		previous = current;
+		current = current->next;
+	}
+	return (1);
+}

@@ -144,12 +144,11 @@ void			token_assign(const char **input, t_token **head);
 void			token_env(const char **input, t_token **head, t_program *shell);
 void			token_word(const char **input, t_token **head, t_program *minishell);
 void			token_extra(const char **input, t_token **head, t_program *minishell);
-void			token_wildcard(const char **input, t_token **head);
 char	    *token_env_word(const char **input, t_program *minishell);
 void			token_paranthesis(const char **input, t_token **head);
 void			token_hash(const char **input, t_token **head);
 void	    token_expand(const char	**input, char **result, t_program *minishell);
-void			token_wildcard(const char **input, t_token **head);
+int	token_wildcard(const char **input, t_token **head, t_program *minishell);
 
 char			*env_name(const char **input);
 char			*env_value(t_program *minishell, const char *key);
@@ -169,9 +168,17 @@ t_token			*parser_status(t_token *token, t_program *minishell);
 int				parser_argument(t_command *command, char *value);
 int				parser_builtin(const char *command);
 int				parser_sequence(t_token *tokens, t_program *minishell);
+int	sequence_heredoc(t_token *token, t_program *minishell);
+int	sequence_pipes(t_token *current, t_program *minishell);
+int	sequence_redirect(t_token *current, t_program *minishell);
+int	sequence_operators(t_token *current, t_token *previous,
+	t_program *minishell);
+int	sequence_next(t_token *current, t_program *minishell);
 
 // PARSER BONUS
 t_token			*parser_wildcard(t_token *token, t_command *command);
+int	add_wildcard(DIR *directory, const char *pattern, t_token **head);
+int	match_pattern(const char *pattern, const char *filename);
 t_token *parser_logical(t_token *token, t_command **command, t_pipeline *pipeline);\
 
 // PIPELINE
@@ -269,9 +276,11 @@ void	error_permission(char *command, t_program *minishell);
 void	error_numeric(char *command, t_program *minishell);
 void	error_identifier(char *identifier, t_program *minishell);
 void	error_file_not_found_127(char *path, t_program *minishell);
-void error_not_valid_identifier(char *command, t_program *minishell);
+void	error_not_valid_identifier(char *command, t_program *minishell);
 void	error_out_of_range(char *argument, t_program *minishell);
 void	error_option(char *argument, t_program *minishell);
+void	error_no_match(char *pattern, t_program *minishell);
+void	error_heredoc(char *delimiter);
 
 // env
 void	init_env(t_program *minishell, char **envp);

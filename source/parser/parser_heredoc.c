@@ -38,14 +38,6 @@ static int	heredoc_append(t_redirection *heredoc, char *line)
 	heredoc->content = temp;
 	return (1);
 }
-static void	error_heredoc(char *delimiter)
-{
-	ft_putstr_fd("minishell: warning: here-document at line 1 delimited by end-of-file (wanted `", STDERR_FILENO);
-	ft_putstr_fd(delimiter, STDERR_FILENO);
-	ft_putstr_fd("')", STDERR_FILENO);
-	rl_clear_history();
-}
-
 
 static int	heredoc_lines(t_redirection *heredoc)
 {
@@ -91,7 +83,8 @@ static void	heredoc_expand(t_redirection *heredoc, t_program *minishell)
 		ft_error("Heredoc: failed to expand heredoc");
 }
 
-void	heredoc_read(t_redirection *heredoc, t_command *command, t_program *minishell)
+void	heredoc_read(t_redirection *heredoc, t_command *command,
+	t_program *minishell)
 {
 	if (!heredoc || !command || !command->heredoc)
 		return ;
