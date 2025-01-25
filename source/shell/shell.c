@@ -42,18 +42,29 @@ int	handle_input(char *input, t_program *minishell)
 	return (1);
 }
 
+// printf("\033[4;42m%s:\033m\033[0;m\033[1;37m [%d]
+//\033m ", cwd, minishell->status);
 void	run_shell(t_program *minishell)
 {
 	char	*input;
+	char	*cwd;
 	int		result;
 
 	while (1)
 	{
+		cwd = getcwd(NULL, 0);
+		if (cwd == NULL || access(cwd, F_OK) != 0)
+			cwd_exit(cwd);
 		signal(SIGINT, nl_handler);
 		signal(SIGQUIT, SIG_IGN);
-		input = readline("minishell$ ");
+		input = readline(PROMPT);
+		free(cwd);
 		if (!input)
+		{
+			free_env (minishell->env_list);
+			ft_putendl_fd("exit", STDOUT_FILENO);
 			break ;
+		}
 		result = handle_input(input, minishell);
 		if (result < 0)
 			break ;
@@ -68,4 +79,5 @@ void	init_shell(t_program *program, char **envp)
 	program->status = 0;
 	program->exit = 0;
 	init_env(program, envp);
+	update_shlvl(program);
 }

@@ -53,7 +53,7 @@ static int	heredoc_lines(t_redirection *heredoc)
 
 	while (1)
 	{
-		line = readline("> ");
+		line = readline(HEREDOC);
 		if (!line)
 		{
 			error_heredoc(heredoc->filename);
