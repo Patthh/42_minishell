@@ -11,12 +11,14 @@
 # include <sys/stat.h>
 # include <signal.h>
 # include <string.h>
+# include <termios.h>
 # include <errno.h>
 # include <dirent.h> // opendir, readir
 # include <limits.h>
 # include "../libft/include/libft.h"
 
-# define PROMPT "minishell$ "
+# define PROMPT "\033[1;32mminishell$ \033[0m"
+# define HEREDOC "\033[1;33m> \033[0m"
 # define TRUE 1
 # define FALSE 0
 # define EXIT_STATUS
@@ -277,6 +279,7 @@ void	add_env(t_program *minishell, const char *key, const char *value, int sign)
 
 // SIGNAL
 void	nl_handler(int signal);
+void	handle_sigquit(int sig);
 void    cwd_exit(char *cwd);
 void 	update_shlvl(t_program *minishell);
 

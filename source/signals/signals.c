@@ -16,23 +16,50 @@ void	cwd_exit(char *cwd)
 	exit(EXIT_SUCCESS);
 }
 
+void	handle_sigquit(int sig)
+{
+	(void)sig;
+}
+
 void update_shlvl(t_program *program)
 {
     t_env *shlvl_node;
     int num_val;
+    char *shlvl;
 
     shlvl_node = env_find(program->env_list, "SHLVL");
-    if (shlvl_node)
+    if (!shlvl_node)
     {
-        num_val = ft_atoi(shlvl_node->value);
-        num_val++;
-        free(shlvl_node->value);
-        shlvl_node->value = ft_itoa(num_val);
-        if (!shlvl_node->value)
-        {
-            perror("ft_itoa");
-            exit(EXIT_FAILURE);
-        }
-        printf("SHLVL %s numval %d\n", shlvl_node->value, num_val);
+        export_process("SHLVL=1", program);
+        return;
+    }
+    shlvl = shlvl_node->value;
+    num_val = ft_atoi(shlvl);
+    num_val++;
+    free(shlvl_node->value);
+    shlvl_node->value = ft_itoa(num_val);
+    if (!shlvl_node->value)
+    {
+        perror("ft_itoa");
+        exit(EXIT_FAILURE);
     }
 }
+// void update_shlvl(t_program *program)
+// {
+//     t_env *shlvl_node;
+//     int num_val;
+
+//     shlvl_node = env_find(program->env_list, "SHLVL");
+//     if (shlvl_node)
+//     {
+//         num_val = ft_atoi(shlvl_node->value);
+//         num_val++;
+//         free(shlvl_node->value);
+//         shlvl_node->value = ft_itoa(num_val);
+//         if (!shlvl_node->value)
+//         {
+//             perror("ft_itoa");
+//             exit(EXIT_FAILURE);
+//         }
+//     }
+// }

@@ -56,7 +56,7 @@ void	run_shell(t_program *minishell)
 		free(cwd);
 		signal(SIGINT, nl_handler);
 		signal(SIGQUIT, SIG_IGN);
-		input = readline("minishell$ ");
+		input = readline(PROMPT);
 		if (!input)
 		{
 			free_env (minishell->env_list);
@@ -72,6 +72,11 @@ void	run_shell(t_program *minishell)
 // initialize minishell's structure with default values
 void	init_shell(t_program *program, char **envp)
 {
+	struct termios termios_p;
+
+	tcgetattr(STDIN_FILENO, &termios_p);
+	termios_p.c_iflag |= ICRNL;
+	tcsetattr(STDIN_FILENO, TCSANOW, &termios_p);
 	ft_memset(program, 0, sizeof(*program));
 	program->envp = envp;
 	program->status = 0;

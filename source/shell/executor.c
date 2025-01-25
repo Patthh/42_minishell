@@ -82,6 +82,8 @@ void	execute_command(t_command *command, t_program *minishell)
 
 	if (!command || !command->arguments || !command->arguments[0])
 		return ;
+	if (signal(SIGQUIT, handle_sigquit))
+		minishell->status = 131;
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 	if (saved_stdin == -1 || saved_stdout == -1)
@@ -92,10 +94,7 @@ void	execute_command(t_command *command, t_program *minishell)
 		return ;
 	}
 	if (handle_redirections(command, minishell))
-	{
-		restore_std_fds(saved_stdin, saved_stdout);
-		return ;
-	}
+		return (restore_std_fds(saved_stdin, saved_stdout));
 	if (command->is_builtin)
 		execute_builtin(command, minishell);
 	else
