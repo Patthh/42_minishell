@@ -17,7 +17,7 @@
 # include <limits.h>
 # include "../libft/include/libft.h"
 
-# define PROMPT "\033[1;32mminishell$ \033[0m"
+# define PROMPT "\033[1;36mminishell$ \033[0m"
 # define HEREDOC "\033[1;33m> \033[0m"
 # define TRUE 1
 # define FALSE 0

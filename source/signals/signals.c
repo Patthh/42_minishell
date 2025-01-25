@@ -37,7 +37,7 @@ void	handle_sigint(int sig)
 //     if (!shlvl_node)
 //     {
 //         export_process("SHLVL=1", program);
-//         return;
+//         return ;
 //     }
 //     shlvl = shlvl_node->value;
 //     num_val = ft_atoi(shlvl);
@@ -50,22 +50,22 @@ void	handle_sigint(int sig)
 //         exit(EXIT_FAILURE);
 //     }
 // }
-void update_shlvl(t_program *program)
+void	update_shlvl(t_program *program)
 {
-    t_env *shlvl_node;
-    int num_val;
+	t_env	*shlvl_node;
+	int		num_val;
 
-    shlvl_node = env_find(program->env_list, "SHLVL");
-    if (shlvl_node)
-    {
-        num_val = ft_atoi(shlvl_node->value);
-        num_val++;
-        free(shlvl_node->value);
-        shlvl_node->value = ft_itoa(num_val);
-        if (!shlvl_node->value)
-        {
-            perror("ft_itoa");
-            exit(EXIT_FAILURE);
-        }
-    }
+	shlvl_node = env_find(program->env_list, "SHLVL");
+	if (shlvl_node)
+	{
+		num_val = ft_atoi(shlvl_node->value);
+		num_val++;
+		free(shlvl_node->value);
+		shlvl_node->value = ft_itoa(num_val);
+		if (!shlvl_node->value)
+		{
+			perror("ft_itoa");
+			exit(EXIT_FAILURE);
+		}
+	}
 }

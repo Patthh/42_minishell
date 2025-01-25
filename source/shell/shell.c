@@ -42,6 +42,8 @@ int	handle_input(char *input, t_program *minishell)
 	return (1);
 }
 
+// printf("\033[4;42m%s:\033m\033[0;m\033[1;37m [%d]
+//\033m ", cwd, minishell->status);
 void	run_shell(t_program *minishell)
 {
 	char	*input;
@@ -53,10 +55,10 @@ void	run_shell(t_program *minishell)
 		cwd = getcwd(NULL, 0);
 		if (cwd == NULL || access(cwd, F_OK) != 0)
 			cwd_exit(cwd);
-		free(cwd);
 		signal(SIGINT, nl_handler);
 		signal(SIGQUIT, SIG_IGN);
 		input = readline(PROMPT);
+		free(cwd);
 		if (!input)
 		{
 			free_env (minishell->env_list);
