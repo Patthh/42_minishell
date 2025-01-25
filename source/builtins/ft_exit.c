@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_exit.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aomont <aomont@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/25 18:44:19 by aomont            #+#    #+#             */
+/*   Updated: 2025/01/25 18:44:21 by aomont           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 // // Exit the shell, returning a status of n to the shell’s parent.
 // // If n is omitted, the exit status is that of the last command executed.

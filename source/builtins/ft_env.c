@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_env.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aomont <aomont@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/25 18:44:18 by aomont            #+#    #+#             */
+/*   Updated: 2025/01/25 18:44:19 by aomont           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
-void	init_env(t_program *minishell, char **envp)
+void	init_env(t_program *minishell)
 {
 	int		i;
 	char	*key;
@@ -8,13 +20,14 @@ void	init_env(t_program *minishell, char **envp)
 	char	*sign;
 
 	minishell->env_list = NULL;
+	minishell->env_len = 0;
 	i = 0;
-	while (envp[i])
+	while (minishell->envp[i])
 	{
-		sign = ft_strchr(envp[i], '=');
+		sign = ft_strchr(minishell->envp[i], '=');
 		if (sign)
 		{
-			key = ft_strndup(envp[i], sign - envp[i]);
+			key = ft_strndup(minishell->envp[i], sign - minishell->envp[i]);
 			value = ft_strdup(sign + 1);
 			add_env(minishell, key, value, 0);
 			free(key);
@@ -22,6 +35,43 @@ void	init_env(t_program *minishell, char **envp)
 		}
 		i++;
 	}
+	minishell->envp = NULL;
+}
+
+char *ft_multjoin(char **arr_str)
+{
+	char	*res;
+	char	*tmp;
+
+	if (!arr_str && !*arr_str)
+		return (NULL);
+	res = ft_strdup(*arr_str++);
+	while (*arr_str)
+	{
+		tmp = ft_strjoin(res, *arr_str);
+		free(res);
+		res = tmp;
+		arr_str++;
+	}
+	return (tmp);
+}
+
+void	gen_env(t_program *minishell)
+{
+	t_env	*tmp;
+	size_t	i;
+
+	if (minishell->envp != NULL)
+		free_environ(minishell->envp);
+	i = 0;
+	minishell->envp = malloc(sizeof(*minishell->envp) * (minishell->env_len + 1));
+	tmp = minishell->env_list;
+	while (tmp)
+	{
+		minishell->envp[i++] = ft_multjoin((char *[]){tmp->key, "=", tmp->value, NULL});
+		tmp = tmp->next;
+	}
+	minishell->envp[i] = NULL;
 }
 
 void	add_env(t_program *minishell, const char *key, const char *value,
@@ -40,20 +90,22 @@ void	add_env(t_program *minishell, const char *key, const char *value,
 	new->sign = sign;
 	new->next = minishell->env_list;
 	minishell->env_list = new;
+	minishell->env_len++;
 }
 
-void	free_env(t_env *head)
+void	free_env(t_program *minishell)
 {
 	t_env	*temp;
 
-	while (head)
+	while (minishell->env_list)
 	{
-		temp = head;
-		head = head->next;
+		temp = minishell->env_list;
+		minishell->env_list = minishell->env_list->next;
 		free(temp->key);
 		free(temp->value);
 		free(temp);
 	}
+	free_environ(minishell->envp);
 }
 
 t_env	*env_find(t_env *env_list, const char *key)

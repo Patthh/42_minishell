@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_unset.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aomont <aomont@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/25 18:44:24 by aomont            #+#    #+#             */
+/*   Updated: 2025/01/25 18:44:25 by aomont           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
 static void	unset_free(t_env *env)
@@ -18,6 +30,7 @@ static int	unset_remove(t_program *minishell, const char *key)
 
 	if (!key)
 		return (0);
+	minishell->env_len--;
 	current = minishell->env_list;
 	previous = NULL;
 	while (current)

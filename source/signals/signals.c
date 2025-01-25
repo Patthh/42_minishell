@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aomont <aomont@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/25 18:30:41 by pracksaw          #+#    #+#             */
+/*   Updated: 2025/01/25 18:43:22 by aomont           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 void	nl_handler(int signal)
@@ -27,29 +39,6 @@ void	handle_sigint(int sig)
 	write(1, "\n", 1);
 }
 
-// void update_shlvl(t_program *program)
-// {
-//     t_env *shlvl_node;
-//     int num_val;
-//     char *shlvl;
-
-//     shlvl_node = env_find(program->env_list, "SHLVL");
-//     if (!shlvl_node)
-//     {
-//         export_process("SHLVL=1", program);
-//         return ;
-//     }
-//     shlvl = shlvl_node->value;
-//     num_val = ft_atoi(shlvl);
-//     num_val++;
-//     free(shlvl_node->value);
-//     shlvl_node->value = ft_itoa(num_val);
-//     if (!shlvl_node->value)
-//     {
-//         perror("ft_itoa");
-//         exit(EXIT_FAILURE);
-//     }
-// }
 void	update_shlvl(t_program *program)
 {
 	t_env	*shlvl_node;

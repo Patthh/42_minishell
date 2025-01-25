@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils_cd.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aomont <aomont@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/25 18:36:26 by pracksaw          #+#    #+#             */
+/*   Updated: 2025/01/25 18:45:41 by aomont           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
 // expands a path starting with a tilde to its absolute path
@@ -46,7 +58,7 @@ case starts w tilde, expands it to its absolute path
 */
 char	*get_target(t_command *command, t_program *minishell)
 {
-	static char target[PATH_MAX];
+	static char	target[PATH_MAX];
 
 	if (!command->arguments || !command->arguments[1])
 		ft_strcpy(target, get_path(minishell, "HOME"));
@@ -54,8 +66,7 @@ char	*get_target(t_command *command, t_program *minishell)
 		ft_strcpy(target, get_path(minishell, "OLDPWD"));
 	else
 		ft_strcpy(target, command->arguments[1]);
-
-	return target;
+	return (target);
 }
 
 // updates OLDPWD and PWD
