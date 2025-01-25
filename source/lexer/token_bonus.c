@@ -16,6 +16,8 @@
 // parse to match remain pattern with rest of filename
 int	match_pattern(const char *pattern, const char *filename)
 {
+	if (!pattern || !filename)
+		return (0);
 	while (*pattern && *filename)
 	{
 		if (*pattern == '*')
@@ -41,14 +43,13 @@ int	match_pattern(const char *pattern, const char *filename)
 }
 
 // adds wildcard tokens
+// Add wildcard tokens
 int	add_wildcard(DIR *directory, const char *pattern, t_token **head)
 {
 	struct dirent	*entry;
 	int				match;
 
 	match = 0;
-	if (!directory)
-		return (match);
 	entry = readdir(directory);
 	while (entry != NULL)
 	{
@@ -64,38 +65,7 @@ int	add_wildcard(DIR *directory, const char *pattern, t_token **head)
 		}
 		entry = readdir(directory);
 	}
-	closedir(directory);
+	if (!match)
+		return (-1);
 	return (match);
-}
-
-// creates a TKN_WILDCARD for matching file and a TKN_WORD for the pattern
-// find the extent of the pattern
-// crate the extent from original input
-// create pattern from origin input
-void	token_wildcard(const char **input, t_token **head)
-{
-	DIR			*directory;
-	const char	*start;
-	char		*pattern;
-	int			matched;
-
-	start = *input;
-	directory = NULL;
-	pattern = NULL;
-	while (**input == '*')
-		(*input)++;
-	while (**input != '\0' && **input != '*' && !ft_isspace(**input))
-		(*input)++;
-	pattern = ft_strndup(start, *input - start);
-	directory = opendir(".");
-	if (!directory)
-	{
-		perror("opendir");
-		free (pattern);
-		return ;
-	}
-	matched = add_wildcard(directory, pattern, head);
-	if (!matched)
-		token_add(head, token_new(TKN_WILDCARD, pattern));
-	free (pattern);
 }

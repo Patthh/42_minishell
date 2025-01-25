@@ -72,10 +72,7 @@ static char	*prepare_path(t_command *command, t_program *minishell)
 		return (NULL);
 	}
 	if (!validate_path(target_path, minishell))
-	{
-		free(target_path);
 		return (NULL);
-	}
 	return (target_path);
 }
 
@@ -96,10 +93,8 @@ int	ft_cd(t_command *command, t_program *minishell)
 	if (chdir(target_path) == -1)
 	{
 		ret = chdir_error(target_path, minishell);
-		free(target_path);
 		return (ret);
 	}
 	ret = update_pwd(minishell, old_pwd);
-	free(target_path);
 	return (ret);
 }
