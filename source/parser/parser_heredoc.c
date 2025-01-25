@@ -45,7 +45,7 @@ static int	heredoc_lines(t_redirection *heredoc)
 
 	while (1)
 	{
-		line = readline("> ");
+		line = readline(HEREDOC);
 		if (!line)
 		{
 			ft_putendl_fd("warning: here-document at end-of-file", 2);
