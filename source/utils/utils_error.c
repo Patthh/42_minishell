@@ -21,6 +21,7 @@ void	error_command(char *command, t_program *minishell)
 		status_str = ft_itoa(minishell->status);
 		if (status_str)
 		{
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
 			ft_putstr_fd(status_str, STDERR_FILENO);
 			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
 			free(status_str);
@@ -28,6 +29,7 @@ void	error_command(char *command, t_program *minishell)
 	}
 	else
 	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		ft_putstr_fd(command, STDERR_FILENO);
 		ft_putstr_fd(": command not found\n", STDERR_FILENO);
 	}

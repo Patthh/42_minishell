@@ -31,7 +31,7 @@ static void	execute_external(t_command *command, t_program *minishell)
 	if (pid == 0)
 	{
 		if (execve(cmd_path, command->arguments, minishell->envp) == -1)
-			exec_err_exit(command, cmd_path);
+			exec_err_exit(command, cmd_path, minishell);
 	}
 	else
 	{
@@ -69,10 +69,12 @@ void	execute_in_child(char *cmd_path, t_command *command,
 	}
 	if (execve(cmd_path, command->arguments, minishell->envp) == -1)
 	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		ft_putstr_fd(command->arguments[0], STDERR_FILENO);
 		ft_putstr_fd(": ", STDERR_FILENO);
 		ft_putstr_fd(strerror(errno), STDERR_FILENO);
 		ft_putstr_fd("\n", STDERR_FILENO);
+		minishell -> status = 1;
 		free(cmd_path);
 		exit(errno);
 	}

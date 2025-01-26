@@ -54,89 +54,8 @@ int	handle_input(char *input, t_program *minishell)
 	return (1);
 }
 
-// #include "../include/minishell.h"
-// # ifdef DEBUG_TOKEN
-// void	print_tokens(t_token *head)
-// {
-// 	t_token	*current;
-// 	if (!head)
-// 	{
-// 		printf("Token list is empty.\n");
-// 		return ;
-// 	}
-// 	current = head;
-// 	while (current)
-// 	{
-// 		printf("Type: %d, Value: %s\n", current->type, current->value);
-// 		current = current->next;
-// 	}
-// }
-// // Simple and basic print_pipeline function
-// void print_pipeline(t_pipeline *pipeline)
-// {
-//     t_command *command;
-//     t_redirection *curr;
-//     int i;
-//     int j;
-//     if (!pipeline)
-//     {
-//         printf("Pipeline: nothing in there\n");
-//         return;
-//     }
-//     i = 0;
-//     while (i < pipeline->cmd_count)
-//     {
-//         command = pipeline->commands[i];
-//         printf("Command %d:\n", i + 1);
-//         j = 0;
-//         while (command->arguments && command->arguments[j])
-//         {
-//             printf(" Arg %d: %s\n", j + 1, command->arguments[j]);
-//             j++;
-//         }
-//         if (command->input)
-//         {
-//             printf(" Input:");
-//             curr = command->input;
-//             while (curr)
-//             {
-//                 printf(" %s", curr->filename);
-//                 curr = curr->next;
-//                 if (curr)
-//                     printf(" ->");
-//             }
-//             printf("\n");
-//         }
-//         if (command->output)
-//             printf(" Output: %s\n", command->output->filename);
-//         if (command->append)
-//             printf(" Append: %s\n", command->append->filename);
-//         if (command->heredoc)
-//         {
-//             printf(" Heredoc:");
-//             curr = command->heredoc;
-//             while (curr)
-//             {
-//                 printf(" %s", curr->filename);
-//                 curr = curr->next;
-//                 if (curr)
-//                     printf(" ->");
-//             }
-//             printf("\n");
-//         }
-//         i++;
-//     }
-// }
-// #else
-// void	print_tokens(t_token *head)
-// {
-// 	(void)head;
-// }
-// void print_pipeline(t_pipeline *pipeline)
-// {
-// 	(void)pipeline;
-// }
-// #endif
+//		printf("\033[4;42m%s:\033m\033[0;m
+//\033[1;37m [%d] \033m ", cwd, minishell->status);
 void	run_shell(t_program *minishell)
 {
 	char	*input;
@@ -149,7 +68,6 @@ void	run_shell(t_program *minishell)
 		cwd = getcwd(NULL, 0);
 		if (cwd == NULL || access(cwd, F_OK) != 0)
 			cwd_exit(cwd);
-		printf("\033[4;42m%s:\033m\033[0;m\033[1;37m [%d] \033m ", cwd, minishell->status);
 		signal(SIGINT, nl_handler);
 		signal(SIGQUIT, SIG_IGN);
 		input = readline(PROMPT);

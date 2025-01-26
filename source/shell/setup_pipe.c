@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   setup_pipe.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pracksaw <pracksaw@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pracksaw <pracksaw@student.42bangkok.com>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 18:30:21 by pracksaw          #+#    #+#             */
-/*   Updated: 2025/01/25 18:30:22 by pracksaw         ###   ########.fr       */
+/*   Updated: 2025/01/26 00:24:42 by pracksaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,8 @@ void	execute_piped_command(t_command *command, t_program *minishell)
 {
 	char	*cmd_path;
 
+	if (handle_redirections(command, minishell) != 0)
+		exit (1);
 	if (command->is_builtin)
 	{
 		execute_builtin(command, minishell);

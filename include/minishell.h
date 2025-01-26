@@ -282,7 +282,8 @@ void						setup_child_pipes(t_pipeline *pipeline,
 								int **pipe_fds, int i);
 void						execute_piped_command(t_command *command,
 								t_program *minishell);
-void						exec_err_exit(t_command *command, char *cmd_path);
+void						exec_err_exit(t_command *command, char *cmd_path,
+								t_program *minishell);
 void						execute_pipeline(t_pipeline *pipeline,
 								t_program *minishell);
 void						execute_command(t_command *command,
@@ -312,6 +313,7 @@ char						*expand_var(const char **pointer,
 // MEMORY
 void						init_env(t_program *minishell);
 void						gen_env(t_program *minishell);
+char						*ft_multjoin(char **arr_str);
 void						free_shell(t_program *program);
 void						free_token(t_token *token);
 void						free_list(t_token *head);

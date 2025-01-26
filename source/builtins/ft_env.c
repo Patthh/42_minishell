@@ -38,44 +38,8 @@ void	init_env(t_program *minishell)
 	minishell->envp = NULL;
 }
 
-char *ft_multjoin(char **arr_str)
-{
-	char	*res;
-	char	*tmp;
-
-	if (!arr_str && !*arr_str)
-		return (NULL);
-	res = ft_strdup(*arr_str++);
-	while (*arr_str)
-	{
-		tmp = ft_strjoin(res, *arr_str);
-		free(res);
-		res = tmp;
-		arr_str++;
-	}
-	return (tmp);
-}
-
-void	gen_env(t_program *minishell)
-{
-	t_env	*tmp;
-	size_t	i;
-
-	if (minishell->envp != NULL)
-		free_environ(minishell->envp);
-	i = 0;
-	minishell->envp = malloc(sizeof(*minishell->envp) * (minishell->env_len + 1));
-	tmp = minishell->env_list;
-	while (tmp)
-	{
-		minishell->envp[i++] = ft_multjoin((char *[]){tmp->key, "=", tmp->value, NULL});
-		tmp = tmp->next;
-	}
-	minishell->envp[i] = NULL;
-}
-
 void	add_env(t_program *minishell, const char *key, const char *value,
-			int sign)
+		int sign)
 {
 	t_env	*new;
 
