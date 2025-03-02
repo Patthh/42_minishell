@@ -1,3 +1,4 @@
+# 42 Minishell
 
 ███╗░░░███╗██╗███╗░░██╗██╗░██████╗██╗░░██╗███████╗██╗░░░░░██╗░░░░░
 ████╗░████║██║████╗░██║██║██╔════╝██║░░██║██╔════╝██║░░░░░██║░░░░░
@@ -21,6 +22,7 @@ The goal of this project is to teach students about imperative programming, Unix
 <details>
 <summary><b>Project completion status</b></summary><br>
 <p align="center">
+Completed on : 2025-01-27 <br><br>
 <img src="https://i.ibb.co/MkpXyMXp/image.png" alt="Project Status">
 </p>
 </details>
